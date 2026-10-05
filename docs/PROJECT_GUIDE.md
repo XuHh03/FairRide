@@ -6,7 +6,7 @@ The organizer's brief calls for a Rider Advocate, a Driver Advocate, and an impa
 
 ## Current project state
 
-As of 5 October 2026, the repository contains one no-show case (`DISP-002`), a labelled sample no-show policy, a read-only Streamlit screen, and a policy-configured wait-time calculation, shared Pydantic contracts, evidence IDs and lookups, citation checks, hand-written output examples, and nine passing unit tests. The three functions in `agents.py` and the function in `workflow.py` deliberately raise `NotImplementedError`. There are no model calls, rebuttals, rulings, route-deviation cases, or submitted refunds yet. `requirements.txt` contains Streamlit and Pydantic v2. See `docs/PERSON_B_HANDOFF.md` for the implemented interfaces and the remaining work.
+As of 5 October 2026, the repository contains one no-show case (`DISP-002`), a labelled sample no-show policy, shared Pydantic contracts, evidence lookups, citation checks, deterministic facts and final amount checks, a live-model client, a hand-written example backend, a one-round workflow, and a Streamlit activity/result view. Sixteen tests pass, including a simulated end-to-end walkthrough and a mocked HTTP client; no live provider call has been verified. The example walkthrough refers `DISP-002` to human review because the timer event conflicts with the sample threshold and the physical entrance is unresolved. There are no route-deviation cases or submitted refunds. See `progress.md` for current next steps.
 
 The original sample document remains in `data/`. The JSON in `cases/DISP-002.json` excludes the expected ruling. Keep expected answers in tests or evaluation files, never in material sent to a model.
 
@@ -89,7 +89,7 @@ For fee eligibility, use trip and policy facts. Historical dispute counts, ratin
 
 ## Agent handoff contract
 
-**Implemented shared contract v1.0.** `contracts.py` validates agent input and output with Pydantic v2. Use `docs/PERSON_B_HANDOFF.md` and `examples/agent_outputs.json` for exact fields, interfaces, and examples. Model calls remain unimplemented.
+**Implemented shared contract v1.0.** `contracts.py` validates agent input and output with Pydantic v2. Use `docs/PERSON_B_HANDOFF.md` and `examples/agent_outputs.json` for exact fields, interfaces, and examples. Model calls are implemented for a configurable chat-completions endpoint; live provider behavior remains unverified.
 
 | Output | Required fields | Meaning |
 |---|---|---|
@@ -113,17 +113,15 @@ The initial Python scaffold uses `agents.py`. After confirming the handoff contr
 
 | File | Responsibility | State |
 |---|---|---|
-| `app.py` | Case selection, evidence and agent activity, final result | Read-only case view exists; review UI planned |
+| `app.py` | Case evidence, agent activity, and final result | Implemented for one no-show case; case selection planned |
 | `case_data.py` | Load case and policy JSON | Implemented |
-| `checks.py` | Calculate facts; later validate citations, amounts, and rulings | No-show facts implemented; final checks planned |
-| `agents/client.py` | One model API connection, key handling, model selection | Planned |
-| `agents/advocates.py` | Rider and Driver Advocate prompts and calls | Planned; placeholders currently in `agents.py` |
-| `agents/judge.py` | Provisional and final Judge prompts and calls | Planned; placeholder currently in `agents.py` |
+| `checks.py` | Calculate facts and validate known conflicts and amounts | Implemented for no-show; more case types planned |
+| `agents.py` | Model client, prompts, three roles, and example backend | Implemented; live provider verification pending |
 | `contracts.py` | Shared input/result schemas and valid actions | Implemented |
 | `evidence.py` | Evidence lookup, normalized input, citation checks | Implemented |
-| `workflow.py` | Call order, rebuttal limit, activity log, final validation | Placeholder |
+| `workflow.py` | Call order, rebuttal limit, activity log, final validation | Implemented for no-show |
 | `cases/`, `policies/` | Case and sample policy fixtures | One no-show case and policy exist |
-| `tests/` | Calculations, contracts, citations, and later workflow evaluation | Nine fact and shared-interface tests exist |
+| `tests/` | Calculations, contracts, citations, workflow, and client shape | Sixteen tests pass |
 
 The model provider is a configuration choice. Tencent TokenHub is a candidate because it offers models through an OpenAI-compatible API; any permitted accessible model can be tested. Do not assume CodeBuddy or WorkBuddy development credits include runtime model API usage. Store API keys in environment variables or deployment secrets, never in the repository. Add model dependencies to `requirements.txt` only when the corresponding code is implemented.
 
@@ -138,7 +136,7 @@ Both people should work directly with AI. Agree on the example input, evidence I
 | Build the evidence section of `app.py`. | Build the decision and activity-log section of `app.py`. |
 | Review a difficult Judge case and improve its prompt with Person B. | Review a difficult advocate case and improve its prompt with Person A. |
 
-Both people own the final integrated tests and live demo. Because this repo has no initial commit yet, establish the shared scaffold and contract in a first commit before separate branches. Keep work in separate files where possible; integrate a working case daily rather than waiting for both sides to be “finished.”
+Both people own the final integrated tests and live demo. The shared scaffold has been committed. Keep work in separate files where possible; integrate a working case daily rather than waiting for both sides to be “finished.”
 
 ## Evaluation and tests
 

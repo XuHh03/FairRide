@@ -1,6 +1,6 @@
 # FairRide progress
 
-Updated 5 October 2026. This is a repository-based status snapshot, not a claim that a live agent review has run.
+Updated 5 October 2026. This is a repository-based status snapshot. The example workflow has run locally; a live model provider has not been called.
 
 ## Done so far
 
@@ -9,23 +9,23 @@ Updated 5 October 2026. This is a repository-based status snapshot, not a claim 
 - Added `policies/sample_no_show.json` with six identified clauses and explicit sample-only status. The assumed wait clock starts at driver arrival; it is not a verified Ryde policy.
 - Implemented case/policy loading, no-show wait-time and threshold calculations, Pydantic v2 input/output contracts, evidence and policy lookup, normalized agent input, and citation-existence checks.
 - Added hand-written advocate/Judge output examples and tests for calculations, IDs, schema constraints, profile exclusion, and the configurable wait clock.
-- Built a read-only Streamlit view of `DISP-002`, its calculated wait, sample policy, and raw records.
+- Built a Streamlit review screen for `DISP-002` with example/live modes, cited source records, agent activity, timing, token usage, and result.
+- Implemented a configurable chat-completions client, three agent roles, a hand-written example backend, parallel initial advocate calls, one optional rebuttal round, and conservative human-review fallback.
+- Added deterministic final checks for the known timer conflict, missing designated entrance, sample-policy status, citations, and refund amount. Added workflow and mocked-client tests.
 
 ## Current state and verification
 
-- `agents.py` has three typed role functions, and `workflow.py` has `run_review`; all still raise `NotImplementedError`. There are no live model calls, rebuttals, final rulings, refund actions, or activity-log UI.
+- The example walkthrough runs end to end and refers `DISP-002` to human review after one rebuttal. A synthetic resolvable-case test reaches a validated final ruling. The live client request is tested with a mocked HTTP response; provider compatibility, real model quality, cost, and latency remain unverified because no API credentials are configured.
 - Only `DISP-002` and the no-show sample policy exist. Route deviation has no fixtures, policy, or calculation yet.
-- `docs/PERSON_B_HANDOFF.md` reports nine passing tests in a configured environment. On this checkout, `python3 -m unittest discover -s tests -v` ran the two no-show tests successfully but could not import `test_shared_contract.py` because `pydantic` is not installed in the active Python environment. No local `.venv` is present. Install `requirements.txt`, then rerun the full suite.
+- A local Python 3.12.13 `.venv` has `requirements.txt` installed (`pydantic` 2.13.5 and `streamlit` 1.65.0). `.venv/bin/python -m unittest discover -s tests -v` passes all 16 tests. Streamlit's `AppTest` opens the app and runs the example walkthrough without UI exceptions. The virtual environment is ignored by Git.
 - `checks.no_show_facts` reports an eight-minute wait from 08:43 to 08:51 and time-threshold eligibility for the sample case. This is only a time check, not a final fee ruling. `EVENT-008` says the fee became applicable after five minutes, conflicting with the sample policy's eight-minute threshold; pickup-entrance evidence also remains ambiguous.
 
 ## Next steps
 
-1. **Get a green local baseline:** create a Python 3.12+ virtual environment, install `requirements.txt`, and run the full unit suite. Record any actual failures before changing interfaces.
-2. **Complete the no-show review path:** connect a model client through configured secrets; implement both advocates and Judge using `ReviewInput`, `AdvocateResult`, and `JudgeResult`. Parse and check schemas and citations after every call.
-3. **Implement `workflow.run_review`:** call both advocates, request at most one targeted rebuttal round, call the Judge again, keep a visible activity log, and return human review on invalid or unresolved material evidence. Agree on a question parameter for advocate rebuttals before changing their signatures.
-4. **Add deterministic final checks:** validate policy conditions and evidence support, compute refund cents from the charged amount, and reject inconsistent rulings or amounts. Keep the `EVENT-008` conflict visible rather than changing source evidence.
-5. **Complete the UI and coverage:** display arguments, citations, rebuttal, validation issues, and the final recommendation. Add contrasting no-show cases; then build route-deviation policy, records, calculations, and cases. Keep expected outcomes outside model input.
-6. **Evaluate and prepare the demo:** use rider-favorable, driver-favorable, and ambiguous cases for both dispute types; record ruling, citation, arithmetic, abstention, latency, and cost results. Rehearse the live flow and prepare the required architecture and submission assets. The project guide lists a 16 October 2026 submission date and CodeBuddy/WorkBuddy development-conversation evidence requirement; verify current organizer instructions before submission.
+1. **Verify live operation:** configure a permitted provider, run `DISP-002`, and inspect JSON-mode compatibility, citations, latency, and token usage. Update prompts or client behavior based on observed responses; keep uncertain outcomes in human review.
+2. **Broaden no-show coverage:** add rider-favorable, driver-favorable, and ambiguous cases with independent expected answers. Strengthen semantic support checks; current code checks citation existence and known material conditions, not every natural-language inference.
+3. **Add the second dispute type:** design a sample route-deviation policy, fixtures, deterministic route/fare facts, checks, and case selection in the UI.
+4. **Evaluate and prepare the demo:** record rulings, citation support, arithmetic, abstention, latency, and cost across both categories. Rehearse the live flow and prepare architecture and submission assets. The project guide lists a 16 October 2026 submission date and CodeBuddy/WorkBuddy development-conversation evidence requirement; verify current organizer instructions before submission.
 
 ## Key references
 
