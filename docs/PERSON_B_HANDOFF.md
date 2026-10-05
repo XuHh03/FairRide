@@ -1,6 +1,6 @@
 # Person B handoff — shared foundation v1.0
 
-Updated 5 October 2026. This records implemented work, not future agent behavior.
+Updated 5 October 2026. This began as the shared-foundation handoff and now includes the implemented no-show review path. See `progress.md` for the latest status.
 
 ## Implemented by Person A's shared-foundation task
 
@@ -10,12 +10,12 @@ Updated 5 October 2026. This records implemented work, not future agent behavior
 - `policies/sample_no_show.json`: version `1.0`, six individually identified sample clauses, and explicit policy assumptions.
 - `checks.py`: waiting-time calculation now follows `wait_start_event`. The fixture still gives eight minutes with the arrival-based rule.
 - `examples/agent_outputs.json`: hand-written examples of both advocates and all three Judge actions. These are interface examples, not model results or evaluation labels.
-- `agents.py` and `workflow.py`: placeholder signatures now reference shared types.
+- `agents.py` and `workflow.py`: the original typed signatures now have live and example backends plus a one-round controller.
 - `tests/test_shared_contract.py`: executable shared-interface checks, alongside existing no-show tests.
 
-## Not implemented
+## Current implementation limit
 
-No model client, advocate model calls, Judge model calls, rebuttal execution, final policy/amount validation, route-deviation facts, or result UI exists yet. `agents.py` and `workflow.py` still raise `NotImplementedError`. The screen remains a read-only Streamlit fixture viewer.
+The model client, three role calls, rebuttal execution, no-show final amount checks, and result UI are implemented. The hand-written example walkthrough has been verified; the live endpoint has only been tested with a mocked HTTP response. No real provider call, route-deviation facts, multi-case evaluation, or payment execution has been verified.
 
 ## Public interfaces
 
@@ -27,10 +27,10 @@ No model client, advocate model calls, Judge model calls, rebuttal execution, fi
 | `evidence.build_policy_index(policy)` | Raw policy | Clause ID → `PolicyClause` |
 | `evidence.build_review_input(case, policy)` | Raw case and policy | `ReviewInput` |
 | `evidence.validate_references(result, case, policy)` | Parsed advocate/Judge result and raw records | Error strings; empty list means all cited IDs exist |
-| `agents.rider_advocate(review)` | `ReviewInput` | `AdvocateResult` — placeholder |
-| `agents.driver_advocate(review)` | `ReviewInput` | `AdvocateResult` — placeholder |
-| `agents.judge(review, rider_argument, driver_argument, rebuttals=None)` | Shared typed input and outputs | `JudgeResult` — placeholder |
-| `workflow.run_review(case, policy)` | Raw case and policy | `WorkflowResult` — placeholder |
+| `agents.rider_advocate(review)` | `ReviewInput` | `AdvocateResult` from configured live model |
+| `agents.driver_advocate(review)` | `ReviewInput` | `AdvocateResult` from configured live model |
+| `agents.judge(review, rider_argument, driver_argument, rebuttals=None)` | Shared typed input and outputs | `JudgeResult` from configured live model |
+| `workflow.run_review(case, policy, backend=None)` | Raw case and policy; optional injectable backend | Validated `WorkflowResult` |
 
 To split file ownership later, move the advocate functions to `agents/advocates.py` and Judge to `agents/judge.py`, replacing the current `agents.py`. Keep these signatures and imports compatible. Do not create both the same-named module and package as competing implementations.
 
@@ -89,27 +89,19 @@ Known conflict: `EVENT-008` says the charge becomes applicable after five minute
 - `final_ruling`: requires `ruling` and `proposed_action`; no follow-up question.
 - `human_review`: requires an explanation; no ruling or proposed action. Human review is an action/status, not a ruling enum.
 - Rulings: `uphold_charge` (keep fee, zero refund), `reverse_charge` (recommend returning the full charged amount), `partial_refund` (return part of it), and `no_action` (no monetary change).
-- `proposed_action.amount_cents` means refund to the rider, not the original charge. It must be a nonnegative integer; currency is `SGD`. Uphold/no-action require zero cents. Python must verify a reversal equals the charge and a partial refund is positive and below the charge. Those case-dependent amount checks remain to be built.
+- `proposed_action.amount_cents` means refund to the rider, not the original charge. It must be a nonnegative integer; currency is `SGD`. Uphold/no-action require zero cents. Python verifies a reversal equals the charge and a partial refund is positive and below the charge.
 - Confidence is optional and bounded from 0 to 1. It cannot override evidence or policy checks.
 - `WorkflowResult.status` is `completed` or `human_review`; it includes an activity log, Judge result, and validation issues. Person B must ensure status matches the validated result.
 
-## Person A's remaining work
+## Remaining work
 
-1. Add the shared model connection and API-key configuration, then implement both advocates against `ReviewInput` and `AdvocateResult`.
-2. Prepare rider-favorable, driver-favorable, and ambiguous no-show cases, keeping expected outcomes outside agent inputs.
-3. Add the advocate follow-up-question interface with Person B and build the evidence section of the UI.
-
-## Person B's next work
-
-1. Implement `judge` against the shared input and both advocate results. Use the fixtures while Person A builds the real advocates.
-2. Implement `run_review`: prepare input, call advocates, parse/check outputs, call Judge, optionally route one specific rebuttal question, then Judge again.
-3. Add a question input for advocate rebuttals together with Person A before coding that call. The current advocate signatures cover initial arguments only.
-4. Reject invalid schemas and citations; enforce one rebuttal round and refer unresolved or invalid results for human review.
-5. Build case-dependent policy and refund checks in Python. The Judge must not execute payments.
-6. Connect validated results and the visible activity log to the UI. Add route-deviation fixtures and calculations separately.
+1. Configure a permitted model endpoint and evaluate actual responses, latency, token use, and provider compatibility. The backend accepts `FAIRRIDE_API_KEY` or `OPENAI_API_KEY`, `FAIRRIDE_MODEL`, and optional `FAIRRIDE_BASE_URL`.
+2. Add rider-favorable, driver-favorable, and ambiguous no-show cases, keeping expected answers outside model input.
+3. Add route-deviation records, sample policy, facts, checks, and case selection in the UI.
+4. Evaluate citation support and case outcomes. ID existence and the current deterministic checks cannot prove every natural-language claim.
 
 ## Verification and interface changes
 
-Run `python3 -m unittest discover -s tests -v`. Nine tests cover existing wait facts, citation resolution/errors, missing/duplicate source IDs, profile exclusion, derived provenance, Judge action fields, output examples, and the configurable wait clock. No live AI behavior is tested.
+Run `.venv/bin/python -m unittest discover -s tests -v`. Sixteen tests pass, covering wait facts, contracts, example workflow, concurrent advocates, rebuttal limit, amount checks, and mocked client request shape. No live AI behavior is tested.
 
 When changing a shared interface, update `contracts.py`, this handoff, the examples, and relevant tests together. Notify the other person before integrating incompatible changes.
