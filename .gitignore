@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+.streamlit/secrets.toml
+.env
+.DS_Store
+.vscode/
+.workbuddy-ai/
+ManboThink Project Guide.docx

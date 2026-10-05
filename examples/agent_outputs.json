@@ -1,0 +1,124 @@
+{
+  "rider_advocate": {
+    "role": "rider_advocate",
+    "claims": [
+      {
+        "statement": "The rider reports waiting at the lobby; the supplied records do not independently establish the rider location.",
+        "evidence_ids": [
+          "TICKET-001"
+        ],
+        "policy_ids": [
+          "POLICY-005"
+        ]
+      }
+    ],
+    "counterpoints": [
+      {
+        "statement": "Recorded driver arrival and cancellation span eight minutes, meeting the sample time condition.",
+        "evidence_ids": [
+          "TRIP-001",
+          "GPS-005",
+          "GPS-008"
+        ],
+        "policy_ids": [
+          "POLICY-001",
+          "POLICY-003"
+        ]
+      }
+    ],
+    "unanswered_questions": [
+      "Was a specific physical entrance designated and communicated to the rider?"
+    ]
+  },
+  "driver_advocate": {
+    "role": "driver_advocate",
+    "claims": [
+      {
+        "statement": "GPS records place the driver at the recorded pickup coordinates at 08:43; an app event also records arrival.",
+        "evidence_ids": [
+          "GPS-005",
+          "EVENT-004"
+        ],
+        "policy_ids": [
+          "POLICY-005"
+        ]
+      },
+      {
+        "statement": "The records show a driver call attempt that was unanswered.",
+        "evidence_ids": [
+          "CHAT-003",
+          "EVENT-007"
+        ],
+        "policy_ids": [
+          "POLICY-005"
+        ]
+      }
+    ],
+    "counterpoints": [
+      {
+        "statement": "The five-minute timer-expiry event says a fee is applicable, while the sample policy uses an eight-minute threshold.",
+        "evidence_ids": [
+          "EVENT-008"
+        ],
+        "policy_ids": [
+          "POLICY-002",
+          "POLICY-003"
+        ]
+      }
+    ],
+    "unanswered_questions": [
+      "Can the case records clarify the designated entrance and the conflicting timer description?"
+    ]
+  },
+  "judge_rebuttal": {
+    "action": "request_rebuttal",
+    "question": "Do the existing records identify a designated physical pickup entrance, beyond the lobby description and coordinates?",
+    "rebuttal_roles": [
+      "rider_advocate",
+      "driver_advocate"
+    ],
+    "explanation": "The driver location is recorded, but the disputed entrance remains unresolved.",
+    "evidence_ids": [
+      "TICKET-001",
+      "TRIP-001",
+      "CHAT-001",
+      "GPS-005"
+    ],
+    "policy_ids": [
+      "POLICY-005",
+      "POLICY-006"
+    ]
+  },
+  "judge_human_review": {
+    "action": "human_review",
+    "explanation": "Refer this case for review if the designated entrance remains materially unresolved after the follow-up. The event description also conflicts with the sample threshold.",
+    "evidence_ids": [
+      "TICKET-001",
+      "TRIP-001",
+      "EVENT-008"
+    ],
+    "policy_ids": [
+      "POLICY-002",
+      "POLICY-003",
+      "POLICY-005",
+      "POLICY-006"
+    ]
+  },
+  "judge_final_ruling": {
+    "action": "final_ruling",
+    "ruling": "uphold_charge",
+    "proposed_action": {
+      "amount_cents": 0,
+      "currency": "SGD"
+    },
+    "explanation": "Format example only: an upheld charge recommends zero refund cents. This is not an expected answer for DISP-002; pickup ambiguity and the conflicting event still require assessment.",
+    "evidence_ids": [
+      "TRIP-001"
+    ],
+    "policy_ids": [
+      "POLICY-001",
+      "POLICY-003",
+      "POLICY-004"
+    ]
+  }
+}

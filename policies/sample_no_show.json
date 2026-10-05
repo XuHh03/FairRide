@@ -1,0 +1,36 @@
+{
+  "free_wait_time_min": 5,
+  "cancellation_fee_after_wait": 5.0,
+  "no_show_threshold_min": 8,
+  "fee_goes_to": "driver_compensation",
+  "policy_id": "sample_no_show",
+  "status": "sample_only_not_ryde_policy",
+  "wait_start_event": "driver_arrival_time",
+  "version": "1.0",
+  "clauses": [
+    {
+      "id": "POLICY-001",
+      "text": "Measure waiting time from recorded driver_arrival_time to cancellation_time, including early arrival. This is a sample assumption."
+    },
+    {
+      "id": "POLICY-002",
+      "text": "The free wait period is five minutes. Its expiry alone does not establish the eight-minute no-show condition."
+    },
+    {
+      "id": "POLICY-003",
+      "text": "The no-show time condition is met when the recorded driver wait is at least eight minutes. This time check alone is not a final ruling."
+    },
+    {
+      "id": "POLICY-004",
+      "text": "The sample no-show charge is SGD 5.00, designated as driver compensation. A full reversal recommends returning the charged amount to the rider; no real payment is executed."
+    },
+    {
+      "id": "POLICY-005",
+      "text": "GPS is evidence of the recorded driver location. It does not establish the rider location or resolve ambiguity about the physical pickup entrance. Contact records are relevant context; this sample sets no separate mandatory contact count."
+    },
+    {
+      "id": "POLICY-006",
+      "text": "Do not decide fee validity from ratings, dispute history, or fraud flags. Refer unresolved material contradictions or missing facts for human review."
+    }
+  ]
+}
