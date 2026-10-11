@@ -71,7 +71,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(any("Full reversal" in issue for issue in wrong.validation_issues))
 
     def test_second_rebuttal_request_is_stopped(self):
-        backend = FixedJudgeBackend(ExampleAgentBackend().examples["judge_rebuttal"])
+        backend = FixedJudgeBackend(ExampleAgentBackend().examples["DISP-002"]["judge_rebuttal"])
         result = run_review(self.case, self.policy, backend)
         self.assertEqual(backend.judge_calls, 2)
         self.assertEqual(result.status, "human_review")

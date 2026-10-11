@@ -66,25 +66,13 @@ def build_review_input(case: dict, policy: dict) -> ReviewInput:
 
 def validate_references(
     result: AdvocateResult | JudgeResult, case: dict, policy: dict,
-    fact_ids: set[str] | None = None,
 ) -> list[str]:
-    """Check source existence, not whether a source supports a claim.
-
-    Args:
-        result: The agent output to validate.
-        case: Raw case dict for building the evidence index.
-        policy: Raw policy dict for building the policy index.
-        fact_ids: Optional set of derived-fact IDs (FACT-001, etc.) that are
-            also valid evidence references.  When provided, references to
-            these IDs are accepted in addition to raw evidence records.
-    """
+    """Check source existence, not whether a source supports a claim."""
     evidence = build_evidence_index(case)
     clauses = build_policy_index(policy)
-    # Derived fact IDs are valid evidence references when provided
-    valid_refs = set(evidence) | (fact_ids or set())
     claims = result.claims + result.counterpoints if isinstance(result, AdvocateResult) else [result]
     issues = []
     for claim in claims:
-        issues.extend(f"Unknown evidence ID: {ref}" for ref in claim.evidence_ids if ref not in valid_refs)
+        issues.extend(f"Unknown evidence ID: {ref}" for ref in claim.evidence_ids if ref not in evidence)
         issues.extend(f"Unknown policy ID: {ref}" for ref in claim.policy_ids if ref not in clauses)
     return issues

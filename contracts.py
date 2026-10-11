@@ -91,6 +91,16 @@ class JudgeResult(Contract):
     policy_ids: list[str] = Field(default_factory=list)
     confidence: float | None = Field(default=None, ge=0, le=1)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_null_lists(cls, data):
+        """Models sometimes send null for list fields; normalize to []."""
+        if isinstance(data, dict):
+            for key in ("rebuttal_roles", "evidence_ids", "policy_ids"):
+                if data.get(key) is None:
+                    data[key] = []
+        return data
+
     @model_validator(mode="after")
     def check_action_fields(self):
         if self.action == "request_rebuttal":

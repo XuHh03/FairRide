@@ -1,124 +1,171 @@
 {
-  "rider_advocate": {
-    "role": "rider_advocate",
-    "claims": [
-      {
-        "statement": "The rider reports waiting at the lobby; the supplied records do not independently establish the rider location.",
-        "evidence_ids": [
-          "TICKET-001"
-        ],
-        "policy_ids": [
-          "POLICY-005"
-        ]
-      }
-    ],
-    "counterpoints": [
-      {
-        "statement": "Recorded driver arrival and cancellation span eight minutes, meeting the sample time condition.",
-        "evidence_ids": [
-          "TRIP-001",
-          "GPS-005",
-          "GPS-008"
-        ],
-        "policy_ids": [
-          "POLICY-001",
-          "POLICY-003"
-        ]
-      }
-    ],
-    "unanswered_questions": [
-      "Was a specific physical entrance designated and communicated to the rider?"
-    ]
-  },
-  "driver_advocate": {
-    "role": "driver_advocate",
-    "claims": [
-      {
-        "statement": "GPS records place the driver at the recorded pickup coordinates at 08:43; an app event also records arrival.",
-        "evidence_ids": [
-          "GPS-005",
-          "EVENT-004"
-        ],
-        "policy_ids": [
-          "POLICY-005"
-        ]
-      },
-      {
-        "statement": "The records show a driver call attempt that was unanswered.",
-        "evidence_ids": [
-          "CHAT-003",
-          "EVENT-007"
-        ],
-        "policy_ids": [
-          "POLICY-005"
-        ]
-      }
-    ],
-    "counterpoints": [
-      {
-        "statement": "The five-minute timer-expiry event says a fee is applicable, while the sample policy uses an eight-minute threshold.",
-        "evidence_ids": [
-          "EVENT-008"
-        ],
-        "policy_ids": [
-          "POLICY-002",
-          "POLICY-003"
-        ]
-      }
-    ],
-    "unanswered_questions": [
-      "Can the case records clarify the designated entrance and the conflicting timer description?"
-    ]
-  },
-  "judge_rebuttal": {
-    "action": "request_rebuttal",
-    "question": "Do the existing records identify a designated physical pickup entrance, beyond the lobby description and coordinates?",
-    "rebuttal_roles": [
-      "rider_advocate",
-      "driver_advocate"
-    ],
-    "explanation": "The driver location is recorded, but the disputed entrance remains unresolved.",
-    "evidence_ids": [
-      "TICKET-001",
-      "TRIP-001",
-      "CHAT-001",
-      "GPS-005"
-    ],
-    "policy_ids": [
-      "POLICY-005",
-      "POLICY-006"
-    ]
-  },
-  "judge_human_review": {
-    "action": "human_review",
-    "explanation": "Refer this case for review if the designated entrance remains materially unresolved after the follow-up. The event description also conflicts with the sample threshold.",
-    "evidence_ids": [
-      "TICKET-001",
-      "TRIP-001",
-      "EVENT-008"
-    ],
-    "policy_ids": [
-      "POLICY-002",
-      "POLICY-003",
-      "POLICY-005",
-      "POLICY-006"
-    ]
-  },
-  "judge_final_ruling": {
-    "action": "final_ruling",
-    "ruling": "uphold_charge",
-    "proposed_action": {
-      "amount_cents": 0,
-      "currency": "SGD"
+  "DISP-002": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider reports waiting at the lobby; the supplied records do not independently establish the rider location.",
+          "evidence_ids": ["TICKET-001"],
+          "policy_ids": ["POLICY-005"]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Recorded driver arrival and cancellation span eight minutes, meeting the sample time condition.",
+          "evidence_ids": ["TRIP-001", "GPS-005", "GPS-008"],
+          "policy_ids": ["POLICY-001", "POLICY-003"]
+        }
+      ],
+      "unanswered_questions": [
+        "Was a specific physical entrance designated and communicated to the rider?"
+      ]
     },
-    "explanation": "Format example only: an upheld charge recommends zero refund cents. This is not an expected answer for DISP-002; pickup ambiguity and the conflicting event still require assessment.",
-    "evidence_ids": [
-      "TRIP-001"
-    ],
-    "policy_ids": [
-      "POLICY-001",
-      "POLICY-003",
-      "POLICY-004"
-    ]
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "GPS records place the driver at the recorded pickup coordinates at 08:43; an app event also records arrival.",
+          "evidence_ids": ["GPS-005", "EVENT-004"],
+          "policy_ids": ["POLICY-005"]
+        },
+        {
+          "statement": "The records show a driver call attempt that was unanswered.",
+          "evidence_ids": ["CHAT-003", "EVENT-007"],
+          "policy_ids": ["POLICY-005"]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The five-minute timer-expiry event says a fee is applicable, while the sample policy uses an eight-minute threshold.",
+          "evidence_ids": ["EVENT-008"],
+          "policy_ids": ["POLICY-002", "POLICY-003"]
+        }
+      ],
+      "unanswered_questions": [
+        "Can the case records clarify the designated entrance and the conflicting timer description?"
+      ]
+    },
+    "judge_rebuttal": {
+      "action": "request_rebuttal",
+      "question": "Do the existing records identify a designated physical pickup entrance, beyond the lobby description and coordinates?",
+      "rebuttal_roles": ["rider_advocate", "driver_advocate"],
+      "explanation": "The driver location is recorded, but the disputed entrance remains unresolved.",
+      "evidence_ids": ["TICKET-001", "TRIP-001", "CHAT-001", "GPS-005"],
+      "policy_ids": ["POLICY-005", "POLICY-006"]
+    },
+    "judge_human_review": {
+      "action": "human_review",
+      "explanation": "Refer this case for review if the designated entrance remains materially unresolved after the follow-up. The event description also conflicts with the sample threshold.",
+      "evidence_ids": ["TICKET-001", "TRIP-001", "EVENT-008"],
+      "policy_ids": ["POLICY-002", "POLICY-003", "POLICY-005", "POLICY-006"]
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {"amount_cents": 0, "currency": "SGD"},
+      "explanation": "Format example only: an upheld charge recommends zero refund cents. This is not an expected answer for DISP-002; pickup ambiguity and the conflicting event still require assessment.",
+      "evidence_ids": ["TRIP-001"],
+      "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"]
+    }
+  },
+  "DISP-003": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The driver arrived five minutes late at 08:50, well after the scheduled pickup of 08:45.",
+          "evidence_ids": ["TRIP-001", "GPS-003", "EVENT-003"],
+          "policy_ids": ["POLICY-001"]
+        },
+        {
+          "statement": "The driver cancelled after only four minutes of waiting, below the eight-minute no-show threshold.",
+          "evidence_ids": ["TRIP-001"],
+          "policy_ids": ["POLICY-003"]
+        },
+        {
+          "statement": "The rider was communicating and present at the taxi stand, as shown in the chat logs.",
+          "evidence_ids": ["CHAT-001", "CHAT-003"],
+          "policy_ids": ["POLICY-005"]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The driver arrived and waited at the pickup location, but the rider was not visible at the taxi stand.",
+          "evidence_ids": ["GPS-003", "CHAT-002"],
+          "policy_ids": ["POLICY-005"]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The recorded wait was only four minutes, which does not meet the eight-minute no-show threshold in the sample policy.",
+          "evidence_ids": ["TRIP-001"],
+          "policy_ids": ["POLICY-003"]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "reverse_charge",
+      "proposed_action": {"amount_cents": 500, "currency": "SGD"},
+      "explanation": "The driver arrived five minutes late and waited only four minutes, below the eight-minute no-show threshold. The charge is not valid under the sample policy.",
+      "evidence_ids": ["TRIP-001", "GPS-003", "EVENT-003"],
+      "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"]
+    }
+  },
+  "DISP-004": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider was arriving from the MRT and reached the pickup point shortly after the driver cancelled.",
+          "evidence_ids": ["TICKET-001"],
+          "policy_ids": ["POLICY-005"]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The driver waited twelve minutes, well above the eight-minute no-show threshold.",
+          "evidence_ids": ["TRIP-001", "GPS-007"],
+          "policy_ids": ["POLICY-001", "POLICY-003"]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The driver arrived three minutes early at 08:57 and waited twelve minutes until 09:09.",
+          "evidence_ids": ["TRIP-001", "GPS-003", "EVENT-003", "GPS-007"],
+          "policy_ids": ["POLICY-001", "POLICY-003"]
+        },
+        {
+          "statement": "The driver made two unanswered calls and sent multiple messages; the rider sent zero messages.",
+          "evidence_ids": ["CHAT-002", "CHAT-004", "CHAT-005", "EVENT-006", "EVENT-007"],
+          "policy_ids": ["POLICY-005"]
+        },
+        {
+          "statement": "The pickup location is unambiguous: Grand Hyatt main driveway taxi stand.",
+          "evidence_ids": ["TRIP-001", "CHAT-001"],
+          "policy_ids": ["POLICY-005"]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {"amount_cents": 0, "currency": "SGD"},
+      "explanation": "The driver arrived early, waited twelve minutes (exceeding the eight-minute threshold), made two unanswered calls, and the pickup point is unambiguous. The no-show charge is valid.",
+      "evidence_ids": ["TRIP-001", "GPS-007", "EVENT-008"],
+      "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"]
+    }
   }
 }

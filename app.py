@@ -1,8 +1,11 @@
-"""Reviewer walkthrough for the currently supported no-show case."""
+"""Reviewer walkthrough for the currently supported no-show cases."""
 
 import os
 
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()  # Load .env for FAIRRIDE_API_KEY, FAIRRIDE_BASE_URL, etc.
 
 from agents import ExampleAgentBackend
 from case_data import load_case, load_policy
@@ -12,7 +15,24 @@ from workflow import run_review
 
 
 st.set_page_config(page_title="FairRide | Dispute review", layout="wide")
-case = load_case("DISP-002")
+
+# Case selector — switch between all no-show cases
+case_options = ["DISP-002", "DISP-003", "DISP-004"]
+case_labels = {
+    "DISP-002": "DISP-002 — Ambiguous (driver waited 8 min, entrance unclear)",
+    "DISP-003": "DISP-003 — Rider-favorable (driver late, waited 4 min)",
+    "DISP-004": "DISP-004 — Driver-favorable (driver early, waited 12 min)",
+}
+selected_case_id = st.selectbox(
+    "Select a case", case_options,
+    format_func=lambda cid: case_labels[cid],
+)
+# Clear previous result when switching cases
+if st.session_state.get("selected_case") != selected_case_id:
+    st.session_state.pop("review_result", None)
+    st.session_state["selected_case"] = selected_case_id
+
+case = load_case(selected_case_id)
 policy = load_policy("sample_no_show")
 facts = no_show_facts(case, policy)
 ticket = case["dispute_ticket"]

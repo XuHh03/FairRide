@@ -88,9 +88,9 @@ class ChatClient:
             raise ValueError("Model returned an invalid JSON response") from exc
 
 
-_ADVOCATE_INSTRUCTIONS = """You are the {role} in a sample rider-driver dispute review. Return one JSON object with exactly role, claims, counterpoints, unanswered_questions. Each claim/counterpoint has statement, evidence_ids, policy_ids. Use only supplied evidence and policy IDs. Represent uncertainty and the opposing side fairly. A citation must support the exact statement. Never infer a rider's location from driver GPS, decide from profile history, or treat the sample policy as official. If asked a follow-up question, answer only from supplied records and say when they cannot answer it. No hidden reasoning or invented records."""
+_ADVOCATE_INSTRUCTIONS = """You are the {role} in a sample rider-driver dispute review. Return one JSON object with exactly role, claims, counterpoints, unanswered_questions. Each claim/counterpoint has statement, evidence_ids, policy_ids. Use only original evidence IDs (GPS-*, CHAT-*, EVENT-*, TRIP-*, TICKET-*) and policy clause IDs (POLICY-*). Do NOT cite derived fact IDs (FACT-*) in evidence_ids or policy_ids; they are computed context, not citable sources. Represent uncertainty and the opposing side fairly. A citation must support the exact statement. Never infer a rider's location from driver GPS, decide from profile history, or treat the sample policy as official. If asked a follow-up question, answer only from supplied records and say when they cannot answer it. No hidden reasoning or invented records."""
 
-_JUDGE_INSTRUCTIONS = """You are an impartial reviewer of a sample rider-driver dispute. Return one JSON object matching JudgeResult fields: action, question, rebuttal_roles, ruling, proposed_action, explanation, evidence_ids, policy_ids, confidence. Use null for inapplicable optional fields. Actions are request_rebuttal, final_ruling, human_review. Request one specific question only if existing records might resolve it. After rebuttals, decide or refer to human_review; never request a second rebuttal. Cite decisive original evidence IDs and policy clause IDs. Source-ID existence alone is not proof. Treat material contradictions and an unverified pickup entrance as unresolved. The sample policy is not official. Do not compute or execute a refund; proposed_action.amount_cents is a suggested integer SGD refund for Python to verify. Never use rider/driver history or invent records. Return JSON only."""
+_JUDGE_INSTRUCTIONS = """You are an impartial reviewer of a sample rider-driver dispute. Return one JSON object matching JudgeResult fields: action, question, rebuttal_roles, ruling, proposed_action, explanation, evidence_ids, policy_ids, confidence. Use null for inapplicable optional fields. Actions are request_rebuttal, final_ruling, human_review. Valid rulings for final_ruling are: uphold_charge, reverse_charge, partial_refund, no_action. Use ONLY these exact ruling strings; do not invent other values. Request one specific question only if existing records might resolve it. After rebuttals, decide or refer to human_review; never request a second rebuttal. Cite decisive original evidence IDs (GPS-*, CHAT-*, EVENT-*, TRIP-*, TICKET-*) and policy clause IDs (POLICY-*). Do NOT cite derived fact IDs (FACT-*) in evidence_ids or policy_ids; they are computed context, not citable sources. Source-ID existence alone is not proof. Treat material contradictions and an unverified pickup entrance as unresolved. The sample policy is not official. proposed_action.amount_cents is an integer SGD refund recommendation for Python to verify: uphold_charge=0, reverse_charge=full charge (500 for S$5.00), partial_refund=between 0 and charge. Never use rider/driver history or invent records. Return JSON only."""
 
 
 class ModelAgentBackend:
@@ -120,35 +120,44 @@ class ModelAgentBackend:
 
 
 class ExampleAgentBackend:
-    """Deterministic hand-written walkthrough for DISP-002, never a live ruling."""
+    """Deterministic hand-written walkthrough, never a live ruling."""
 
     def __init__(self):
         path = Path(__file__).resolve().parent / "examples" / "agent_outputs.json"
         self.examples = json.loads(path.read_text())
 
     async def advocate(self, review: ReviewInput, role: Role, question: str | None = None) -> AgentCall[AdvocateResult]:
-        if review.case_id != "DISP-002":
-            raise ValueError("Example walkthrough is available only for DISP-002")
+        case_examples = self.examples.get(review.case_id)
+        if not case_examples:
+            raise ValueError(f"Example walkthrough is not available for {review.case_id}")
         if question:
+            # Rebuttal response: cite that the records do not resolve the question
             output = {
                 "role": role,
                 "claims": [{
-                    "statement": "The supplied records mention a lobby and pickup coordinates but do not designate a specific physical entrance.",
-                    "evidence_ids": ["TRIP-001", "CHAT-001"], "policy_ids": ["POLICY-005"],
+                    "statement": "The supplied records do not resolve the material question asked.",
+                    "evidence_ids": ["TRIP-001", "TICKET-001"],
+                    "policy_ids": ["POLICY-005"],
                 }],
                 "counterpoints": [],
-                "unanswered_questions": ["Which physical entrance was designated to both parties?"],
+                "unanswered_questions": [question],
             }
         else:
-            output = self.examples[role]
+            output = case_examples[role]
         return AgentCall(AdvocateResult.model_validate(output))
 
     async def judge(
         self, review: ReviewInput, rider_argument: AdvocateResult,
         driver_argument: AdvocateResult, rebuttals: list[AdvocateResult] | None = None,
     ) -> AgentCall[JudgeResult]:
-        key = "judge_human_review" if rebuttals is not None else "judge_rebuttal"
-        return AgentCall(JudgeResult.model_validate(self.examples[key]))
+        case_examples = self.examples.get(review.case_id)
+        if not case_examples:
+            raise ValueError(f"Example walkthrough is not available for {review.case_id}")
+        if rebuttals is not None:
+            key = "judge_human_review" if "judge_human_review" in case_examples else "judge_final_ruling"
+        else:
+            key = "judge_rebuttal" if "judge_rebuttal" in case_examples else "judge_final_ruling"
+        return AgentCall(JudgeResult.model_validate(case_examples[key]))
 
 
 def rider_advocate(review: ReviewInput) -> AdvocateResult:
