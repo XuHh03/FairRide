@@ -11,12 +11,12 @@ Read this before changing the repository. The current project is a Python/Stream
 
 ## Repository map
 
-- `app.py`: Streamlit review screen; currently shows one case and source evidence.
+- `app.py`: Streamlit review screen with example/live modes, agent activity, citations, and result.
 - `case_data.py`, `cases/`, `policies/`: JSON fixture and sample-policy loading.
-- `checks.py`: deterministic no-show time facts; final ruling and amount checks still need implementation.
+- `checks.py`: deterministic no-show facts, known material conflicts, and final ruling/amount checks.
 - `contracts.py`: Pydantic v2 contract v1.0 for review input, advocates, Judge, and workflow result.
 - `evidence.py`: stable source-ID lookup, normalized `ReviewInput`, and citation-existence checks.
-- `agents.py`, `workflow.py`: typed placeholders; their functions currently raise `NotImplementedError`.
+- `agents.py`, `workflow.py`: live/example agent backends and the one-round review controller.
 - `examples/agent_outputs.json`: hand-written schema examples, not model outputs or expected rulings.
 - `tests/`: no-show calculations and shared-contract checks.
 
@@ -32,4 +32,4 @@ Read this before changing the repository. The current project is a Python/Stream
 
 ## Immediate work
 
-Implement a working no-show review using the existing contracts: model client and three roles, one optional rebuttal round, reference and policy/amount validation, then a review result and activity log in the UI. Add focused tests for the new behavior. See `progress.md` for the ordered follow-on work and current verification status.
+Evaluate the live model path with an actual provider, then add contrasting no-show cases and route-deviation support. The example walkthrough is hand-written and must never be described as a model result. See `progress.md` for the ordered work and current verification status.

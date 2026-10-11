@@ -1,250 +1,131 @@
-"""Integration tests for the workflow pipeline using stub mode."""
-
+import asyncio
 import copy
 import json
-import os
 import unittest
-from decimal import Decimal
-from pathlib import Path
+from io import BytesIO
 from unittest.mock import patch
 
-from contracts import AdvocateResult, JudgeResult, ProposedAction
+from agents import AgentCall, ChatClient, ExampleAgentBackend, ModelConfig
 from case_data import load_case, load_policy
-from checks import validate_amounts
-from evidence import build_review_input
-from workflow import run_review
+from contracts import AdvocateResult, JudgeResult
+from workflow import run_review, run_review_async
 
 
-class StubModeTests(unittest.TestCase):
-    """Tests that run the full pipeline using FAIRRIDE_STUB=1."""
+def resolvable_case() -> dict:
+    case = copy.deepcopy(load_case("DISP-002"))
+    case["trip_data"]["pickup_location"]["designated_entrance"] = "Main lobby entrance"
+    event = next(item for item in case["app_events"] if item["id"] == "EVENT-008")
+    event["details"] = "The five-minute free wait period expired; no-show threshold has not yet been reached."
+    return case
 
+
+class FixedJudgeBackend(ExampleAgentBackend):
+    def __init__(self, decision: dict):
+        super().__init__()
+        self.decision = decision
+        self.judge_calls = 0
+
+    async def judge(self, review, rider_argument, driver_argument, rebuttals=None):
+        self.judge_calls += 1
+        return AgentCall(JudgeResult.model_validate(self.decision))
+
+
+def final_decision(ruling="uphold_charge", amount=0):
+    return {
+        "action": "final_ruling", "ruling": ruling,
+        "proposed_action": {"amount_cents": amount, "currency": "SGD"},
+        "explanation": "Proposed sample-policy result based on the recorded trip and threshold.",
+        "evidence_ids": ["TRIP-001", "GPS-005"],
+        "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"],
+    }
+
+
+class WorkflowTests(unittest.TestCase):
     def setUp(self):
-        os.environ["FAIRRIDE_STUB"] = "1"
         self.case = load_case("DISP-002")
         self.policy = load_policy("sample_no_show")
 
-    def test_end_to_end_returns_workflow_result(self):
-        result = run_review(self.case, self.policy)
-        self.assertEqual(result.case_id, "DISP-002")
-        self.assertIn(result.status, ("completed", "human_review"))
-        self.assertGreater(len(result.activity_log), 0)
-
-    def test_activity_log_has_all_agents(self):
-        result = run_review(self.case, self.policy)
-        actors = {entry.actor for entry in result.activity_log}
-        self.assertIn("rider_advocate", actors)
-        self.assertIn("driver_advocate", actors)
-        self.assertIn("judge", actors)
-
-    def test_advocates_have_distinct_outputs(self):
-        result = run_review(self.case, self.policy)
-        rider_entry = next(
-            e for e in result.activity_log
-            if e.actor == "rider_advocate" and e.event == "initial_argument"
-        )
-        driver_entry = next(
-            e for e in result.activity_log
-            if e.actor == "driver_advocate" and e.event == "initial_argument"
-        )
-        self.assertNotEqual(rider_entry.output, driver_entry.output)
-
-    def test_judge_action_is_valid(self):
-        result = run_review(self.case, self.policy)
-        self.assertIn(result.judge_result.action,
-                      ("request_rebuttal", "final_ruling", "human_review"))
-
-    def test_rebuttal_flow_completes(self):
-        """Stub mode triggers a rebuttal; confirm the full flow runs."""
-        result = run_review(self.case, self.policy)
-        events = [e.event for e in result.activity_log]
-        # The stub Judge requests rebuttal on first pass
-        self.assertIn("first_pass", events)
-        self.assertIn("rebuttal_response", events)
-        self.assertIn("second_pass", events)
-
-    def test_no_validation_issues_in_clean_run(self):
-        result = run_review(self.case, self.policy)
-        self.assertEqual(result.validation_issues, [])
-
-
-class CitationRejectionTests(unittest.TestCase):
-    """Test that unknown citations are caught and logged."""
-
-    def setUp(self):
-        os.environ["FAIRRIDE_STUB"] = "1"
-        self.case = load_case("DISP-002")
-        self.policy = load_policy("sample_no_show")
-
-    def test_unknown_evidence_id_is_logged(self):
-        """Inject a fake evidence ID into a stub advocate response."""
-        from agents.client import _stub_response
-        from contracts import AdvocateResult, ReviewInput
-
-        review = build_review_input(self.case, self.policy)
-        # Get the normal stub, then corrupt it
-        normal = _stub_response("rider_advocate", "", AdvocateResult)
-        corrupted = normal.model_copy()
-        corrupted.claims[0] = corrupted.claims[0].model_copy(
-            update={"evidence_ids": ["GPS-999"]}
-        )
-        # Patch the advocate to return the corrupted version
-        with patch("workflow.rider_advocate", return_value=corrupted):
-            result = run_review(self.case, self.policy)
-        self.assertTrue(
-            any("GPS-999" in issue for issue in result.validation_issues)
-        )
-
-
-class AmountValidationTests(unittest.TestCase):
-    """Test validate_amounts for all four ruling types."""
-
-    def setUp(self):
-        self.policy = load_policy("sample_no_show")
-
-    def test_uphold_charge_requires_zero(self):
-        """The Pydantic contract already rejects uphold_charge with non-zero cents.
-        validate_amounts is defense-in-depth; test it with model_construct to bypass."""
-        result = JudgeResult.model_construct(
-            action="final_ruling", ruling="uphold_charge",
-            proposed_action=ProposedAction(amount_cents=500),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(len(issues), 1)
-        self.assertIn("zero", issues[0])
-
-    def test_reverse_charge_requires_full_amount(self):
-        result = JudgeResult(
-            action="final_ruling", ruling="reverse_charge",
-            proposed_action=ProposedAction(amount_cents=400),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(len(issues), 1)
-        self.assertIn("500", issues[0])
-
-    def test_reverse_charge_full_amount_ok(self):
-        result = JudgeResult(
-            action="final_ruling", ruling="reverse_charge",
-            proposed_action=ProposedAction(amount_cents=500),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(issues, [])
-
-    def test_partial_refund_must_be_positive(self):
-        result = JudgeResult(
-            action="final_ruling", ruling="partial_refund",
-            proposed_action=ProposedAction(amount_cents=0),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(len(issues), 1)
-
-    def test_partial_refund_must_be_below_charge(self):
-        result = JudgeResult(
-            action="final_ruling", ruling="partial_refund",
-            proposed_action=ProposedAction(amount_cents=600),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(len(issues), 1)
-
-    def test_partial_refund_valid_amount_ok(self):
-        result = JudgeResult(
-            action="final_ruling", ruling="partial_refund",
-            proposed_action=ProposedAction(amount_cents=200),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(issues, [])
-
-    def test_uphold_charge_zero_ok(self):
-        result = JudgeResult(
-            action="final_ruling", ruling="uphold_charge",
-            proposed_action=ProposedAction(amount_cents=0),
-            explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(issues, [])
-
-    def test_non_final_ruling_skips_amount_check(self):
-        result = JudgeResult(
-            action="human_review", explanation="test",
-        )
-        issues = validate_amounts(result, self.policy)
-        self.assertEqual(issues, [])
-
-
-class RebuttalLimitTests(unittest.TestCase):
-    """Test that the one-round rebuttal limit is enforced."""
-
-    def setUp(self):
-        os.environ["FAIRRIDE_STUB"] = "1"
-        self.case = load_case("DISP-002")
-        self.policy = load_policy("sample_no_show")
-
-    def test_second_rebuttal_request_overridden(self):
-        """If the Judge requests rebuttal twice, the second is overridden."""
-        from contracts import JudgeResult as JR
-
-        # First judge call: request_rebuttal (normal stub behavior)
-        first_pass = JR(
-            action="request_rebuttal",
-            question="Do the records identify a designated entrance?",
-            rebuttal_roles=["rider_advocate", "driver_advocate"],
-            explanation="Entrance is unresolved.",
-        )
-        # Second judge call: also request_rebuttal (should be overridden)
-        second_pass = JR(
-            action="request_rebuttal",
-            question="Another question?",
-            rebuttal_roles=["rider_advocate"],
-            explanation="Still unresolved.",
-        )
-
-        call_count = [0]
-        original_judge = None
-
-        def mock_judge(*args, **kwargs):
-            call_count[0] += 1
-            if call_count[0] == 1:
-                return first_pass
-            return second_pass
-
-        with patch("workflow.judge", side_effect=mock_judge):
-            result = run_review(self.case, self.policy)
-
-        self.assertEqual(result.judge_result.action, "human_review")
-        self.assertTrue(
-            any("Rebuttal limit" in issue for issue in result.validation_issues)
-        )
-        # Check the rebuttal_limit_enforced event was logged
-        events = [e.event for e in result.activity_log]
-        self.assertIn("rebuttal_limit_enforced", events)
-
-
-class ModelCallFailureTests(unittest.TestCase):
-    """Test that model call failures route to human review."""
-
-    def setUp(self):
-        os.environ["FAIRRIDE_STUB"] = "1"
-        self.case = load_case("DISP-002")
-        self.policy = load_policy("sample_no_show")
-
-    def test_advocate_failure_routes_to_human_review(self):
-        from agents.client import ModelCallError
-
-        def failing_advocate(*args, **kwargs):
-            raise ModelCallError("Simulated API failure")
-
-        with patch("workflow.rider_advocate", side_effect=failing_advocate):
-            result = run_review(self.case, self.policy)
-
+    def test_example_walkthrough_reaches_human_review_after_one_rebuttal(self):
+        result = run_review(self.case, self.policy, ExampleAgentBackend())
         self.assertEqual(result.status, "human_review")
-        self.assertTrue(
-            any("rider_advocate call failed" in issue for issue in result.validation_issues)
-        )
+        self.assertEqual(result.judge_result.action, "human_review")
+        self.assertEqual(sum(entry.event == "rebuttal" for entry in result.activity_log), 2)
+        self.assertEqual(sum(entry.actor == "judge" for entry in result.activity_log), 2)
+        self.assertTrue(any("EVENT-008" in issue for issue in result.validation_issues))
+        self.assertTrue(any("entrance" in issue for issue in result.validation_issues))
+        self.assertTrue(any("wall_duration_ms" in entry.output for entry in result.activity_log))
+
+    def test_unsupported_final_ruling_is_referred_to_human(self):
+        result = run_review(self.case, self.policy, FixedJudgeBackend(final_decision()))
+        self.assertEqual(result.status, "human_review")
+        self.assertTrue(result.validation_issues)
+        self.assertEqual(result.judge_result.action, "human_review")
+
+    def test_valid_synthetic_final_ruling_and_amount_check(self):
+        case = resolvable_case()
+        result = run_review(case, self.policy, FixedJudgeBackend(final_decision()))
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(result.validation_issues, [])
+        wrong = run_review(case, self.policy, FixedJudgeBackend(final_decision("reverse_charge", 400)))
+        self.assertEqual(wrong.status, "human_review")
+        self.assertTrue(any("Full reversal" in issue for issue in wrong.validation_issues))
+
+    def test_second_rebuttal_request_is_stopped(self):
+        backend = FixedJudgeBackend(ExampleAgentBackend().examples["judge_rebuttal"])
+        result = run_review(self.case, self.policy, backend)
+        self.assertEqual(backend.judge_calls, 2)
+        self.assertEqual(result.status, "human_review")
+        self.assertIn("Judge requested a second rebuttal round", result.validation_issues)
+
+    def test_unknown_citation_is_referred_to_human(self):
+        class BadCitationBackend(FixedJudgeBackend):
+            async def advocate(self, review, role, question=None):
+                call = await super().advocate(review, role, question)
+                output = call.result.model_dump()
+                output["claims"][0]["evidence_ids"] = ["GPS-999"]
+                return AgentCall(AdvocateResult.model_validate(output))
+
+        result = run_review(self.case, self.policy, BadCitationBackend(final_decision()))
+        self.assertEqual(result.status, "human_review")
+        self.assertTrue(any("GPS-999" in issue for issue in result.validation_issues))
+
+    def test_independent_advocates_run_concurrently(self):
+        class BarrierBackend(FixedJudgeBackend):
+            def __init__(self):
+                super().__init__(final_decision())
+                self.started = 0
+                self.both_started = asyncio.Event()
+
+            async def advocate(self, review, role, question=None):
+                self.started += 1
+                if self.started == 2:
+                    self.both_started.set()
+                await asyncio.wait_for(self.both_started.wait(), timeout=0.5)
+                return await super().advocate(review, role, question)
+
+        backend = BarrierBackend()
+        result = asyncio.run(run_review_async(resolvable_case(), self.policy, backend))
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(backend.started, 2)
+
+    def test_live_client_request_shape_and_usage_without_network(self):
+        response = {"choices": [{"message": {"content": '{"ok": true}'}}],
+                    "usage": {"prompt_tokens": 3, "completion_tokens": 2, "total_tokens": 5}}
+        client = ChatClient(ModelConfig(api_key="test-secret", model="test-model", base_url="https://example.test/v1"))
+
+        def fake_urlopen(req, timeout):
+            self.assertEqual(req.full_url, "https://example.test/v1/chat/completions")
+            self.assertEqual(timeout, 45)
+            body = json.loads(req.data)
+            self.assertEqual(body["model"], "test-model")
+            self.assertEqual(body["response_format"], {"type": "json_object"})
+            self.assertEqual(body["messages"][1]["role"], "user")
+            return BytesIO(json.dumps(response).encode())
+
+        with patch("agents.request.urlopen", side_effect=fake_urlopen):
+            output, usage = client._complete_json("Return JSON", {"case": "DISP-002"})
+        self.assertEqual(output, {"ok": True})
+        self.assertEqual(usage["total_tokens"], 5)
 
 
 if __name__ == "__main__":
