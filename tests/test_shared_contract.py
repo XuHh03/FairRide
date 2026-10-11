@@ -64,11 +64,13 @@ class SharedContractTests(unittest.TestCase):
     def test_examples_have_valid_schemas_and_citations(self):
         path = Path(__file__).resolve().parents[1] / "examples" / "agent_outputs.json"
         examples = json.loads(path.read_text())
-        for name, output in examples.items():
-            with self.subTest(example=name):
-                model = AdvocateResult if name.endswith("advocate") else JudgeResult
-                result = model.model_validate(output)
-                self.assertEqual(validate_references(result, self.case, self.policy), [])
+        for case_id, outputs in examples.items():
+            case = load_case(case_id)
+            for name, output in outputs.items():
+                with self.subTest(case=case_id, example=name):
+                    model = AdvocateResult if name.endswith("advocate") else JudgeResult
+                    result = model.model_validate(output)
+                    self.assertEqual(validate_references(result, case, self.policy), [])
 
     def test_wait_clock_follows_configured_policy(self):
         policy = copy.deepcopy(self.policy)
