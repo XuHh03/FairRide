@@ -26,11 +26,12 @@ RULES
 4. If two records conflict (e.g., an event description vs. a policy threshold), acknowledge the conflict in your explanation and cite both.
 5. Do not use rider or driver profiles (ratings, dispute history, fraud flags) as the basis for your ruling.
 6. Do not invent evidence IDs.
-7. "proposed_action.amount_cents" is the refund to the rider in SGD cents (integer), not the original charge.
-   - "uphold_charge" or "no_action": amount_cents must be 0.
-   - "reverse_charge": amount_cents must equal the charged amount.
-   - "partial_refund": amount_cents must be positive and less than the charged amount.
-   Python will verify these; do not set them arbitrarily.
+7. "proposed_action.amount_cents" is the REFUND TO THE RIDER in SGD cents (integer). It is NOT the charge amount. It is how much money the rider gets back.
+   - "uphold_charge" (rider pays the fee, gets nothing back): amount_cents = 0
+   - "no_action" (no monetary change): amount_cents = 0
+   - "reverse_charge" (rider gets full refund): amount_cents = the charged amount in cents (e.g., 500 for S$5.00)
+   - "partial_refund" (rider gets partial refund): amount_cents = a positive value less than the charged amount
+   Example: if the charge was S$5.00 (500 cents) and you rule "uphold_charge", set amount_cents to 0, NOT 500.
 8. "confidence" (0.0 to 1.0) is your self-assessed certainty. It is displayed as context and cannot override evidence or policy checks.
 
 OUTPUT
