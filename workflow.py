@@ -24,6 +24,7 @@ def run_review(case: dict, policy: dict) -> WorkflowResult:
 
     # 1. Prepare input
     review = build_review_input(case, policy)
+    fact_ids = {f.id for f in review.facts}
     log.append(ActivityEntry(
         actor="system", event="review_prepared",
         output={"case_id": review.case_id,
@@ -33,17 +34,18 @@ def run_review(case: dict, policy: dict) -> WorkflowResult:
 
     # 2. Call advocates
     rider = _call_advocate(rider_advocate, review, case, policy,
-                           "rider_advocate", log, issues)
+                           "rider_advocate", log, issues, fact_ids=fact_ids)
     if rider is None:
         return _human_review_result(review.case_id, log, issues)
 
     driver = _call_advocate(driver_advocate, review, case, policy,
-                             "driver_advocate", log, issues)
+                             "driver_advocate", log, issues, fact_ids=fact_ids)
     if driver is None:
         return _human_review_result(review.case_id, log, issues)
 
     # 4. Call Judge (pass 1)
-    result = _call_judge(review, rider, driver, None, case, policy, log, issues)
+    result = _call_judge(review, rider, driver, None, case, policy, log, issues,
+                         fact_ids=fact_ids)
     if result is None:
         return _human_review_result(review.case_id, log, issues)
 
@@ -53,12 +55,13 @@ def run_review(case: dict, policy: dict) -> WorkflowResult:
         for role in result.rebuttal_roles:
             fn = rider_advocate if role == "rider_advocate" else driver_advocate
             rebuttal = _call_advocate(fn, review, case, policy, role, log, issues,
-                                      question=result.question)
+                                      question=result.question, fact_ids=fact_ids)
             if rebuttal is not None:
                 rebuttals.append(rebuttal)
 
         # Judge pass 2
-        result = _call_judge(review, rider, driver, rebuttals, case, policy, log, issues)
+        result = _call_judge(review, rider, driver, rebuttals, case, policy, log, issues,
+                             fact_ids=fact_ids)
         if result is None:
             return _human_review_result(review.case_id, log, issues)
 
@@ -89,7 +92,8 @@ def run_review(case: dict, policy: dict) -> WorkflowResult:
     )
 
 
-def _call_advocate(fn, review, case, policy, role, log, issues, question=None):
+def _call_advocate(fn, review, case, policy, role, log, issues, question=None,
+                   fact_ids=None):
     """Call an advocate, log the result, and validate citations.
 
     Returns the AdvocateResult, or None if the call failed.
@@ -105,11 +109,12 @@ def _call_advocate(fn, review, case, policy, role, log, issues, question=None):
 
     log.append(ActivityEntry(actor=role, event=event,
                              output=result.model_dump(mode="json")))
-    issues += validate_references(result, case, policy)
+    issues += validate_references(result, case, policy, fact_ids=fact_ids)
     return result
 
 
-def _call_judge(review, rider, driver, rebuttals, case, policy, log, issues):
+def _call_judge(review, rider, driver, rebuttals, case, policy, log, issues,
+                fact_ids=None):
     """Call the Judge, log the result, and validate citations.
 
     Returns the JudgeResult, or None if the call failed.
@@ -125,7 +130,7 @@ def _call_judge(review, rider, driver, rebuttals, case, policy, log, issues):
 
     log.append(ActivityEntry(actor="judge", event=event,
                              output=result.model_dump(mode="json")))
-    issues += validate_references(result, case, policy)
+    issues += validate_references(result, case, policy, fact_ids=fact_ids)
     return result
 
 

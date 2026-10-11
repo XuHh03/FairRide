@@ -1,0 +1,185 @@
+{
+  "dispute_ticket": {
+    "dispute_id": "DISP-003",
+    "trip_id": "TRIP-2026-10231",
+    "filed_by": "rider",
+    "dispute_type": "no_show_charge",
+    "description": "I was at the pickup point at NEX Mall taxi stand on time. The driver arrived 5 minutes late, waited barely 4 minutes, and then cancelled claiming I was a no-show. I sent a message saying I was at the taxi stand. The app charged me $5.00 which is unfair — the driver was late and didn't wait long enough.",
+    "filed_at": "2026-09-20T09:10:00+08:00",
+    "status": "open",
+    "id": "TICKET-001"
+  },
+  "rider_profile": {
+    "rider_id": "R-4502",
+    "name": "Sarah Chen",
+    "account_age_days": 540,
+    "total_trips": 87,
+    "avg_rating": 4.7,
+    "dispute_history": {
+      "total_disputes": 1,
+      "upheld": 1,
+      "rejected": 0
+    },
+    "fraud_flags": 0,
+    "payment_method": "credit_card"
+  },
+  "driver_profile": {
+    "driver_id": "D-7712",
+    "name": "Tan Boon Huat",
+    "account_age_days": 300,
+    "total_trips": 415,
+    "avg_rating": 4.2,
+    "dispute_history": {
+      "total_disputes": 3,
+      "upheld_against": 2,
+      "rejected": 1
+    },
+    "fraud_flags": 0,
+    "vehicle": "Toyota Vios (SGP 8821 K)"
+  },
+  "trip_data": {
+    "trip_id": "TRIP-2026-10231",
+    "rider_id": "R-4502",
+    "driver_id": "D-7712",
+    "pickup_location": {
+      "name": "NEX Mall Taxi Stand",
+      "lat": 1.3509,
+      "lng": 103.8498
+    },
+    "dropoff_location": {
+      "name": "Changi Airport T2",
+      "lat": 1.3526,
+      "lng": 103.9886
+    },
+    "scheduled_time": "2026-09-20T08:45:00+08:00",
+    "driver_arrival_time": "2026-09-20T08:50:00+08:00",
+    "driver_wait_start": "2026-09-20T08:50:00+08:00",
+    "cancellation_time": "2026-09-20T08:54:00+08:00",
+    "cancellation_fee": 5.0,
+    "cancellation_reason": "rider_no_show",
+    "id": "TRIP-001"
+  },
+  "gps_telemetry": [
+    {
+      "timestamp": "2026-09-20T08:44:00+08:00",
+      "lat": 1.3525,
+      "lng": 103.8510,
+      "speed_kmh": 35,
+      "status": "en_route",
+      "id": "GPS-001"
+    },
+    {
+      "timestamp": "2026-09-20T08:47:00+08:00",
+      "lat": 1.3518,
+      "lng": 103.8505,
+      "speed_kmh": 20,
+      "status": "en_route",
+      "id": "GPS-002"
+    },
+    {
+      "timestamp": "2026-09-20T08:50:00+08:00",
+      "lat": 1.3512,
+      "lng": 103.8501,
+      "speed_kmh": 0,
+      "status": "arrived",
+      "id": "GPS-003"
+    },
+    {
+      "timestamp": "2026-09-20T08:52:00+08:00",
+      "lat": 1.3512,
+      "lng": 103.8501,
+      "speed_kmh": 0,
+      "status": "waiting",
+      "id": "GPS-004"
+    },
+    {
+      "timestamp": "2026-09-20T08:54:00+08:00",
+      "lat": 1.3512,
+      "lng": 103.8501,
+      "speed_kmh": 0,
+      "status": "cancelled",
+      "id": "GPS-005"
+    }
+  ],
+  "chat_logs": [
+    {
+      "timestamp": "2026-09-20T08:48:00+08:00",
+      "sender": "rider",
+      "type": "message",
+      "content": "Hi, I'm at the NEX Mall taxi stand. Where are you?",
+      "id": "CHAT-001"
+    },
+    {
+      "timestamp": "2026-09-20T08:50:30+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "I've arrived. I'm at the taxi stand. White Toyota Vios SGP 8821 K.",
+      "id": "CHAT-002"
+    },
+    {
+      "timestamp": "2026-09-20T08:51:00+08:00",
+      "sender": "rider",
+      "type": "message",
+      "content": "I don't see your car. I'm standing at the taxi queue. Are you at the right stand?",
+      "id": "CHAT-003"
+    },
+    {
+      "timestamp": "2026-09-20T08:53:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "I'm at the taxi stand. I don't see you. I'll have to cancel if you don't come.",
+      "id": "CHAT-004"
+    },
+    {
+      "timestamp": "2026-09-20T08:54:00+08:00",
+      "sender": "system",
+      "type": "system",
+      "content": "Trip cancelled by driver. Reason: rider_no_show. Cancellation fee of $5.00 applied.",
+      "id": "CHAT-005"
+    }
+  ],
+  "app_events": [
+    {
+      "timestamp": "2026-09-20T08:40:00+08:00",
+      "event_type": "booking_confirmed",
+      "details": "Rider R-4502 booked trip TRIP-2026-10231 from NEX Mall Taxi Stand to Changi Airport T2. Scheduled pickup 08:45.",
+      "id": "EVENT-001"
+    },
+    {
+      "timestamp": "2026-09-20T08:40:10+08:00",
+      "event_type": "driver_assigned",
+      "details": "Driver D-7712 (Tan Boon Huat, Toyota Vios SGP 8821 K) assigned. ETA 5 min.",
+      "id": "EVENT-002"
+    },
+    {
+      "timestamp": "2026-09-20T08:50:00+08:00",
+      "event_type": "driver_arrived",
+      "details": "Driver GPS within 30m of pickup point. Speed 0 km/h. Auto-arrival confirmed.",
+      "id": "EVENT-003"
+    },
+    {
+      "timestamp": "2026-09-20T08:50:05+08:00",
+      "event_type": "rider_notified",
+      "details": "Push notification sent to rider: 'Your driver has arrived.'",
+      "id": "EVENT-004"
+    },
+    {
+      "timestamp": "2026-09-20T08:50:10+08:00",
+      "event_type": "wait_timer_started",
+      "details": "Free wait timer started. 5 min free wait period ends at 08:55.",
+      "id": "EVENT-005"
+    },
+    {
+      "timestamp": "2026-09-20T08:54:00+08:00",
+      "event_type": "cancellation_fee_applied",
+      "details": "Driver cancelled trip. Reason: rider_no_show. Cancellation fee of $5.00 charged to rider.",
+      "id": "EVENT-006"
+    },
+    {
+      "timestamp": "2026-09-20T08:54:05+08:00",
+      "event_type": "driver_released",
+      "details": "Driver D-7712 released from trip. Trip status: cancelled (rider_no_show).",
+      "id": "EVENT-007"
+    }
+  ]
+}
