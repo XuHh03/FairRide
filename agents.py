@@ -125,6 +125,7 @@ Evidence ID rules (CRITICAL — violations cause system rejection):
   Valid policy prefix: POLICY-.
 - Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, ROUTE-001, FARE-002, POLICY-003.
 - NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
+- NEVER put evidence IDs in policy_ids, or policy IDs in evidence_ids. ROUTE-002 goes in evidence_ids; POLICY-003 goes in policy_ids.
 
 Conduct:
 - Represent uncertainty and the opposing side fairly. A citation must support the exact statement.
@@ -171,17 +172,29 @@ Evidence ID rules (CRITICAL — violations cause system rejection):
   Valid policy prefix: POLICY-.
 - Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, ROUTE-001, FARE-002, POLICY-003.
 - NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
+- NEVER put evidence IDs in policy_ids, or policy IDs in evidence_ids. ROUTE-002 goes in evidence_ids; POLICY-003 goes in policy_ids.
 
 Amount rules (amount_cents is the SGD refund TO the rider, in integer cents):
 - "uphold_charge": 0 (no refund)
-- "reverse_charge": full charge amount (500 for S$5.00)
+- "reverse_charge": full charge amount (use the actual charged amount from the case records)
 - "partial_refund": between 0 and the full charge (exclusive)
 
 Decision guidance:
-- The review includes Python-calculated facts (waited_minutes, fee_eligible). Use them to guide your ruling.
-- If fee_eligible is true and the driver waited at or beyond the no-show threshold, uphold_charge (0 refund) is appropriate.
+- The review includes Python-calculated facts. Use them to apply the policy threshold and guide your ruling.
+- Check the dispute_type in the review to determine which facts and threshold apply.
+
+For no_show_charge disputes:
+- If fee_eligible is true (driver waited at or beyond the no-show threshold), uphold_charge (0 refund) is appropriate.
 - If fee_eligible is false (driver waited below the threshold), reverse_charge (full refund) is appropriate.
-- Make a final_ruling when the calculated facts clearly support one side. Do not abstain merely because GPS does not prove the rider's exact position — the wait-time threshold is the decisive factor.
+- The wait-time threshold is the decisive factor. Do not abstain merely because GPS does not prove the rider's exact position.
+
+For route_deviation disputes:
+- If deviation_significant is true (actual route exceeds the policy threshold), partial_refund of the fare_difference is appropriate — unless the driver's justification is corroborated by app alerts or rider-requested changes.
+- If deviation_significant is false (deviation within the acceptable range), uphold_charge (0 refund) is appropriate.
+- If the driver claimed traffic but no app alerts corroborate it, the deviation is unjustified and a refund is warranted.
+
+General:
+- Make a final_ruling when the calculated facts clearly support one side.
 - Route to human_review ONLY when material evidence is genuinely missing, contradictory, or the case is truly ambiguous after considering the calculated facts.
 - Source-ID existence alone is not proof. Treat the sample policy as not official.
 - Never use rider/driver history or invent records. Return JSON only, no markdown."""

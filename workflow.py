@@ -116,7 +116,8 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
         )
     except Exception as exc:
         # A malformed model response or transport failure must not become a ruling.
-        reason = str(exc) if type(exc) in (ValueError, RuntimeError) else type(exc).__name__
+        # isinstance (not type()) so ValidationError subclasses of ValueError are included.
+        reason = str(exc) if isinstance(exc, (ValueError, RuntimeError)) else type(exc).__name__
         issues.append(f"Agent review failed: {reason}")
         activity.append(ActivityEntry(
             actor="system", event="review_failed",
