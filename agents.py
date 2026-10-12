@@ -88,9 +88,91 @@ class ChatClient:
             raise ValueError("Model returned an invalid JSON response") from exc
 
 
-_ADVOCATE_INSTRUCTIONS = """You are the {role} in a sample rider-driver dispute review. Return one JSON object with exactly role, claims, counterpoints, unanswered_questions. Each claim/counterpoint has statement, evidence_ids, policy_ids. Use only original evidence IDs (GPS-*, CHAT-*, EVENT-*, TRIP-*, TICKET-*) and policy clause IDs (POLICY-*). Do NOT cite derived fact IDs (FACT-*) in evidence_ids or policy_ids; they are computed context, not citable sources. Represent uncertainty and the opposing side fairly. A citation must support the exact statement. Never infer a rider's location from driver GPS, decide from profile history, or treat the sample policy as official. If asked a follow-up question, answer only from supplied records and say when they cannot answer it. No hidden reasoning or invented records."""
+_ADVOCATE_INSTRUCTIONS = """You are the {role} in a sample rider-driver dispute review.
 
-_JUDGE_INSTRUCTIONS = """You are an impartial reviewer of a sample rider-driver dispute. Return one JSON object matching JudgeResult fields: action, question, rebuttal_roles, ruling, proposed_action, explanation, evidence_ids, policy_ids, confidence. Use null for inapplicable optional fields. Actions are request_rebuttal, final_ruling, human_review. Valid rulings for final_ruling are: uphold_charge, reverse_charge, partial_refund, no_action. Use ONLY these exact ruling strings; do not invent other values. Request one specific question only if existing records might resolve it. After rebuttals, decide or refer to human_review; never request a second rebuttal. Cite decisive original evidence IDs (GPS-*, CHAT-*, EVENT-*, TRIP-*, TICKET-*) and policy clause IDs (POLICY-*). Do NOT cite derived fact IDs (FACT-*) in evidence_ids or policy_ids; they are computed context, not citable sources. Source-ID existence alone is not proof. Treat material contradictions and an unverified pickup entrance as unresolved. The sample policy is not official. proposed_action.amount_cents is an integer SGD refund recommendation for Python to verify: uphold_charge=0, reverse_charge=full charge (500 for S$5.00), partial_refund=between 0 and charge. Never use rider/driver history or invent records. Return JSON only."""
+Return ONE JSON object with EXACTLY these top-level fields:
+- "role": must be exactly "{role}"
+- "claims": array of objects. Each object has "statement" (non-empty string), "evidence_ids" (array of strings), "policy_ids" (array of strings).
+- "counterpoints": same structure as claims.
+- "unanswered_questions": array of strings.
+
+Example (copy the structure, fill with real content from the records):
+  {
+    "role": "{role}",
+    "claims": [
+      {"statement": "The driver arrived late.", "evidence_ids": ["TRIP-001"], "policy_ids": ["POLICY-003"]}
+    ],
+    "counterpoints": [
+      {"statement": "The rider was not at the pickup.", "evidence_ids": ["CHAT-002"], "policy_ids": ["POLICY-001"]}
+    ],
+    "unanswered_questions": ["Was the designated entrance clearly communicated?"]
+  }
+
+Field rules:
+- All array fields (claims, counterpoints, unanswered_questions) must be JSON arrays. Never use null. Use [] when empty.
+- Each claim and counterpoint must have at least one entry in evidence_ids or policy_ids.
+- "statement" must be a non-empty string.
+
+Evidence ID rules:
+- Copy evidence IDs exactly as they appear in the supplied records. Each ID has exactly ONE prefix and ONE number.
+- Valid prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-. Policy IDs use POLICY-.
+- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, POLICY-003.
+- NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
+- Do NOT cite derived fact IDs (FACT-*); they are computed context, not citable sources.
+
+Conduct:
+- Represent uncertainty and the opposing side fairly. A citation must support the exact statement.
+- Never infer a rider's location from driver GPS, decide from profile history, or treat the sample policy as official.
+- If asked a follow-up question, answer only from supplied records and say when they cannot answer it.
+- No hidden reasoning or invented records. Return JSON only, no markdown."""
+
+_JUDGE_INSTRUCTIONS = """You are an impartial reviewer of a sample rider-driver dispute.
+
+Return ONE JSON object with EXACTLY these fields:
+{
+  "action": "final_ruling",
+  "question": null,
+  "rebuttal_roles": [],
+  "ruling": "uphold_charge",
+  "proposed_action": {"amount_cents": 0, "currency": "SGD"},
+  "explanation": "Your reasoning here.",
+  "evidence_ids": ["GPS-005"],
+  "policy_ids": ["POLICY-003"],
+  "confidence": 0.85
+}
+
+Action rules (choose one):
+- "request_rebuttal": Set question to a non-empty string and rebuttal_roles to ["rider_advocate"] or ["driver_advocate"]. Set ruling to null and omit proposed_action.
+- "final_ruling": Set ruling to one of: "uphold_charge", "reverse_charge", "partial_refund", "no_action". Set proposed_action.amount_cents. Set question to null and rebuttal_roles to [].
+- "human_review": Set ruling to null and omit proposed_action. Set question to null and rebuttal_roles to [].
+
+Field rules:
+- All array fields (rebuttal_roles, evidence_ids, policy_ids) must be JSON arrays. Never use null for arrays. Use [] when empty.
+- question must be null when action is not request_rebuttal. Do NOT send an empty string "".
+- proposed_action must be present ONLY for final_ruling. Omit it (or set to null) for other actions.
+- explanation must be a non-empty string.
+- confidence is a number between 0.0 and 1.0. Use null if you have none.
+
+Evidence ID rules:
+- Copy evidence IDs exactly as they appear in the supplied records. Each ID has exactly ONE prefix and ONE number.
+- Valid prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-. Policy IDs use POLICY-.
+- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, POLICY-003.
+- NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
+- Do NOT cite derived fact IDs (FACT-*); they are computed context, not citable sources.
+
+Amount rules (amount_cents is the SGD refund TO the rider, in integer cents):
+- "uphold_charge": 0 (no refund)
+- "reverse_charge": full charge amount (500 for S$5.00)
+- "partial_refund": between 0 and the full charge (exclusive)
+
+Decision guidance:
+- The review includes Python-calculated facts (waited_minutes, fee_eligible). Use them to guide your ruling.
+- If fee_eligible is true and the driver waited at or beyond the no-show threshold, uphold_charge (0 refund) is appropriate.
+- If fee_eligible is false (driver waited below the threshold), reverse_charge (full refund) is appropriate.
+- Make a final_ruling when the calculated facts clearly support one side. Do not abstain merely because GPS does not prove the rider's exact position — the wait-time threshold is the decisive factor.
+- Route to human_review ONLY when material evidence is genuinely missing, contradictory, or the case is truly ambiguous after considering the calculated facts.
+- Source-ID existence alone is not proof. Treat the sample policy as not official.
+- Never use rider/driver history or invent records. Return JSON only, no markdown."""
 
 
 class ModelAgentBackend:
@@ -99,7 +181,8 @@ class ModelAgentBackend:
 
     async def advocate(self, review: ReviewInput, role: Role, question: str | None = None) -> AgentCall[AdvocateResult]:
         payload = {"review": review.model_dump(mode="json"), "follow_up_question": question}
-        output, usage = await self.client.complete_json(_ADVOCATE_INSTRUCTIONS.format(role=role), payload)
+        instructions = _ADVOCATE_INSTRUCTIONS.replace("{role}", role)
+        output, usage = await self.client.complete_json(instructions, payload)
         result = AdvocateResult.model_validate(output)
         if result.role != role:
             raise ValueError("Advocate returned the wrong role")
