@@ -7,11 +7,12 @@ and that the example-mode workflow produces a valid result for each case.
 In live mode (FAIRRIDE_API_KEY + FAIRRIDE_MODEL set), the same tests run
 against the real model and check that the Judge's ruling matches the label.
 Live tests are skipped when no API key is configured.
+
+Labels are imported from evaluation.py to avoid duplication.
 """
 
 import os
 import unittest
-from dataclasses import dataclass
 
 from case_data import load_case, load_policy
 from checks import no_show_facts, validate_final_ruling, charged_cents, material_case_issues
@@ -19,87 +20,7 @@ from contracts import JudgeResult, ProposedAction
 from evidence import build_evidence_index, build_review_input
 from workflow import run_review
 from agents import ExampleAgentBackend
-
-
-# ---------------------------------------------------------------------------
-# Expected labels for no-show cases
-# ---------------------------------------------------------------------------
-
-@dataclass(frozen=True)
-class CaseLabel:
-    """Human-annotated expected outcome for a single dispute case."""
-    case_id: str
-    expected_ruling: str          # uphold_charge | reverse_charge | partial_refund | human_review
-    expected_waited_minutes: float
-    expected_fee_eligible: bool
-    rationale: str               # why we expect this ruling
-    evidence_count: int          # total evidence records with IDs
-    notes: str = ""              # ambiguities or caveats
-    acceptable_alternatives: tuple = ()  # rulings also considered defensible
-
-
-LABELS: dict[str, CaseLabel] = {
-    "DISP-002": CaseLabel(
-        case_id="DISP-002",
-        expected_ruling="uphold_charge",
-        expected_waited_minutes=8.0,
-        expected_fee_eligible=True,
-        rationale=(
-            "Driver waited 8 minutes (meets no-show threshold). "
-            "Entrance ambiguity and EVENT-008 timer conflict exist but are "
-            "not material enough to reverse the charge; Judge upholds."
-        ),
-        evidence_count=26,
-        notes=(
-            "Material ambiguities: (1) designated entrance unresolved, "
-            "(2) EVENT-008 conflicts with 8-min threshold. The live API "
-            "returned uphold_charge with confidence 0.90 on one run, but "
-            "the model may also legitimately choose human_review given "
-            "the unresolved entrance ambiguity."
-        ),
-        acceptable_alternatives=("human_review",),
-    ),
-    "DISP-003": CaseLabel(
-        case_id="DISP-003",
-        expected_ruling="reverse_charge",
-        expected_waited_minutes=4.0,
-        expected_fee_eligible=False,
-        rationale=(
-            "Driver arrived 5 min late (08:50 vs scheduled 08:45), waited "
-            "only 4 min (below 8-min threshold), fee_eligible=False. "
-            "Charge is invalid; Judge reverses and refunds full S$5.00."
-        ),
-        evidence_count=19,
-        acceptable_alternatives=("human_review",),
-        notes=(
-            "The model sometimes routes to human_review instead of making "
-            "a ruling. An uphold_charge ruling would be a true failure "
-            "(validate_final_ruling rejects upholding when fee_eligible "
-            "is False)."
-        ),
-    ),
-    "DISP-004": CaseLabel(
-        case_id="DISP-004",
-        expected_ruling="uphold_charge",
-        expected_waited_minutes=12.0,
-        expected_fee_eligible=True,
-        rationale=(
-            "Driver arrived 3 min early (08:57), waited 12 min (well above "
-            "8-min threshold), unambiguous pickup (Grand Hyatt main driveway "
-            "taxi stand), two unanswered calls, three messages, rider sent "
-            "zero messages. Clear driver-favorable case; Judge upholds."
-        ),
-        evidence_count=26,
-        acceptable_alternatives=("human_review",),
-        notes=(
-            "The model sometimes over-applies POLICY-005 (GPS does not "
-            "establish rider location) and routes to human_review despite "
-            "the time threshold being met and two unanswered calls. This "
-            "is a model caution issue, not a system bug. A reverse_charge "
-            "ruling would be a true failure."
-        ),
-    ),
-}
+from evaluation import CaseLabel, LABELS
 
 
 # ---------------------------------------------------------------------------
@@ -353,6 +274,16 @@ class LabelValidationTests(unittest.TestCase):
         issues = validate_final_ruling(case, self.policy, decision)
         self.assertTrue(any("threshold" in issue for issue in issues),
                         f"Expected threshold issue, got: {issues}")
+
+    def test_disp_003_partial_refund_fails_validation(self):
+        """DISP-003: partial_refund should also fail because fee_eligible
+        is False — if the threshold is not met, the charge must be fully
+        reversed, not partially refunded."""
+        case = load_case("DISP-003")
+        decision = self._build_decision("partial_refund", 250, "DISP-003")
+        issues = validate_final_ruling(case, self.policy, decision)
+        self.assertTrue(any("threshold" in issue for issue in issues),
+                        f"Expected threshold issue for partial_refund, got: {issues}")
 
     def test_disp_004_reverse_charge_fails_validation(self):
         """DISP-004: reverse_charge with 500 refund should pass amount check

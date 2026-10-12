@@ -1,0 +1,452 @@
+"""Evaluation labels and batch metrics for FairRide no-show cases.
+
+This module is the single source of truth for human-annotated expected
+outcomes. Both the test suite and the CLI evaluation harness import from
+here to avoid duplication.
+
+Usage (CLI):
+    python evaluate.py                  # example mode only
+    python evaluate.py --live           # also run live mode
+    python evaluate.py --live --runs 3  # 3 live runs per case
+"""
+
+import argparse
+import json
+import os
+import sys
+import time
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+from case_data import load_case, load_policy
+from checks import charged_cents, material_case_issues, no_show_facts, validate_final_ruling
+from contracts import WorkflowResult
+from evidence import build_evidence_index, validate_references
+from workflow import run_review
+from agents import ExampleAgentBackend
+
+load_dotenv()
+
+
+# ---------------------------------------------------------------------------
+# Expected labels for no-show cases
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class CaseLabel:
+    """Human-annotated expected outcome for a single dispute case."""
+    case_id: str
+    expected_ruling: str          # uphold_charge | reverse_charge | partial_refund | human_review
+    expected_waited_minutes: float
+    expected_fee_eligible: bool
+    rationale: str
+    evidence_count: int
+    notes: str = ""
+    acceptable_alternatives: tuple = ()
+
+
+LABELS: dict[str, CaseLabel] = {
+    "DISP-002": CaseLabel(
+        case_id="DISP-002",
+        expected_ruling="uphold_charge",
+        expected_waited_minutes=8.0,
+        expected_fee_eligible=True,
+        rationale=(
+            "Driver waited 8 minutes (meets no-show threshold). "
+            "Entrance ambiguity and EVENT-008 timer conflict exist but are "
+            "not material enough to reverse the charge; Judge upholds."
+        ),
+        evidence_count=26,
+        notes=(
+            "Material ambiguities: (1) designated entrance unresolved, "
+            "(2) EVENT-008 conflicts with 8-min threshold. The live API "
+            "returned uphold_charge with confidence 0.90 on one run, but "
+            "the model may also legitimately choose human_review given "
+            "the unresolved entrance ambiguity."
+        ),
+        acceptable_alternatives=("human_review",),
+    ),
+    "DISP-003": CaseLabel(
+        case_id="DISP-003",
+        expected_ruling="reverse_charge",
+        expected_waited_minutes=4.0,
+        expected_fee_eligible=False,
+        rationale=(
+            "Driver arrived 5 min late (08:50 vs scheduled 08:45), waited "
+            "only 4 min (below 8-min threshold), fee_eligible=False. "
+            "Charge is invalid; Judge reverses and refunds full S$5.00."
+        ),
+        evidence_count=19,
+        acceptable_alternatives=("human_review",),
+        notes=(
+            "The model sometimes routes to human_review instead of making "
+            "a ruling. An uphold_charge ruling would be a true failure "
+            "(validate_final_ruling rejects upholding when fee_eligible "
+            "is False)."
+        ),
+    ),
+    "DISP-004": CaseLabel(
+        case_id="DISP-004",
+        expected_ruling="uphold_charge",
+        expected_waited_minutes=12.0,
+        expected_fee_eligible=True,
+        rationale=(
+            "Driver arrived 3 min early (08:57), waited 12 min (well above "
+            "8-min threshold), unambiguous pickup (Grand Hyatt main driveway "
+            "taxi stand), two unanswered calls, three messages, rider sent "
+            "zero messages. Clear driver-favorable case; Judge upholds."
+        ),
+        evidence_count=26,
+        acceptable_alternatives=("human_review",),
+        notes=(
+            "The model sometimes over-applies POLICY-005 (GPS does not "
+            "establish rider location) and routes to human_review despite "
+            "the time threshold being met and two unanswered calls. This "
+            "is a model caution issue, not a system bug. A reverse_charge "
+            "ruling would be a true failure."
+        ),
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
+# Metrics collection
+# ---------------------------------------------------------------------------
+
+@dataclass
+class CaseMetrics:
+    """Collected metrics for a single case run."""
+    case_id: str
+    mode: str                 # "example" or "live"
+    run: int                  # run number (1-based)
+    status: str               # "completed" or "human_review"
+    ruling: str | None        # actual ruling (or action if not final_ruling)
+    expected_ruling: str
+    ruling_match: bool       # matches expected or acceptable alternative
+    amount_cents: int | None
+    amount_correct: bool
+    confidence: float | None
+    validation_issues: list[str]
+    citation_error_count: int
+    rebuttal_used: bool
+    wall_duration_ms: float
+    advocate_tokens: int
+    judge_tokens: int
+    total_tokens: int
+    judge_explanation: str
+    error: str | None = None
+
+
+def _extract_token_usage(activity_log: list) -> tuple[int, int, int]:
+    """Sum token usage from advocate and judge entries."""
+    adv_tokens = 0
+    judge_tokens = 0
+    for entry in activity_log:
+        usage = entry.output.get("usage", {})
+        tokens = usage.get("total_tokens", 0) or 0
+        if entry.actor in ("rider_advocate", "driver_advocate"):
+            adv_tokens += tokens
+        elif entry.actor == "judge":
+            judge_tokens += tokens
+    return adv_tokens, judge_tokens, adv_tokens + judge_tokens
+
+
+def _extract_wall_duration(activity_log: list) -> float:
+    """Get wall-clock duration from the review_completed/review_failed entry."""
+    for entry in activity_log:
+        if entry.event in ("review_completed", "review_failed"):
+            return entry.output.get("wall_duration_ms", 0)
+    return 0
+
+
+def _check_rebuttal_used(activity_log: list) -> bool:
+    """Whether a rebuttal round was triggered."""
+    return any(entry.event == "rebuttal" for entry in activity_log)
+
+
+def _count_citation_errors(issues: list[str]) -> int:
+    """Count citation-related validation issues."""
+    keywords = ("Unknown evidence ID", "Unknown policy ID", "citation")
+    return sum(1 for issue in issues if any(kw in issue for kw in keywords))
+
+
+def run_single_case(
+    case_id: str,
+    mode: str,
+    policy: dict,
+    run: int = 1,
+) -> CaseMetrics:
+    """Run one case and collect metrics."""
+    case = load_case(case_id)
+    label = LABELS[case_id]
+
+    if mode == "example":
+        backend = ExampleAgentBackend()
+    else:
+        backend = None  # ModelAgentBackend (live)
+
+    try:
+        result = run_review(case, policy, backend)
+    except Exception as exc:
+        return CaseMetrics(
+            case_id=case_id, mode=mode, run=run,
+            status="error", ruling=None,
+            expected_ruling=label.expected_ruling,
+            ruling_match=False, amount_cents=None,
+            amount_correct=False, confidence=None,
+            validation_issues=[f"Exception: {exc}"],
+            citation_error_count=0, rebuttal_used=False,
+            wall_duration_ms=0, advocate_tokens=0,
+            judge_tokens=0, total_tokens=0,
+            judge_explanation="", error=str(exc),
+        )
+
+    judge = result.judge_result
+    ruling = judge.ruling if judge.action == "final_ruling" else judge.action
+
+    # Ruling match check
+    acceptable = {label.expected_ruling} | set(label.acceptable_alternatives)
+    ruling_match = ruling in acceptable
+
+    # Amount correctness
+    amount = judge.proposed_action.amount_cents if judge.proposed_action else None
+    charge = charged_cents(case)
+    if ruling == "uphold_charge":
+        amount_correct = amount == 0
+    elif ruling == "reverse_charge":
+        amount_correct = amount == charge
+    elif ruling == "partial_refund":
+        amount_correct = amount is not None and 0 < amount < charge
+    else:
+        amount_correct = True  # human_review: no amount to verify
+
+    # Tokens and timing
+    adv_tokens, judge_tokens, total_tokens = _extract_token_usage(result.activity_log)
+    wall_ms = _extract_wall_duration(result.activity_log)
+    rebuttal_used = _check_rebuttal_used(result.activity_log)
+    citation_errors = _count_citation_errors(result.validation_issues)
+
+    return CaseMetrics(
+        case_id=case_id, mode=mode, run=run,
+        status=result.status,
+        ruling=ruling,
+        expected_ruling=label.expected_ruling,
+        ruling_match=ruling_match,
+        amount_cents=amount,
+        amount_correct=amount_correct,
+        confidence=judge.confidence,
+        validation_issues=result.validation_issues,
+        citation_error_count=citation_errors,
+        rebuttal_used=rebuttal_used,
+        wall_duration_ms=wall_ms,
+        advocate_tokens=adv_tokens,
+        judge_tokens=judge_tokens,
+        total_tokens=total_tokens,
+        judge_explanation=judge.explanation,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Summary aggregation
+# ---------------------------------------------------------------------------
+
+@dataclass
+class ModeSummary:
+    """Aggregate metrics for one mode across all cases."""
+    mode: str
+    total_cases: int
+    ruling_matches: int
+    ruling_match_rate: float
+    abstentions: int          # routed to human_review
+    abstention_rate: float
+    amount_errors: int
+    citation_errors: int
+    rebuttals_used: int
+    avg_wall_ms: float
+    total_tokens: int
+    avg_confidence: float | None
+
+
+def summarize(metrics: list[CaseMetrics], mode: str) -> ModeSummary:
+    """Aggregate a list of per-case metrics into a mode-level summary."""
+    n = len(metrics)
+    if n == 0:
+        return ModeSummary(mode, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0.0, 0, None)
+
+    matches = sum(1 for m in metrics if m.ruling_match)
+    abstentions = sum(1 for m in metrics if m.status == "human_review")
+    amount_errors = sum(1 for m in metrics if not m.amount_correct)
+    citation_errors = sum(m.citation_error_count for m in metrics)
+    rebuttals = sum(1 for m in metrics if m.rebuttal_used)
+    avg_wall = sum(m.wall_duration_ms for m in metrics) / n
+    total_tokens = sum(m.total_tokens for m in metrics)
+
+    confidences = [m.confidence for m in metrics if m.confidence is not None]
+    avg_conf = sum(confidences) / len(confidences) if confidences else None
+
+    return ModeSummary(
+        mode=mode, total_cases=n,
+        ruling_matches=matches,
+        ruling_match_rate=matches / n,
+        abstentions=abstentions,
+        abstention_rate=abstentions / n,
+        amount_errors=amount_errors,
+        citation_errors=citation_errors,
+        rebuttals_used=rebuttals,
+        avg_wall_ms=avg_wall,
+        total_tokens=total_tokens,
+        avg_confidence=avg_conf,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Console report
+# ---------------------------------------------------------------------------
+
+def _fmt_pct(val: float) -> str:
+    return f"{val * 100:.0f}%"
+
+
+def print_report(metrics: list[CaseMetrics], summaries: list[ModeSummary]) -> None:
+    """Print a human-readable report to stdout."""
+    print()
+    print("=" * 100)
+    print("  FairRide Evaluation Report")
+    print("=" * 100)
+    print()
+
+    # Per-case detail table
+    print("  Per-Case Results")
+    print("-" * 100)
+    header = (
+        f"  {'Case':<10} {'Mode':<8} {'Run':<4} "
+        f"{'Ruling':<16} {'Expected':<16} {'Match':<6} "
+        f"{'Amount':<8} {'Conf':<6} {'Wall ms':<10} {'Tokens':<8} {'Rebut':<6}"
+    )
+    print(header)
+    print("-" * 100)
+
+    for m in metrics:
+        ruling_str = (m.ruling or "None")[:14]
+        expected_str = m.expected_ruling[:14]
+        amount_str = str(m.amount_cents) if m.amount_cents is not None else "-"
+        conf_str = f"{m.confidence:.2f}" if m.confidence is not None else "-"
+        match_str = "Y" if m.ruling_match else "N"
+        rebut_str = "Y" if m.rebuttal_used else "N"
+        print(
+            f"  {m.case_id:<10} {m.mode:<8} {m.run:<4} "
+            f"{ruling_str:<16} {expected_str:<16} {match_str:<6} "
+            f"{amount_str:<8} {conf_str:<6} {m.wall_duration_ms:<10.0f} "
+            f"{m.total_tokens:<8} {rebut_str:<6}"
+        )
+
+    print()
+    print("  Mode Summaries")
+    print("-" * 100)
+    for s in summaries:
+        conf_str = f"{s.avg_confidence:.2f}" if s.avg_confidence is not None else "-"
+        print(f"  [{s.mode}]")
+        print(f"    Cases:              {s.total_cases}")
+        print(f"    Ruling match rate:  {_fmt_pct(s.ruling_match_rate)} ({s.ruling_matches}/{s.total_cases})")
+        print(f"    Abstention rate:    {_fmt_pct(s.abstention_rate)} ({s.abstentions}/{s.total_cases})")
+        print(f"    Amount errors:      {s.amount_errors}")
+        print(f"    Citation errors:    {s.citation_errors}")
+        print(f"    Rebuttals used:     {s.rebuttals_used}")
+        print(f"    Avg wall time:      {s.avg_wall_ms:.0f} ms")
+        print(f"    Total tokens:       {s.total_tokens}")
+        print(f"    Avg confidence:     {conf_str}")
+        print()
+
+    # Validation issues detail
+    issues_metrics = [m for m in metrics if m.validation_issues]
+    if issues_metrics:
+        print("  Validation Issues Detail")
+        print("-" * 100)
+        for m in issues_metrics:
+            print(f"  {m.case_id} ({m.mode}, run {m.run}):")
+            for issue in m.validation_issues:
+                print(f"    - {issue}")
+        print()
+
+    print("=" * 100)
+
+
+# ---------------------------------------------------------------------------
+# CLI entry point
+# ---------------------------------------------------------------------------
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Batch-evaluate FairRide no-show cases.",
+    )
+    parser.add_argument(
+        "--live", action="store_true",
+        help="Also run live mode (requires FAIRRIDE_API_KEY).",
+    )
+    parser.add_argument(
+        "--runs", type=int, default=1,
+        help="Number of live runs per case (default: 1).",
+    )
+    parser.add_argument(
+        "--output", type=str, default="evaluation_results.json",
+        help="Output JSON file path (default: evaluation_results.json).",
+    )
+    args = parser.parse_args()
+
+    policy = load_policy("sample_no_show")
+    all_metrics: list[CaseMetrics] = []
+    summaries: list[ModeSummary] = []
+
+    # --- Example mode ---
+    print("Running example mode...")
+    example_metrics: list[CaseMetrics] = []
+    for case_id in LABELS:
+        m = run_single_case(case_id, "example", policy, run=1)
+        example_metrics.append(m)
+        status_icon = "OK" if m.ruling_match else "FAIL"
+        print(f"  {case_id}: {m.ruling} (expected {m.expected_ruling}) [{status_icon}]")
+
+    all_metrics.extend(example_metrics)
+    summaries.append(summarize(example_metrics, "example"))
+
+    # --- Live mode ---
+    if args.live:
+        api_key = os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")
+        model = os.getenv("FAIRRIDE_MODEL")
+        if not api_key or not model:
+            print("ERROR: --live requires FAIRRIDE_API_KEY and FAIRRIDE_MODEL in .env")
+            sys.exit(1)
+
+        for run_num in range(1, args.runs + 1):
+            print(f"\nRunning live mode (run {run_num}/{args.runs})...")
+            live_metrics: list[CaseMetrics] = []
+            for case_id in LABELS:
+                m = run_single_case(case_id, "live", policy, run=run_num)
+                live_metrics.append(m)
+                status_icon = "OK" if m.ruling_match else "FAIL"
+                print(f"  {case_id}: {m.ruling} (expected {m.expected_ruling}) [{status_icon}] "
+                      f"({m.wall_duration_ms:.0f}ms, {m.total_tokens} tokens)")
+
+            all_metrics.extend(live_metrics)
+
+        # Summarize all live runs together
+        live_all = [m for m in all_metrics if m.mode == "live"]
+        summaries.append(summarize(live_all, "live"))
+
+    # --- Report ---
+    print_report(all_metrics, summaries)
+
+    # --- JSON output ---
+    output_path = Path(args.output)
+    report_data = {
+        "cases": [asdict(m) for m in all_metrics],
+        "summaries": [asdict(s) for s in summaries],
+    }
+    output_path.write_text(json.dumps(report_data, indent=2, ensure_ascii=False))
+    print(f"\nResults saved to {output_path}")
+
+
+if __name__ == "__main__":
+    main()

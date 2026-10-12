@@ -76,4 +76,6 @@ def validate_final_ruling(case: dict, policy: dict, decision: JudgeResult) -> li
         issues.append("Upheld charge or no action requires zero refund")
     if decision.ruling == "uphold_charge" and not no_show_facts(case, policy)["fee_eligible"]:
         issues.append("Cannot uphold charge before the no-show time threshold")
+    if decision.ruling == "partial_refund" and not no_show_facts(case, policy)["fee_eligible"]:
+        issues.append("Cannot partially refund when the no-show time threshold is not met; reverse the full charge")
     return issues
