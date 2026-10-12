@@ -113,12 +113,18 @@ Field rules:
 - Each claim and counterpoint must have at least one entry in evidence_ids or policy_ids.
 - "statement" must be a non-empty string.
 
-Evidence ID rules:
+Evidence ID rules (CRITICAL — violations cause system rejection):
+- evidence_ids must reference SOURCE RECORDS, never derived facts.
+  The payload contains a "facts" array with IDs like FACT-001, FACT-002.
+  These are COMPUTED conclusions, NOT citable evidence. NEVER put FACT-* in evidence_ids.
+  If a fact supports your claim, cite the underlying source records instead.
+  WRONG: "evidence_ids": ["FACT-001"]
+  RIGHT: "evidence_ids": ["GPS-005", "EVENT-004"]
 - Copy evidence IDs exactly as they appear in the supplied records. Each ID has exactly ONE prefix and ONE number.
-- Valid prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-. Policy IDs use POLICY-.
-- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, POLICY-003.
+- Valid evidence prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-, ROUTE-, FARE-.
+  Valid policy prefix: POLICY-.
+- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, ROUTE-001, FARE-002, POLICY-003.
 - NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
-- Do NOT cite derived fact IDs (FACT-*); they are computed context, not citable sources.
 
 Conduct:
 - Represent uncertainty and the opposing side fairly. A citation must support the exact statement.
@@ -153,12 +159,18 @@ Field rules:
 - explanation must be a non-empty string.
 - confidence is a number between 0.0 and 1.0. Use null if you have none.
 
-Evidence ID rules:
+Evidence ID rules (CRITICAL — violations cause system rejection):
+- evidence_ids must reference SOURCE RECORDS, never derived facts.
+  The payload contains a "facts" array with IDs like FACT-001, FACT-002.
+  These are COMPUTED conclusions, NOT citable evidence. NEVER put FACT-* in evidence_ids.
+  If a fact supports your ruling, cite the underlying source records instead.
+  WRONG: "evidence_ids": ["FACT-001"]
+  RIGHT: "evidence_ids": ["GPS-005", "EVENT-004"]
 - Copy evidence IDs exactly as they appear in the supplied records. Each ID has exactly ONE prefix and ONE number.
-- Valid prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-. Policy IDs use POLICY-.
-- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, POLICY-003.
+- Valid evidence prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-, ROUTE-, FARE-.
+  Valid policy prefix: POLICY-.
+- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, ROUTE-001, FARE-002, POLICY-003.
 - NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
-- Do NOT cite derived fact IDs (FACT-*); they are computed context, not citable sources.
 
 Amount rules (amount_cents is the SGD refund TO the rider, in integer cents):
 - "uphold_charge": 0 (no refund)

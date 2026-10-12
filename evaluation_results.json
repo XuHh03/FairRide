@@ -99,38 +99,37 @@
       "amount_correct": true,
       "confidence": null,
       "validation_issues": [
-        "Agent review failed: Unknown evidence ID: FACT-001; Unknown evidence ID: FACT-002"
+        "EVENT-008 claims fee eligibility before the sample policy's 8-minute threshold",
+        "The disputed physical pickup entrance is not designated in the supplied trip record"
       ],
-      "citation_error_count": 1,
+      "citation_error_count": 0,
       "rebuttal_used": false,
-      "wall_duration_ms": 7202,
-      "advocate_tokens": 4421,
-      "judge_tokens": 0,
-      "total_tokens": 4421,
-      "judge_explanation": "Agent review could not be validated.",
+      "wall_duration_ms": 9144,
+      "advocate_tokens": 9258,
+      "judge_tokens": 5569,
+      "total_tokens": 14827,
+      "judge_explanation": "Material evidence or validation issues require human review.",
       "error": null
     },
     {
       "case_id": "DISP-003",
       "mode": "live",
       "run": 1,
-      "status": "human_review",
-      "ruling": "human_review",
+      "status": "completed",
+      "ruling": "reverse_charge",
       "expected_ruling": "reverse_charge",
       "ruling_match": true,
-      "amount_cents": null,
+      "amount_cents": 500,
       "amount_correct": true,
-      "confidence": null,
-      "validation_issues": [
-        "Agent review failed: Unknown evidence ID: FACT-001"
-      ],
-      "citation_error_count": 1,
+      "confidence": 0.95,
+      "validation_issues": [],
+      "citation_error_count": 0,
       "rebuttal_used": false,
-      "wall_duration_ms": 4846,
-      "advocate_tokens": 3913,
-      "judge_tokens": 0,
-      "total_tokens": 3913,
-      "judge_explanation": "Agent review could not be validated.",
+      "wall_duration_ms": 8915,
+      "advocate_tokens": 8168,
+      "judge_tokens": 5027,
+      "total_tokens": 13195,
+      "judge_explanation": "The dispute hinges on the 'no-show' condition. According to POLICY-003, the no-show time condition is met only when the recorded driver wait is at least eight minutes. Calculated from TRIP-001, the driver arrived at 08:50:00 and cancelled at 08:54:00, resulting in a wait time of 4 minutes (FACT-001). This is below the 8-minute threshold required to validate a no-show charge. Additionally, the wait (4 mins) is below the 5-minute free wait period (POLICY-002), although the primary ruling factor is the failure to meet the 8-minute no-show threshold. Since the driver did not wait long enough to claim the rider was a no-show under the policy, the charge is invalid and must be reversed.",
       "error": null
     },
     {
@@ -147,11 +146,11 @@
       "validation_issues": [],
       "citation_error_count": 0,
       "rebuttal_used": false,
-      "wall_duration_ms": 9915,
-      "advocate_tokens": 9412,
-      "judge_tokens": 5733,
-      "total_tokens": 15145,
-      "judge_explanation": "The driver arrived at the pickup location at 08:57:00 and the trip was cancelled at 09:09:00, resulting in a total wait time of 12 minutes. According to FACT-001 and FACT-002, this exceeds the policy's no-show threshold of 8 minutes (POLICY-003). The rider was notified of the arrival (EVENT-004) and the driver attempted multiple contacts without response (CHAT-002, CHAT-004). Although GPS does not prove the rider's exact location, the calculated wait time clearly meets the no-show condition, making the charge valid.",
+      "wall_duration_ms": 10059,
+      "advocate_tokens": 9504,
+      "judge_tokens": 5823,
+      "total_tokens": 15327,
+      "judge_explanation": "The decision relies on the calculated wait time and the policy's no-show threshold. According to TRIP-001, the driver arrived at 08:57 and the trip was cancelled at 09:09, resulting in a total wait of 12 minutes. The sample policy (POLICY-003) defines the no-show condition as a driver wait of at least 8 minutes. Since 12 minutes exceeds this 8-minute threshold, the condition for the no-show charge is met. The rider's claim of arriving 'right after' the driver left is contradicted by GPS telemetry (GPS-003 through GPS-006), which shows the driver remained stationary at the pickup location throughout the wait period. Furthermore, communication logs (CHAT-002, CHAT-004) confirm the driver attempted to contact the rider via two phone calls, which went unanswered. Therefore, the charge is valid and upheld.",
       "error": null
     },
     {
@@ -168,11 +167,11 @@
       "validation_issues": [],
       "citation_error_count": 0,
       "rebuttal_used": false,
-      "wall_duration_ms": 9449,
-      "advocate_tokens": 10777,
-      "judge_tokens": 6362,
-      "total_tokens": 17139,
-      "judge_explanation": "The GPS data and trip records confirm a route deviation where the actual distance (25.2 km) exceeded the planned distance (18.5 km) by 36.2%. This exceeds the 15% significant deviation threshold defined in POLICY-002. The driver claimed traffic as justification, but POLICY-003 specifies that acceptable justification requires documented road closures, app-confirmed traffic incidents, or rider consent. The chat logs show the driver asserted traffic without app confirmation, and the rider explicitly noted the absence of traffic alerts in the app. Therefore, the deviation is unjustified under the policy. According to POLICY-004, the rider is entitled to a refund of the fare difference between the charged amount ($31.00) and the estimated fare based on the planned route ($23.50), which is $7.50 (750 cents).",
+      "wall_duration_ms": 11326,
+      "advocate_tokens": 11376,
+      "judge_tokens": 6758,
+      "total_tokens": 18134,
+      "judge_explanation": "The rider's dispute regarding route deviation is supported by the evidence. GPS telemetry (GPS-002 to GPS-005) and route data (ROUTE-001, ROUTE-002) confirm the driver deviated from the planned ECP route to take a longer route via Nicoll Highway. The calculated deviation is 36.2%, which significantly exceeds the 15% threshold defined in POLICY-002. Under POLICY-003, the driver's justification of 'traffic' is insufficient because no traffic alerts were active on the app, and the rider explicitly questioned the route choice (CHAT-001, CHAT-003). Consequently, the driver is not entitled to charge the full actual fare. Per POLICY-004, the rider is entitled to a refund equal to the difference between the charged fare ($31.00) and the estimated fare for the planned route ($23.50). The refund amount is $7.50 (750 cents).",
       "error": null
     }
   ],
@@ -196,14 +195,14 @@
       "total_cases": 4,
       "ruling_matches": 4,
       "ruling_match_rate": 1.0,
-      "abstentions": 2,
-      "abstention_rate": 0.5,
+      "abstentions": 1,
+      "abstention_rate": 0.25,
       "amount_errors": 0,
-      "citation_errors": 2,
+      "citation_errors": 0,
       "rebuttals_used": 0,
-      "avg_wall_ms": 7853.0,
-      "total_tokens": 40618,
-      "avg_confidence": 0.95
+      "avg_wall_ms": 9861.0,
+      "total_tokens": 61483,
+      "avg_confidence": 0.9499999999999998
     }
   ]
 }
