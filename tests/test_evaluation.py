@@ -14,13 +14,18 @@ Labels are imported from evaluation.py to avoid duplication.
 import os
 import unittest
 
-from case_data import load_case, load_policy
-from checks import no_show_facts, validate_final_ruling, charged_cents, material_case_issues
+from case_data import load_case, load_policy, policy_for_case
+from checks import no_show_facts, route_deviation_facts, validate_final_ruling, charged_cents, material_case_issues
 from contracts import JudgeResult, ProposedAction
 from evidence import build_evidence_index, build_review_input
 from workflow import run_review
 from agents import ExampleAgentBackend
 from evaluation import CaseLabel, LABELS
+
+
+def _policy_for_case(case: dict) -> dict:
+    """Load the appropriate policy based on dispute type."""
+    return policy_for_case(case)
 
 
 # ---------------------------------------------------------------------------
@@ -89,6 +94,35 @@ class EvidenceSystemTests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# Route deviation fact tests (no model calls, deterministic)
+# ---------------------------------------------------------------------------
+
+class RouteDeviationTests(unittest.TestCase):
+    """Verify route deviation derived facts and evidence."""
+
+    def test_disp_005_facts_match_label(self):
+        case = load_case("DISP-005")
+        policy = _policy_for_case(case)
+        facts = route_deviation_facts(case, policy)
+        self.assertAlmostEqual(facts["planned_distance_km"], 18.5, places=1)
+        self.assertAlmostEqual(facts["actual_distance_km"], 25.2, places=1)
+        self.assertAlmostEqual(facts["deviation_pct"], 36.2, places=1)
+        self.assertTrue(facts["deviation_significant"])
+        self.assertEqual(facts["fare_difference_cents"], 750)
+
+    def test_disp_005_evidence_builds(self):
+        case = load_case("DISP-005")
+        policy = _policy_for_case(case)
+        evidence = build_evidence_index(case)
+        self.assertEqual(len(evidence), LABELS["DISP-005"].evidence_count)
+        review = build_review_input(case, policy)
+        self.assertEqual(review.case_id, "DISP-005")
+        self.assertEqual(review.dispute_type, "route_deviation")
+        self.assertEqual(len(review.evidence), LABELS["DISP-005"].evidence_count)
+        self.assertGreater(len(review.facts), 0)
+
+
+# ---------------------------------------------------------------------------
 # Example-mode end-to-end tests (deterministic, no API needed)
 # ---------------------------------------------------------------------------
 
@@ -133,6 +167,17 @@ class ExampleModeEvaluationTests(unittest.TestCase):
         self.assertEqual(result.judge_result.ruling, "uphold_charge")
         self.assertEqual(result.judge_result.proposed_action.amount_cents, 0)
 
+    def test_disp_005_example_run(self):
+        """DISP-005 example should complete with partial_refund."""
+        case = load_case("DISP-005")
+        policy = _policy_for_case(case)
+        result = run_review(case, policy, self.backend)
+        self.assertEqual(result.case_id, "DISP-005")
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(result.judge_result.action, "final_ruling")
+        self.assertEqual(result.judge_result.ruling, "partial_refund")
+        self.assertEqual(result.judge_result.proposed_action.amount_cents, 750)
+
 
 # ---------------------------------------------------------------------------
 # Live-mode evaluation tests (require API key, may be non-deterministic)
@@ -155,12 +200,10 @@ class LiveModeEvaluationTests(unittest.TestCase):
     indicate a model reasoning difference that warrants investigation.
     """
 
-    def setUp(self):
-        self.policy = load_policy("sample_no_show")
-
     def _run_case(self, label: CaseLabel):
         case = load_case(label.case_id)
-        result = run_review(case, self.policy)  # backend=None → ModelAgentBackend
+        policy = _policy_for_case(case)
+        result = run_review(case, policy)  # backend=None → ModelAgentBackend
         self.assertEqual(result.case_id, label.case_id)
 
         # If the pipeline routed to human_review, check if it's acceptable
@@ -217,6 +260,9 @@ class LiveModeEvaluationTests(unittest.TestCase):
 
     def test_disp_004_live_ruling_matches_label(self):
         self._run_case(LABELS["DISP-004"])
+
+    def test_disp_005_live_ruling_matches_label(self):
+        self._run_case(LABELS["DISP-005"])
 
 
 # ---------------------------------------------------------------------------
@@ -295,6 +341,26 @@ class LabelValidationTests(unittest.TestCase):
         issues = validate_final_ruling(case, self.policy, decision)
         # reverse_charge with full refund should pass amount validation
         self.assertEqual(issues, [], f"Unexpected issues: {issues}")
+
+    def test_disp_005_partial_refund_passes_validation(self):
+        """DISP-005: partial_refund with 750 cents (fare difference)
+        should pass validation for the route deviation case."""
+        case = load_case("DISP-005")
+        policy = _policy_for_case(case)
+        decision = self._build_decision("partial_refund", 750, "DISP-005")
+        issues = validate_final_ruling(case, policy, decision)
+        self.assertEqual(issues, [], f"Unexpected issues: {issues}")
+
+    def test_disp_005_uphold_charge_fails_validation(self):
+        """DISP-005: uphold_charge should fail because the deviation
+        exceeds the 15% policy threshold (36.2% > 15%)."""
+        case = load_case("DISP-005")
+        policy = _policy_for_case(case)
+        decision = self._build_decision("uphold_charge", 0, "DISP-005")
+        issues = validate_final_ruling(case, policy, decision)
+        self.assertTrue(any("deviation" in issue.lower() or "threshold" in issue.lower()
+                           for issue in issues),
+                        f"Expected deviation threshold issue, got: {issues}")
 
 
 if __name__ == "__main__":

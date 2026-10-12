@@ -20,7 +20,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from case_data import load_case, load_policy
+from case_data import load_case, load_policy, policy_for_case
 from checks import charged_cents, material_case_issues, no_show_facts, validate_final_ruling
 from contracts import WorkflowResult
 from evidence import build_evidence_index, validate_references
@@ -108,6 +108,26 @@ LABELS: dict[str, CaseLabel] = {
             "ruling would be a true failure."
         ),
     ),
+    "DISP-005": CaseLabel(
+        case_id="DISP-005",
+        expected_ruling="partial_refund",
+        expected_waited_minutes=0,  # N/A for route deviation
+        expected_fee_eligible=False,  # N/A for route deviation
+        rationale=(
+            "Driver deviated 36.2% from planned route (25.2 km vs 18.5 km), "
+            "exceeding the 15% policy threshold. Driver claimed traffic but "
+            "no app alerts corroborate. Fare difference is S$7.50 (750 cents). "
+            "Judge orders partial refund of the fare difference."
+        ),
+        evidence_count=31,
+        acceptable_alternatives=("human_review",),
+        notes=(
+            "Route deviation case. An uphold_charge ruling would be a true "
+            "failure (validate_final_ruling rejects upholding when deviation "
+            "exceeds threshold). The model may route to human_review if it "
+            "cannot verify the traffic claim."
+        ),
+    ),
 }
 
 
@@ -172,15 +192,22 @@ def _count_citation_errors(issues: list[str]) -> int:
     return sum(1 for issue in issues if any(kw in issue for kw in keywords))
 
 
+def _policy_for_case(case: dict) -> dict:
+    """Load the appropriate policy based on dispute type."""
+    return policy_for_case(case)
+
+
 def run_single_case(
     case_id: str,
     mode: str,
-    policy: dict,
+    policy: dict | None = None,
     run: int = 1,
 ) -> CaseMetrics:
     """Run one case and collect metrics."""
     case = load_case(case_id)
     label = LABELS[case_id]
+    if policy is None:
+        policy = _policy_for_case(case)
 
     if mode == "example":
         backend = ExampleAgentBackend()
@@ -379,7 +406,7 @@ def print_report(metrics: list[CaseMetrics], summaries: list[ModeSummary]) -> No
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Batch-evaluate FairRide no-show cases.",
+        description="Batch-evaluate FairRide dispute cases.",
     )
     parser.add_argument(
         "--live", action="store_true",
@@ -395,7 +422,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    policy = load_policy("sample_no_show")
     all_metrics: list[CaseMetrics] = []
     summaries: list[ModeSummary] = []
 
@@ -403,7 +429,7 @@ def main() -> None:
     print("Running example mode...")
     example_metrics: list[CaseMetrics] = []
     for case_id in LABELS:
-        m = run_single_case(case_id, "example", policy, run=1)
+        m = run_single_case(case_id, "example", policy=None, run=1)
         example_metrics.append(m)
         status_icon = "OK" if m.ruling_match else "FAIL"
         print(f"  {case_id}: {m.ruling} (expected {m.expected_ruling}) [{status_icon}]")
@@ -423,7 +449,7 @@ def main() -> None:
             print(f"\nRunning live mode (run {run_num}/{args.runs})...")
             live_metrics: list[CaseMetrics] = []
             for case_id in LABELS:
-                m = run_single_case(case_id, "live", policy, run=run_num)
+                m = run_single_case(case_id, "live", policy=None, run=run_num)
                 live_metrics.append(m)
                 status_icon = "OK" if m.ruling_match else "FAIL"
                 print(f"  {case_id}: {m.ruling} (expected {m.expected_ruling}) [{status_icon}] "

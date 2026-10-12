@@ -1,4 +1,4 @@
-"""Reviewer walkthrough for the currently supported no-show cases."""
+"""Reviewer walkthrough for no-show and route-deviation disputes."""
 
 import os
 
@@ -8,20 +8,21 @@ from dotenv import load_dotenv
 load_dotenv()  # Load .env for FAIRRIDE_API_KEY, FAIRRIDE_BASE_URL, etc.
 
 from agents import ExampleAgentBackend
-from case_data import load_case, load_policy
-from checks import no_show_facts
+from case_data import load_case, policy_for_case
+from checks import no_show_facts, route_deviation_facts
 from evidence import build_evidence_index, build_policy_index
 from workflow import run_review
 
 
 st.set_page_config(page_title="FairRide | Dispute review", layout="wide")
 
-# Case selector — switch between all no-show cases
-case_options = ["DISP-002", "DISP-003", "DISP-004"]
+# Case selector — switch between all supported dispute cases
+case_options = ["DISP-002", "DISP-003", "DISP-004", "DISP-005"]
 case_labels = {
-    "DISP-002": "DISP-002 — Ambiguous (driver waited 8 min, entrance unclear)",
-    "DISP-003": "DISP-003 — Rider-favorable (driver late, waited 4 min)",
-    "DISP-004": "DISP-004 — Driver-favorable (driver early, waited 12 min)",
+    "DISP-002": "DISP-002 — No-show · Ambiguous (driver waited 8 min, entrance unclear)",
+    "DISP-003": "DISP-003 — No-show · Rider-favorable (driver late, waited 4 min)",
+    "DISP-004": "DISP-004 — No-show · Driver-favorable (driver early, waited 12 min)",
+    "DISP-005": "DISP-005 — Route deviation · Rider-favorable (36% longer route)",
 }
 selected_case_id = st.selectbox(
     "Select a case", case_options,
@@ -33,22 +34,46 @@ if st.session_state.get("selected_case") != selected_case_id:
     st.session_state["selected_case"] = selected_case_id
 
 case = load_case(selected_case_id)
-policy = load_policy("sample_no_show")
-facts = no_show_facts(case, policy)
+policy = policy_for_case(case)
 ticket = case["dispute_ticket"]
+dtype = ticket["dispute_type"]
 sources = build_evidence_index(case)
 clauses = build_policy_index(policy)
 
+# Compute type-specific facts
+if dtype == "no_show_charge":
+    facts = no_show_facts(case, policy)
+elif dtype == "route_deviation":
+    facts = route_deviation_facts(case, policy)
+else:
+    raise ValueError(f"Unsupported dispute type: {dtype}")
+
+# Friendly display labels per dispute type
+dispute_titles = {
+    "no_show_charge": "No-show charge",
+    "route_deviation": "Route deviation",
+}
+
 st.title("FairRide")
 st.caption("Digital Native track | Sample-policy dispute review prototype")
-st.subheader(f"{ticket['dispute_id']}: No-show charge")
+st.subheader(f"{ticket['dispute_id']}: {dispute_titles.get(dtype, dtype)}")
 st.write(ticket["description"])
 
 left, right = st.columns(2)
+if dtype == "no_show_charge":
+    left_metric_label = "Recorded driver wait"
+    left_metric_value = f"{facts['waited_minutes']:g} min"
+    right_metric_label = "Cancellation fee"
+    right_metric_value = f"S${case['trip_data']['cancellation_fee']:.2f}"
+elif dtype == "route_deviation":
+    left_metric_label = "Route deviation"
+    left_metric_value = f"{facts['deviation_pct']:.1f}%"
+    right_metric_label = "Fare difference"
+    right_metric_value = f"S${facts['fare_difference']:.2f}"
 with left:
-    st.metric("Recorded driver wait", f"{facts['waited_minutes']:g} min")
+    st.metric(left_metric_label, left_metric_value)
 with right:
-    st.metric("Cancellation fee", f"S${case['trip_data']['cancellation_fee']:.2f}")
+    st.metric(right_metric_label, right_metric_value)
 st.info("This is a sample policy, not an official Ryde rule. A result recommends an action; no payment is executed.")
 
 live_ready = bool((os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")) and os.getenv("FAIRRIDE_MODEL"))
@@ -138,7 +163,10 @@ if result:
 
 with st.expander("Full sample policy and source evidence"):
     st.json(policy)
-    st.json({
-        "trip_data": case["trip_data"], "gps_telemetry": case["gps_telemetry"],
-        "chat_logs": case["chat_logs"], "app_events": case["app_events"],
-    })
+    evidence_sections = {
+        k: case[k] for k in
+        ("trip_data", "gps_telemetry", "chat_logs", "app_events",
+         "route_data", "fare_items")
+        if k in case
+    }
+    st.json(evidence_sections)

@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from checks import no_show_facts
+from checks import no_show_facts, route_deviation_facts
 from contracts import (
     AdvocateResult, DerivedFact, EvidenceRecord, JudgeResult, ReviewInput, SamplePolicy,
 )
@@ -10,7 +10,10 @@ from contracts import (
 
 def build_evidence_index(case: dict) -> dict[str, EvidenceRecord]:
     index = {}
-    for section in ("dispute_ticket", "trip_data", "gps_telemetry", "chat_logs", "app_events"):
+    for section in ("dispute_ticket", "trip_data", "gps_telemetry", "chat_logs",
+                    "app_events", "route_data", "fare_items"):
+        if section not in case:
+            continue
         records = case[section] if isinstance(case[section], list) else [case[section]]
         for record in records:
             evidence_id = record.get("id")
@@ -36,32 +39,63 @@ def build_policy_index(policy: dict) -> dict:
 
 
 def build_review_input(case: dict, policy: dict) -> ReviewInput:
-    """Normalize the current no-show fixture; profiles are not agent evidence."""
-    if case["dispute_ticket"]["dispute_type"] != "no_show_charge":
-        raise ValueError("Derived facts currently support no_show_charge only")
+    """Normalize the fixture; profiles are not agent evidence."""
+    dtype = case["dispute_ticket"]["dispute_type"]
     evidence = build_evidence_index(case)
     build_policy_index(policy)
-    facts = no_show_facts(case, policy)
-    trip_id = case["trip_data"]["id"]
-    fee_cents = Decimal(str(policy["cancellation_fee_after_wait"])) * 100
-    if fee_cents != fee_cents.to_integral_value():
-        raise ValueError("Policy fee must have at most two decimal places")
-    return ReviewInput(
-        case_id=case["dispute_ticket"]["dispute_id"],
-        dispute_type=case["dispute_ticket"]["dispute_type"],
-        evidence=list(evidence.values()), policy=SamplePolicy.model_validate(policy),
-        facts=[
-            DerivedFact(id="FACT-001", value=facts["waited_minutes"], unit="minutes",
-                        formula=f"(trip_data.cancellation_time - trip_data.{policy['wait_start_event']}) / 60 seconds",
-                        evidence_ids=[trip_id], policy_ids=["POLICY-001"]),
-            DerivedFact(id="FACT-002", value=facts["fee_eligible"], unit="boolean",
-                        formula="waited_minutes >= no_show_threshold_min (time condition only)",
-                        evidence_ids=[trip_id], policy_ids=["POLICY-001", "POLICY-003"]),
-            DerivedFact(id="FACT-003", value=int(fee_cents), unit="SGD cents",
-                        formula="Decimal(cancellation_fee_after_wait) * 100",
-                        evidence_ids=[], policy_ids=["POLICY-004"]),
-        ],
-    )
+
+    if dtype == "no_show_charge":
+        facts = no_show_facts(case, policy)
+        trip_id = case["trip_data"]["id"]
+        fee_cents = Decimal(str(policy["cancellation_fee_after_wait"])) * 100
+        if fee_cents != fee_cents.to_integral_value():
+            raise ValueError("Policy fee must have at most two decimal places")
+        return ReviewInput(
+            case_id=case["dispute_ticket"]["dispute_id"],
+            dispute_type=dtype,
+            evidence=list(evidence.values()), policy=SamplePolicy.model_validate(policy),
+            facts=[
+                DerivedFact(id="FACT-001", value=facts["waited_minutes"], unit="minutes",
+                            formula=f"(trip_data.cancellation_time - trip_data.{policy['wait_start_event']}) / 60 seconds",
+                            evidence_ids=[trip_id], policy_ids=["POLICY-001"]),
+                DerivedFact(id="FACT-002", value=facts["fee_eligible"], unit="boolean",
+                            formula="waited_minutes >= no_show_threshold_min (time condition only)",
+                            evidence_ids=[trip_id], policy_ids=["POLICY-001", "POLICY-003"]),
+                DerivedFact(id="FACT-003", value=int(fee_cents), unit="SGD cents",
+                            formula="Decimal(cancellation_fee_after_wait) * 100",
+                            evidence_ids=[], policy_ids=["POLICY-004"]),
+            ],
+        )
+
+    if dtype == "route_deviation":
+        facts = route_deviation_facts(case, policy)
+        return ReviewInput(
+            case_id=case["dispute_ticket"]["dispute_id"],
+            dispute_type=dtype,
+            evidence=list(evidence.values()), policy=SamplePolicy.model_validate(policy),
+            facts=[
+                DerivedFact(id="FACT-001", value=facts["planned_distance_km"], unit="km",
+                            formula="planned route distance from route_data",
+                            evidence_ids=[facts["planned_route_id"]], policy_ids=["POLICY-001"]),
+                DerivedFact(id="FACT-002", value=facts["actual_distance_km"], unit="km",
+                            formula="actual route distance from GPS reconstruction",
+                            evidence_ids=[facts["actual_route_id"]], policy_ids=["POLICY-001"]),
+                DerivedFact(id="FACT-003", value=round(facts["deviation_pct"], 1), unit="percent",
+                            formula="(actual_distance - planned_distance) / planned_distance * 100",
+                            evidence_ids=[facts["planned_route_id"], facts["actual_route_id"]],
+                            policy_ids=["POLICY-001", "POLICY-002"]),
+                DerivedFact(id="FACT-004", value=facts["deviation_significant"], unit="boolean",
+                            formula=f"deviation_pct > max_deviation_pct ({policy.get('max_deviation_pct', 0)})",
+                            evidence_ids=[facts["planned_route_id"], facts["actual_route_id"]],
+                            policy_ids=["POLICY-002"]),
+                DerivedFact(id="FACT-005", value=facts["fare_difference_cents"], unit="SGD cents",
+                            formula="(charged_fare - estimated_fare) * 100",
+                            evidence_ids=["TRIP-001", "FARE-005", "FARE-006"],
+                            policy_ids=["POLICY-004"]),
+            ],
+        )
+
+    raise ValueError(f"Unsupported dispute type: {dtype}")
 
 
 def validate_references(

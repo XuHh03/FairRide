@@ -28,12 +28,16 @@ class SamplePolicy(Contract):
     policy_id: str
     version: str
     status: Literal["sample_only_not_ryde_policy"]
-    wait_start_event: Literal["driver_arrival_time", "scheduled_time"]
-    free_wait_time_min: int = Field(ge=0)
-    no_show_threshold_min: int = Field(ge=0)
-    cancellation_fee_after_wait: float = Field(ge=0)
     fee_goes_to: str
     clauses: list[PolicyClause]
+    # No-show specific (optional — present only for no_show_charge policies)
+    wait_start_event: Literal["driver_arrival_time", "scheduled_time"] | None = None
+    free_wait_time_min: int | None = Field(default=None, ge=0)
+    no_show_threshold_min: int | None = Field(default=None, ge=0)
+    cancellation_fee_after_wait: float | None = Field(default=None, ge=0)
+    # Route deviation specific (optional — present only for route_deviation policies)
+    max_deviation_pct: float | None = Field(default=None, ge=0)
+    refund_basis: str | None = None
 
 
 class DerivedFact(Contract):

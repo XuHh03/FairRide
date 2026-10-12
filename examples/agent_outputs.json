@@ -167,5 +167,63 @@
       "evidence_ids": ["TRIP-001", "GPS-007", "EVENT-008"],
       "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"]
     }
+  },
+  "DISP-005": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The driver deviated from the planned ECP route onto Nicoll Highway, adding 6.7 km and 13 minutes to the trip.",
+          "evidence_ids": ["ROUTE-001", "ROUTE-002", "GPS-002", "EVENT-004"],
+          "policy_ids": ["POLICY-001", "POLICY-002"]
+        },
+        {
+          "statement": "The rider asked about the route and the driver claimed traffic, but no app alerts corroborate the traffic claim.",
+          "evidence_ids": ["CHAT-001", "CHAT-002", "CHAT-003", "EVENT-008"],
+          "policy_ids": ["POLICY-003"]
+        },
+        {
+          "statement": "The fare was $31.00 but the app estimated $23.50 based on the planned route, a difference of $7.50.",
+          "evidence_ids": ["FARE-005", "FARE-006", "TRIP-001"],
+          "policy_ids": ["POLICY-004"]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The driver stated there was traffic on ECP and chose an alternative route via Nicoll Highway.",
+          "evidence_ids": ["CHAT-002", "CHAT-004"],
+          "policy_ids": ["POLICY-003"]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The route deviation was 36.2% above the planned distance, exceeding the 15% policy threshold.",
+          "evidence_ids": ["ROUTE-001", "ROUTE-002"],
+          "policy_ids": ["POLICY-002"]
+        },
+        {
+          "statement": "No app traffic alerts or incident records corroborate the driver's traffic claim.",
+          "evidence_ids": ["EVENT-004", "EVENT-008"],
+          "policy_ids": ["POLICY-003"]
+        }
+      ],
+      "unanswered_questions": [
+        "Are there external traffic records that could verify the driver's claim?"
+      ]
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "partial_refund",
+      "proposed_action": {"amount_cents": 750, "currency": "SGD"},
+      "explanation": "The route deviation was 36.2%, exceeding the 15% policy threshold. The driver claimed traffic but no app alerts corroborate the claim. The fare difference is $7.50 (750 cents), which should be refunded to the rider.",
+      "evidence_ids": ["ROUTE-001", "ROUTE-002", "FARE-005", "FARE-006", "CHAT-002", "EVENT-008"],
+      "policy_ids": ["POLICY-001", "POLICY-002", "POLICY-003", "POLICY-004"],
+      "confidence": 0.90
+    }
   }
 }
