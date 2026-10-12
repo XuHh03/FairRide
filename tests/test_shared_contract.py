@@ -5,7 +5,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from case_data import load_case, load_policy
+from case_data import load_case, load_policy, policy_for_case
 from checks import no_show_facts
 from contracts import AdvocateResult, JudgeResult
 from evidence import build_evidence_index, build_review_input, validate_references
@@ -70,7 +70,7 @@ class SharedContractTests(unittest.TestCase):
                 with self.subTest(case=case_id, example=name):
                     model = AdvocateResult if name.endswith("advocate") else JudgeResult
                     result = model.model_validate(output)
-                    self.assertEqual(validate_references(result, case, self.policy), [])
+                    self.assertEqual(validate_references(result, case, policy_for_case(case)), [])
 
     def test_wait_clock_follows_configured_policy(self):
         policy = copy.deepcopy(self.policy)

@@ -225,5 +225,121 @@
       "policy_ids": ["POLICY-001", "POLICY-002", "POLICY-003", "POLICY-004"],
       "confidence": 0.90
     }
+  },
+  "DISP-006": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The driver took a longer route than the app's planned route, resulting in a higher fare.",
+          "evidence_ids": ["ROUTE-001", "ROUTE-002", "FARE-005", "FARE-006"],
+          "policy_ids": ["POLICY-001"]
+        },
+        {
+          "statement": "The rider questioned the route during the trip but the driver dismissed the concern.",
+          "evidence_ids": ["CHAT-001", "CHAT-003"],
+          "policy_ids": []
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The deviation was only 12.1%, which is below the 15% policy threshold for a significant deviation.",
+          "evidence_ids": ["ROUTE-001", "ROUTE-002"],
+          "policy_ids": ["POLICY-002"]
+        }
+      ],
+      "unanswered_questions": [
+        "Was the driver's route choice reasonable given road conditions at the time?"
+      ]
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The driver's route was a minor detour that added only 2 km to a 16.5 km trip.",
+          "evidence_ids": ["ROUTE-001", "ROUTE-002", "GPS-002", "GPS-004"],
+          "policy_ids": ["POLICY-002"]
+        },
+        {
+          "statement": "The deviation of 12.1% is below the 15% threshold, so no refund is required under the sample policy.",
+          "evidence_ids": ["ROUTE-001", "ROUTE-002"],
+          "policy_ids": ["POLICY-002"]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The rider was charged $21.50 when the app estimated $19.50, a $2.00 difference.",
+          "evidence_ids": ["FARE-005", "FARE-006"],
+          "policy_ids": ["POLICY-004"]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {"amount_cents": 0, "currency": "SGD"},
+      "explanation": "The route deviation was 12.1%, below the 15% policy threshold. The deviation is not significant under the sample policy and no refund is warranted. The charge is upheld.",
+      "evidence_ids": ["ROUTE-001", "ROUTE-002", "FARE-005", "FARE-006"],
+      "policy_ids": ["POLICY-001", "POLICY-002"],
+      "confidence": 0.85
+    }
+  },
+  "DISP-007": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The driver only waited 5 minutes, which is below the 8-minute no-show threshold.",
+          "evidence_ids": ["TRIP-001", "GPS-002", "GPS-004"],
+          "policy_ids": ["POLICY-003"]
+        },
+        {
+          "statement": "The rider communicated that they were at the wrong location and were on their way.",
+          "evidence_ids": ["CHAT-002"],
+          "policy_ids": []
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The rider went to the wrong mall and was not at the designated pickup point.",
+          "evidence_ids": ["CHAT-002", "TICKET-001"],
+          "policy_ids": []
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The driver arrived on time and waited 5 minutes at the correct pickup point.",
+          "evidence_ids": ["TRIP-001", "GPS-002", "EVENT-003"],
+          "policy_ids": ["POLICY-001"]
+        },
+        {
+          "statement": "The rider admitted going to the wrong mall, which caused the delay.",
+          "evidence_ids": ["CHAT-002"],
+          "policy_ids": []
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The 8-minute no-show threshold was not met, so the cancellation fee is not valid under the sample policy.",
+          "evidence_ids": ["TRIP-001"],
+          "policy_ids": ["POLICY-003"]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "reverse_charge",
+      "proposed_action": {"amount_cents": 500, "currency": "SGD"},
+      "explanation": "The driver waited only 5 minutes, below the 8-minute no-show threshold. The fee is not eligible under the sample policy. The full $5.00 charge (500 cents) should be reversed and refunded to the rider.",
+      "evidence_ids": ["TRIP-001", "GPS-002", "GPS-004", "CHAT-002", "EVENT-006"],
+      "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"],
+      "confidence": 0.90
+    }
   }
 }

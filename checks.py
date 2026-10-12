@@ -178,4 +178,6 @@ def _validate_route_deviation_ruling(case: dict, policy: dict, decision: JudgeRe
         issues.append("Upheld charge or no action requires zero refund")
     if decision.ruling == "uphold_charge" and facts["deviation_significant"]:
         issues.append("Cannot uphold charge when the route deviation exceeds the policy threshold")
+    if decision.ruling == "partial_refund" and not facts["deviation_significant"]:
+        issues.append("Cannot order a partial refund when the deviation is below the policy threshold")
     return issues

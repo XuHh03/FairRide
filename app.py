@@ -17,12 +17,14 @@ from workflow import run_review
 st.set_page_config(page_title="FairRide | Dispute review", layout="wide")
 
 # Case selector — switch between all supported dispute cases
-case_options = ["DISP-002", "DISP-003", "DISP-004", "DISP-005"]
+case_options = ["DISP-002", "DISP-003", "DISP-004", "DISP-005", "DISP-006", "DISP-007"]
 case_labels = {
     "DISP-002": "DISP-002 — No-show · Ambiguous (driver waited 8 min, entrance unclear)",
     "DISP-003": "DISP-003 — No-show · Rider-favorable (driver late, waited 4 min)",
     "DISP-004": "DISP-004 — No-show · Driver-favorable (driver early, waited 12 min)",
     "DISP-005": "DISP-005 — Route deviation · Rider-favorable (36% longer route)",
+    "DISP-006": "DISP-006 — Route deviation · Below threshold (12% deviation, no refund)",
+    "DISP-007": "DISP-007 — No-show · Rider-favorable, $8 fee (rider at wrong mall, 5 min wait)",
 }
 selected_case_id = st.selectbox(
     "Select a case", case_options,

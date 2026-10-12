@@ -128,6 +128,48 @@ LABELS: dict[str, CaseLabel] = {
             "cannot verify the traffic claim."
         ),
     ),
+    "DISP-006": CaseLabel(
+        case_id="DISP-006",
+        expected_ruling="uphold_charge",
+        expected_waited_minutes=0,  # N/A for route deviation
+        expected_fee_eligible=False,  # N/A for route deviation
+        rationale=(
+            "Driver deviated 12.1% from planned route (18.5 km vs 16.5 km), "
+            "below the 15% policy threshold. deviation_significant is False. "
+            "No refund is warranted. Judge upholds the charge (0 cents refund)."
+        ),
+        evidence_count=25,
+        acceptable_alternatives=("human_review",),
+        notes=(
+            "HELD-OUT case — prompts were never tuned for below-threshold "
+            "route deviation. There is no prompt guidance for route deviation "
+            "rulings (only no-show decision guidance exists). A partial_refund "
+            "would be a true failure (validate_final_ruling checks that "
+            "partial_refund equals fare_difference_cents, but the model should "
+            "not order a refund when deviation is below threshold)."
+        ),
+    ),
+    "DISP-007": CaseLabel(
+        case_id="DISP-007",
+        expected_ruling="reverse_charge",
+        expected_waited_minutes=5.0,
+        expected_fee_eligible=False,
+        rationale=(
+            "Driver waited 5 min (below 8-min threshold), fee_eligible=False. "
+            "The rider went to the wrong mall but communicated this to the "
+            "driver. Despite the rider being at fault, the policy threshold "
+            "was not met. Judge reverses and refunds full S$5.00 (500 cents)."
+        ),
+        evidence_count=17,
+        acceptable_alternatives=("human_review",),
+        notes=(
+            "HELD-OUT case — tests whether the model follows fee_eligible "
+            "guidance even when the narrative suggests the rider deserved "
+            "the charge (rider went to wrong mall). An uphold_charge would "
+            "be a true failure (validate_final_ruling rejects upholding "
+            "when fee_eligible is False)."
+        ),
+    ),
 }
 
 

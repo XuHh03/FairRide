@@ -60,6 +60,9 @@ class FactLabelTests(unittest.TestCase):
     def test_disp_004_facts_match_label(self):
         self._run_case(LABELS["DISP-004"])
 
+    def test_disp_007_facts_match_label(self):
+        self._run_case(LABELS["DISP-007"])
+
 
 # ---------------------------------------------------------------------------
 # Evidence system tests (no model calls, deterministic)
@@ -92,6 +95,9 @@ class EvidenceSystemTests(unittest.TestCase):
     def test_disp_004_evidence_builds(self):
         self._run_case(LABELS["DISP-004"])
 
+    def test_disp_007_evidence_builds(self):
+        self._run_case(LABELS["DISP-007"])
+
 
 # ---------------------------------------------------------------------------
 # Route deviation fact tests (no model calls, deterministic)
@@ -119,6 +125,29 @@ class RouteDeviationTests(unittest.TestCase):
         self.assertEqual(review.case_id, "DISP-005")
         self.assertEqual(review.dispute_type, "route_deviation")
         self.assertEqual(len(review.evidence), LABELS["DISP-005"].evidence_count)
+        self.assertGreater(len(review.facts), 0)
+
+    def test_disp_006_facts_match_label(self):
+        """HELD-OUT: Below-threshold route deviation (12.1% < 15%)."""
+        case = load_case("DISP-006")
+        policy = _policy_for_case(case)
+        facts = route_deviation_facts(case, policy)
+        self.assertAlmostEqual(facts["planned_distance_km"], 16.5, places=1)
+        self.assertAlmostEqual(facts["actual_distance_km"], 18.5, places=1)
+        self.assertAlmostEqual(facts["deviation_pct"], 12.1, places=1)
+        self.assertFalse(facts["deviation_significant"])
+        self.assertEqual(facts["fare_difference_cents"], 200)
+
+    def test_disp_006_evidence_builds(self):
+        """HELD-OUT: Verify evidence system builds for below-threshold case."""
+        case = load_case("DISP-006")
+        policy = _policy_for_case(case)
+        evidence = build_evidence_index(case)
+        self.assertEqual(len(evidence), LABELS["DISP-006"].evidence_count)
+        review = build_review_input(case, policy)
+        self.assertEqual(review.case_id, "DISP-006")
+        self.assertEqual(review.dispute_type, "route_deviation")
+        self.assertEqual(len(review.evidence), LABELS["DISP-006"].evidence_count)
         self.assertGreater(len(review.facts), 0)
 
 
@@ -177,6 +206,27 @@ class ExampleModeEvaluationTests(unittest.TestCase):
         self.assertEqual(result.judge_result.action, "final_ruling")
         self.assertEqual(result.judge_result.ruling, "partial_refund")
         self.assertEqual(result.judge_result.proposed_action.amount_cents, 750)
+
+    def test_disp_006_example_run(self):
+        """HELD-OUT: DISP-006 example should complete with uphold_charge (below threshold)."""
+        case = load_case("DISP-006")
+        policy = _policy_for_case(case)
+        result = run_review(case, policy, self.backend)
+        self.assertEqual(result.case_id, "DISP-006")
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(result.judge_result.action, "final_ruling")
+        self.assertEqual(result.judge_result.ruling, "uphold_charge")
+        self.assertEqual(result.judge_result.proposed_action.amount_cents, 0)
+
+    def test_disp_007_example_run(self):
+        """HELD-OUT: DISP-007 example should complete with reverse_charge ($5 = 500c)."""
+        case = load_case("DISP-007")
+        result = run_review(case, self.policy, self.backend)
+        self.assertEqual(result.case_id, "DISP-007")
+        self.assertEqual(result.status, "completed")
+        self.assertEqual(result.judge_result.action, "final_ruling")
+        self.assertEqual(result.judge_result.ruling, "reverse_charge")
+        self.assertEqual(result.judge_result.proposed_action.amount_cents, 500)
 
 
 # ---------------------------------------------------------------------------
@@ -248,8 +298,8 @@ class LiveModeEvaluationTests(unittest.TestCase):
         # If reverse_charge, verify refund equals full charge
         if result.judge_result.ruling == "reverse_charge":
             self.assertEqual(
-                result.judge_result.proposed_action.amount_cents, 500,
-                msg=f"{label.case_id}: reverse_charge but refund != 500 cents",
+                result.judge_result.proposed_action.amount_cents, charged_cents(case),
+                msg=f"{label.case_id}: reverse_charge but refund != {charged_cents(case)} cents",
             )
 
     def test_disp_002_live_ruling_matches_label(self):
@@ -263,6 +313,14 @@ class LiveModeEvaluationTests(unittest.TestCase):
 
     def test_disp_005_live_ruling_matches_label(self):
         self._run_case(LABELS["DISP-005"])
+
+    def test_disp_006_live_ruling_matches_label(self):
+        """HELD-OUT: Below-threshold route deviation — does the model generalize?"""
+        self._run_case(LABELS["DISP-006"])
+
+    def test_disp_007_live_ruling_matches_label(self):
+        """HELD-OUT: $8 fee, rider at fault — does the model follow the policy?"""
+        self._run_case(LABELS["DISP-007"])
 
 
 # ---------------------------------------------------------------------------
@@ -361,6 +419,39 @@ class LabelValidationTests(unittest.TestCase):
         self.assertTrue(any("deviation" in issue.lower() or "threshold" in issue.lower()
                            for issue in issues),
                         f"Expected deviation threshold issue, got: {issues}")
+
+    def test_disp_006_uphold_charge_passes_validation(self):
+        """HELD-OUT: DISP-006 uphold_charge should pass (deviation 12.1% < 15%)."""
+        case = load_case("DISP-006")
+        policy = _policy_for_case(case)
+        decision = self._build_decision("uphold_charge", 0, "DISP-006")
+        issues = validate_final_ruling(case, policy, decision)
+        self.assertEqual(issues, [], f"Unexpected issues: {issues}")
+
+    def test_disp_006_partial_refund_fails_validation(self):
+        """HELD-OUT: DISP-006 partial_refund should fail (deviation below threshold)."""
+        case = load_case("DISP-006")
+        policy = _policy_for_case(case)
+        decision = self._build_decision("partial_refund", 200, "DISP-006")
+        issues = validate_final_ruling(case, policy, decision)
+        self.assertTrue(any("below" in issue.lower() and "threshold" in issue.lower()
+                           for issue in issues),
+                        f"Expected below-threshold issue, got: {issues}")
+
+    def test_disp_007_reverse_charge_passes_validation(self):
+        """HELD-OUT: DISP-007 reverse_charge with 500c should pass (below threshold)."""
+        case = load_case("DISP-007")
+        decision = self._build_decision("reverse_charge", 500, "DISP-007")
+        issues = validate_final_ruling(case, self.policy, decision)
+        self.assertEqual(issues, [], f"Unexpected issues: {issues}")
+
+    def test_disp_007_uphold_charge_fails_validation(self):
+        """HELD-OUT: DISP-007 uphold_charge should fail (fee_eligible is False)."""
+        case = load_case("DISP-007")
+        decision = self._build_decision("uphold_charge", 0, "DISP-007")
+        issues = validate_final_ruling(case, self.policy, decision)
+        self.assertTrue(any("threshold" in issue for issue in issues),
+                        f"Expected threshold issue, got: {issues}")
 
 
 if __name__ == "__main__":

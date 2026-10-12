@@ -1,0 +1,122 @@
+{
+  "dispute_ticket": {
+    "dispute_id": "DISP-006",
+    "trip_id": "TRIP-2026-10788",
+    "filed_by": "rider",
+    "dispute_type": "route_deviation",
+    "description": "Driver took a longer route from Jurong East Mall to Gardens by the Bay. The app estimated $19.50 but I was charged $21.50. The driver said they knew a shortcut but the route was clearly longer than what the app showed.",
+    "filed_at": "2026-10-02T11:00:00+08:00",
+    "status": "open",
+    "id": "TICKET-001"
+  },
+  "rider_profile": {
+    "rider_id": "R-5210",
+    "name": "Wong Kah Mun",
+    "account_age_days": 120,
+    "total_trips": 22,
+    "avg_rating": 4.5,
+    "dispute_history": {
+      "total_disputes": 0,
+      "upheld": 0,
+      "rejected": 0
+    },
+    "fraud_flags": 0,
+    "payment_method": "grabpay"
+  },
+  "driver_profile": {
+    "driver_id": "D-8810",
+    "name": "Raj Kumar",
+    "account_age_days": 600,
+    "total_trips": 2100,
+    "avg_rating": 4.8,
+    "dispute_history": {
+      "total_disputes": 1,
+      "upheld_against": 0,
+      "rejected": 1
+    },
+    "fraud_flags": 0,
+    "vehicle": "Honda Vezel (SGP 4421 M)"
+  },
+  "trip_data": {
+    "trip_id": "TRIP-2026-10788",
+    "rider_id": "R-5210",
+    "driver_id": "D-8810",
+    "pickup_location": {
+      "name": "Jurong East Mall",
+      "lat": 1.3333,
+      "lng": 103.7433
+    },
+    "dropoff_location": {
+      "name": "Gardens by the Bay",
+      "lat": 1.2816,
+      "lng": 103.8636
+    },
+    "start_time": "2026-10-01T14:00:00+08:00",
+    "end_time": "2026-10-01T14:30:00+08:00",
+    "estimated_fare": 19.50,
+    "charged_fare": 21.50,
+    "fare_currency": "SGD",
+    "id": "TRIP-001"
+  },
+  "route_data": [
+    {
+      "id": "ROUTE-001",
+      "type": "planned",
+      "route_name": "AYE direct to Marina Bay",
+      "waypoints": [
+        {"lat": 1.3333, "lng": 103.7433, "label": "Jurong East Mall"},
+        {"lat": 1.2999, "lng": 103.7810, "label": "AYE (city exit)"},
+        {"lat": 1.2816, "lng": 103.8636, "label": "Gardens by the Bay"}
+      ],
+      "distance_km": 16.5,
+      "estimated_duration_min": 20,
+      "source": "in_app_routing_engine",
+      "generated_at": "2026-10-01T13:55:00+08:00"
+    },
+    {
+      "id": "ROUTE-002",
+      "type": "actual",
+      "route_name": "CTE detour via Bukit Timah",
+      "waypoints": [
+        {"lat": 1.3333, "lng": 103.7433, "label": "Jurong East Mall"},
+        {"lat": 1.3400, "lng": 103.7800, "label": "Bukit Batok Road (north)"},
+        {"lat": 1.3500, "lng": 103.8100, "label": "CTE southbound"},
+        {"lat": 1.2999, "lng": 103.7810, "label": "AYE junction (rejoined)"},
+        {"lat": 1.2816, "lng": 103.8636, "label": "Gardens by the Bay"}
+      ],
+      "distance_km": 18.5,
+      "actual_duration_min": 30,
+      "source": "gps_reconstruction",
+      "generated_at": "2026-10-01T14:31:00+08:00"
+    }
+  ],
+  "fare_items": [
+    {"id": "FARE-001", "component": "base_fare", "amount": 3.50, "currency": "SGD"},
+    {"id": "FARE-002", "component": "distance_charge", "distance_km": 18.5, "rate_per_km": 0.55, "amount": 10.18, "currency": "SGD"},
+    {"id": "FARE-003", "component": "time_charge", "duration_min": 30, "rate_per_min": 0.25, "amount": 7.50, "currency": "SGD"},
+    {"id": "FARE-004", "component": "booking_fee", "amount": 0.32, "currency": "SGD"},
+    {"id": "FARE-005", "component": "total_charged", "amount": 21.50, "currency": "SGD", "note": "Sum of base + distance + time + booking. Rounded to nearest $0.10."},
+    {"id": "FARE-006", "component": "estimated_total", "amount": 19.50, "currency": "SGD", "note": "App estimate based on planned route (16.5km, 20min) at same fare rates."}
+  ],
+  "gps_telemetry": [
+    {"timestamp": "2026-10-01T14:00:00+08:00", "lat": 1.3333, "lng": 103.7433, "speed_kmh": 0, "status": "trip_start", "id": "GPS-001"},
+    {"timestamp": "2026-10-01T14:02:00+08:00", "lat": 1.3380, "lng": 103.7600, "speed_kmh": 40, "status": "minor_detour", "id": "GPS-002", "note": "Vehicle headed north on Bukit Batok Road instead of east on AYE"},
+    {"timestamp": "2026-10-01T14:06:00+08:00", "lat": 1.3500, "lng": 103.8100, "speed_kmh": 55, "status": "on_detour", "id": "GPS-003"},
+    {"timestamp": "2026-10-01T14:10:00+08:00", "lat": 1.3200, "lng": 103.7950, "speed_kmh": 60, "status": "rejoined_planned", "id": "GPS-004", "note": "Vehicle rejoined AYE corridor"},
+    {"timestamp": "2026-10-01T14:30:00+08:00", "lat": 1.2816, "lng": 103.8636, "speed_kmh": 0, "status": "trip_end", "id": "GPS-005"}
+  ],
+  "chat_logs": [
+    {"timestamp": "2026-10-01T14:03:00+08:00", "sender": "rider", "type": "message", "content": "Are we going the right way? The app showed AYE.", "id": "CHAT-001"},
+    {"timestamp": "2026-10-01T14:04:00+08:00", "sender": "driver", "type": "message", "content": "Yes, I know a better way through Bukit Batok. It's fine.", "id": "CHAT-002"},
+    {"timestamp": "2026-10-01T14:08:00+08:00", "sender": "rider", "type": "message", "content": "This doesn't look right. We're going north.", "id": "CHAT-003"},
+    {"timestamp": "2026-10-01T14:09:00+08:00", "sender": "driver", "type": "message", "content": "Don't worry, I've been driving for years. We'll get there.", "id": "CHAT-004"}
+  ],
+  "app_events": [
+    {"timestamp": "2026-10-01T13:55:00+08:00", "event_type": "booking_confirmed", "details": "Rider R-5210 booked trip TRIP-2026-10788 from Jurong East Mall to Gardens by the Bay. Estimated fare: $19.50. Estimated duration: 20 min.", "id": "EVENT-001"},
+    {"timestamp": "2026-10-01T13:55:05+08:00", "event_type": "driver_assigned", "details": "Driver D-8810 (Raj Kumar, Honda Vezel SGP 4421 M) assigned. ETA 3 min.", "id": "EVENT-002"},
+    {"timestamp": "2026-10-01T14:00:00+08:00", "event_type": "trip_started", "details": "Trip started. In-app routing engine assigned planned route via AYE (16.5 km).", "id": "EVENT-003"},
+    {"timestamp": "2026-10-01T14:02:00+08:00", "event_type": "route_deviation_detected", "details": "GPS indicates minor route deviation. Vehicle heading north on Bukit Batok Road. Deviation: approximately 2 km additional distance so far.", "id": "EVENT-004"},
+    {"timestamp": "2026-10-01T14:10:00+08:00", "event_type": "route_rejoined", "details": "Vehicle rejoined planned route corridor at AYE. Total deviation distance: approximately 2.0 km additional.", "id": "EVENT-005"},
+    {"timestamp": "2026-10-01T14:30:00+08:00", "event_type": "trip_completed", "details": "Trip completed. Actual distance: 18.5 km (planned: 16.5 km). Actual duration: 30 min (estimated: 20 min). Fare charged: $21.50.", "id": "EVENT-006"}
+  ]
+}
