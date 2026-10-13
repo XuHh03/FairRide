@@ -2,6 +2,8 @@
 
 Evaluation update (13 October 2026): `WorkflowResult` now has optional `failure_category` (`setup`, `model`, `validation`, or null). Preserve it when integrating the workflow; human-review status alone does not identify a successful evidence-based escalation. See [evaluation scoring v2](EVALUATION.md) for definitions and tests.
 
+Route update (13 October 2026): DISP-008/009, route policy v1.1, route exception checks, fare consistency checks, and example evaluation are implemented. See [route scenarios](ROUTE_CASES.md) for the evidence format and corrected fare values. No new live provider run or UI verification has been performed.
+
 Updated 5 October 2026. This began as the shared-foundation handoff and now includes the implemented no-show review path. See `progress.md` for the latest status.
 
 ## Implemented by Person A's shared-foundation task

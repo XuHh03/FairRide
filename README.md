@@ -1,6 +1,6 @@
 # FairRide
 
-FairRide is a Streamlit prototype for evidence-based rider–driver dispute review in the Tencent Cloud hackathon Digital Native track. It currently supports one sample no-show case, `DISP-002`. The policy is synthetic and **not an official Ryde policy**. The review recommends an outcome or human referral; it never issues a payment.
+FairRide is a Streamlit prototype for evidence-based rider–driver dispute review in the Tencent Cloud hackathon Digital Native track. It supports eight sample cases across no-show charges and route deviations, including justified and ambiguous detours. Policies are synthetic and **not official Ryde policies**. The review recommends an outcome or human referral; it never issues a payment.
 
 The app has two clearly labeled modes. **Example walkthrough** runs hand-written agent responses through the real controller and validation, with no API key. **Live model** calls an OpenAI-compatible chat completions endpoint; it requires configuration and has not been verified against a live provider in this repository. For `DISP-002`, the supplied app event conflicts with the sample policy and the physical pickup entrance is unresolved, so the example correctly ends in human review.
 
@@ -35,11 +35,11 @@ To enable **Live model**, set `FAIRRIDE_API_KEY` (or `OPENAI_API_KEY`) and `FAIR
 | `checks.py` | No-show facts, known material conflicts, and ruling/amount checks |
 | `agents.py` | Live model backend and hand-written example backend |
 | `workflow.py` | Parallel initial advocates, Judge, one rebuttal round, validation, and referral |
-| `cases/`, `policies/` | One no-show case and explicit sample policy |
+| `cases/`, `policies/` | Eight cases and versioned sample policies for two dispute types |
 | `tests/` | Calculation, contract, workflow, and client-shape tests |
 | `examples/` | Hand-written agent output fixtures, never AI decisions |
 | `data/` | Supplied original document, retained for reference only |
 
 `evidence.validate_references` checks whether IDs exist, not whether a statement is true. The final checks catch specific known conflicts and amount errors; they are not a general proof of evidence support. Rider and driver history is excluded from model input and must not determine fee validity.
 
-See [the project guide](docs/PROJECT_GUIDE.md), [the shared handoff](docs/PERSON_B_HANDOFF.md), and [progress](progress.md) for design decisions, interfaces, and next steps. Route-deviation cases and evaluation are still to be built.
+See [the project guide](docs/PROJECT_GUIDE.md), [the shared handoff](docs/PERSON_B_HANDOFF.md), and [progress](progress.md) for design decisions, interfaces, and next steps. [Route scenarios](docs/ROUTE_CASES.md) documents the new cases, fare corrections, and justification rules.

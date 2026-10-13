@@ -189,7 +189,8 @@ For no_show_charge disputes:
 - The wait-time threshold is the decisive factor. Do not abstain merely because GPS does not prove the rider's exact position.
 
 For route_deviation disputes:
-- If deviation_significant is true (actual route exceeds the policy threshold), partial_refund of the fare_difference is appropriate — unless the driver's justification is corroborated by app alerts or rider-requested changes.
+- If deviation_significant is true (actual route exceeds the policy threshold), partial_refund of the fare_difference is appropriate — unless the driver's justification is corroborated by app alerts, documented road closures, or rider-requested changes. A confirmed exception supports uphold_charge with zero refund.
+- Check structured alert affected_route_id, valid_from/valid_until, and status. Active, route- and time-matched records support an exception; status none does not. Conflicting or unknown snapshots require clarification and then human_review if unresolved. Negative statements such as no traffic alerts are not positive corroboration.
 - If deviation_significant is false (deviation within the acceptable range), uphold_charge (0 refund) is appropriate.
 - If the driver claimed traffic but no app alerts corroborate it, the deviation is unjustified and a refund is warranted.
 
@@ -239,6 +240,9 @@ class ExampleAgentBackend:
         if not case_examples:
             raise ValueError(f"Example walkthrough is not available for {review.case_id}")
         if question:
+            rebuttal_key = role.removesuffix("_advocate") + "_rebuttal_advocate"
+            if rebuttal_key in case_examples:
+                return AgentCall(AdvocateResult.model_validate(case_examples[rebuttal_key]))
             # Rebuttal response: cite that the records do not resolve the question
             output = {
                 "role": role,

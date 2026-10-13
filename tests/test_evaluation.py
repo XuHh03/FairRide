@@ -114,7 +114,7 @@ class RouteDeviationTests(unittest.TestCase):
         self.assertAlmostEqual(facts["actual_distance_km"], 25.2, places=1)
         self.assertAlmostEqual(facts["deviation_pct"], 36.2, places=1)
         self.assertTrue(facts["deviation_significant"])
-        self.assertEqual(facts["fare_difference_cents"], 750)
+        self.assertEqual(facts["fare_difference_cents"], 693)
 
     def test_disp_005_evidence_builds(self):
         case = load_case("DISP-005")
@@ -136,7 +136,7 @@ class RouteDeviationTests(unittest.TestCase):
         self.assertAlmostEqual(facts["actual_distance_km"], 18.5, places=1)
         self.assertAlmostEqual(facts["deviation_pct"], 12.1, places=1)
         self.assertFalse(facts["deviation_significant"])
-        self.assertEqual(facts["fare_difference_cents"], 200)
+        self.assertEqual(facts["fare_difference_cents"], 360)
 
     def test_disp_006_evidence_builds(self):
         """HELD-OUT: Verify evidence system builds for below-threshold case."""
@@ -205,7 +205,7 @@ class ExampleModeEvaluationTests(unittest.TestCase):
         self.assertEqual(result.status, "completed")
         self.assertEqual(result.judge_result.action, "final_ruling")
         self.assertEqual(result.judge_result.ruling, "partial_refund")
-        self.assertEqual(result.judge_result.proposed_action.amount_cents, 750)
+        self.assertEqual(result.judge_result.proposed_action.amount_cents, 693)
 
     def test_disp_006_example_run(self):
         """HELD-OUT: DISP-006 example should complete with uphold_charge (below threshold)."""
@@ -402,11 +402,11 @@ class LabelValidationTests(unittest.TestCase):
         self.assertEqual(issues, [], f"Unexpected issues: {issues}")
 
     def test_disp_005_partial_refund_passes_validation(self):
-        """DISP-005: partial_refund with 750 cents (fare difference)
+        """DISP-005: partial_refund with 693 cents (fare difference)
         should pass validation for the route deviation case."""
         case = load_case("DISP-005")
         policy = _policy_for_case(case)
-        decision = self._build_decision("partial_refund", 750, "DISP-005")
+        decision = self._build_decision("partial_refund", 693, "DISP-005")
         issues = validate_final_ruling(case, policy, decision)
         self.assertEqual(issues, [], f"Unexpected issues: {issues}")
 

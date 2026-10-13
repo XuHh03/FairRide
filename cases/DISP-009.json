@@ -1,0 +1,350 @@
+{
+  "dispute_ticket": {
+    "dispute_id": "DISP-009",
+    "trip_id": "TRIP-2026-10802",
+    "filed_by": "rider",
+    "dispute_type": "route_deviation",
+    "description": "The fare rose from $19.68 to $26.61 after a detour. The driver showed a closure alert, but the rider app showed no closure. The supplied records disagree about whether the planned ECP segment was closed.",
+    "filed_at": "2026-09-29T10:00:00+08:00",
+    "status": "open",
+    "id": "TICKET-001"
+  },
+  "rider_profile": {
+    "rider_id": "R-4502",
+    "name": "Sarah Tan",
+    "account_age_days": 200,
+    "total_trips": 45,
+    "avg_rating": 4.7,
+    "dispute_history": {
+      "total_disputes": 1,
+      "upheld": 1,
+      "rejected": 0
+    },
+    "fraud_flags": 0,
+    "payment_method": "credit_card"
+  },
+  "driver_profile": {
+    "driver_id": "D-7821",
+    "name": "Lim Wei Ming",
+    "account_age_days": 800,
+    "total_trips": 3200,
+    "avg_rating": 4.6,
+    "dispute_history": {
+      "total_disputes": 3,
+      "upheld_against": 2,
+      "rejected": 1
+    },
+    "fraud_flags": 0,
+    "vehicle": "Toyota Vios (SGP 5512 K)"
+  },
+  "trip_data": {
+    "trip_id": "TRIP-2026-10802",
+    "rider_id": "R-4502",
+    "driver_id": "D-7821",
+    "pickup_location": {
+      "name": "Marina Bay Sands",
+      "lat": 1.2834,
+      "lng": 103.8607
+    },
+    "dropoff_location": {
+      "name": "Changi Airport Terminal 3",
+      "lat": 1.3556,
+      "lng": 103.9869
+    },
+    "start_time": "2026-09-28T14:00:00+08:00",
+    "end_time": "2026-09-28T14:35:00+08:00",
+    "estimated_fare": 19.68,
+    "charged_fare": 26.61,
+    "fare_currency": "SGD",
+    "id": "TRIP-001"
+  },
+  "route_data": [
+    {
+      "id": "ROUTE-001",
+      "type": "planned",
+      "route_name": "ECP (East Coast Parkway) direct",
+      "waypoints": [
+        {
+          "lat": 1.2834,
+          "lng": 103.8607,
+          "label": "Marina Bay Sands"
+        },
+        {
+          "lat": 1.2966,
+          "lng": 103.8719,
+          "label": "Benjamin Sheares Bridge (ECP entrance)"
+        },
+        {
+          "lat": 1.3076,
+          "lng": 103.904,
+          "label": "ECP (Changi exit)"
+        },
+        {
+          "lat": 1.3556,
+          "lng": 103.9869,
+          "label": "Changi Airport T3"
+        }
+      ],
+      "distance_km": 18.5,
+      "estimated_duration_min": 22,
+      "source": "in_app_routing_engine",
+      "generated_at": "2026-09-28T13:55:00+08:00"
+    },
+    {
+      "id": "ROUTE-002",
+      "type": "actual",
+      "route_name": "City route via Nicoll Highway and Mountbatten",
+      "waypoints": [
+        {
+          "lat": 1.2834,
+          "lng": 103.8607,
+          "label": "Marina Bay Sands"
+        },
+        {
+          "lat": 1.2966,
+          "lng": 103.855,
+          "label": "Nicoll Highway"
+        },
+        {
+          "lat": 1.301,
+          "lng": 103.864,
+          "label": "Mountbatten Road"
+        },
+        {
+          "lat": 1.3076,
+          "lng": 103.904,
+          "label": "ECP junction (joined ECP late)"
+        },
+        {
+          "lat": 1.3556,
+          "lng": 103.9869,
+          "label": "Changi Airport T3"
+        }
+      ],
+      "distance_km": 25.2,
+      "actual_duration_min": 35,
+      "source": "gps_reconstruction",
+      "generated_at": "2026-09-28T14:36:00+08:00"
+    }
+  ],
+  "fare_items": [
+    {
+      "id": "FARE-001",
+      "component": "base_fare",
+      "amount": 3.5,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-002",
+      "component": "distance_charge",
+      "distance_km": 25.2,
+      "rate_per_km": 0.55,
+      "amount": 13.86,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-003",
+      "component": "time_charge",
+      "duration_min": 35,
+      "rate_per_min": 0.25,
+      "amount": 8.75,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-004",
+      "component": "booking_fee",
+      "amount": 0.5,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-005",
+      "component": "total_charged",
+      "amount": 26.61,
+      "currency": "SGD",
+      "note": "Sum of individually rounded components; cent precision, half-up rounding."
+    },
+    {
+      "id": "FARE-006",
+      "component": "estimated_total",
+      "amount": 19.68,
+      "currency": "SGD",
+      "note": "App estimate based on planned route (18.5km, 22min) at same fare rates.",
+      "breakdown": {
+        "base_fare": 3.5,
+        "distance_charge": 10.18,
+        "time_charge": 5.5,
+        "booking_fee": 0.5
+      }
+    }
+  ],
+  "gps_telemetry": [
+    {
+      "timestamp": "2026-09-28T14:00:00+08:00",
+      "lat": 1.2834,
+      "lng": 103.8607,
+      "speed_kmh": 0,
+      "status": "trip_start",
+      "id": "GPS-001"
+    },
+    {
+      "timestamp": "2026-09-28T14:02:00+08:00",
+      "lat": 1.292,
+      "lng": 103.858,
+      "speed_kmh": 35,
+      "status": "deviation_start",
+      "id": "GPS-002",
+      "note": "Vehicle headed west toward Nicoll Highway instead of east toward ECP"
+    },
+    {
+      "timestamp": "2026-09-28T14:05:00+08:00",
+      "lat": 1.2966,
+      "lng": 103.855,
+      "speed_kmh": 28,
+      "status": "on_deviation",
+      "id": "GPS-003"
+    },
+    {
+      "timestamp": "2026-09-28T14:08:00+08:00",
+      "lat": 1.301,
+      "lng": 103.864,
+      "speed_kmh": 30,
+      "status": "on_deviation",
+      "id": "GPS-004"
+    },
+    {
+      "timestamp": "2026-09-28T14:12:00+08:00",
+      "lat": 1.3076,
+      "lng": 103.904,
+      "speed_kmh": 45,
+      "status": "rejoined_planned",
+      "id": "GPS-005",
+      "note": "Vehicle rejoined planned route at ECP junction"
+    },
+    {
+      "timestamp": "2026-09-28T14:20:00+08:00",
+      "lat": 1.33,
+      "lng": 103.945,
+      "speed_kmh": 70,
+      "status": "on_planned",
+      "id": "GPS-006"
+    },
+    {
+      "timestamp": "2026-09-28T14:35:00+08:00",
+      "lat": 1.3556,
+      "lng": 103.9869,
+      "speed_kmh": 0,
+      "status": "trip_end",
+      "id": "GPS-007"
+    }
+  ],
+  "chat_logs": [
+    {
+      "timestamp": "2026-09-28T14:03:00+08:00",
+      "sender": "rider",
+      "type": "message",
+      "content": "Hi, are we taking the ECP? The app showed ECP as the route.",
+      "id": "CHAT-001"
+    },
+    {
+      "timestamp": "2026-09-28T14:04:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "The app has confirmed an ECP road closure. I will follow its recommended Nicoll Highway detour.",
+      "id": "CHAT-002"
+    },
+    {
+      "timestamp": "2026-09-28T14:06:00+08:00",
+      "sender": "rider",
+      "type": "message",
+      "content": "My app says there is no active closure on ECP. I do not agree that this detour was necessary.",
+      "id": "CHAT-003"
+    },
+    {
+      "timestamp": "2026-09-28T14:07:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "Yes, I know this area well. Don't worry, we'll get there.",
+      "id": "CHAT-004"
+    },
+    {
+      "timestamp": "2026-09-28T14:30:00+08:00",
+      "sender": "rider",
+      "type": "message",
+      "content": "This is taking much longer than expected. The fare is going to be way higher than the estimate.",
+      "id": "CHAT-005"
+    },
+    {
+      "timestamp": "2026-09-28T14:36:00+08:00",
+      "sender": "system",
+      "type": "system",
+      "content": "Trip completed. Total fare: $26.61. Estimated fare was $19.68. Difference: $6.93.",
+      "id": "CHAT-006"
+    }
+  ],
+  "app_events": [
+    {
+      "timestamp": "2026-09-28T13:55:00+08:00",
+      "event_type": "booking_confirmed",
+      "details": "Rider R-4502 booked trip TRIP-2026-10802 from Marina Bay Sands to Changi Airport T3. Estimated fare: $19.68. Estimated duration: 22 min.",
+      "id": "EVENT-001"
+    },
+    {
+      "timestamp": "2026-09-28T13:55:05+08:00",
+      "event_type": "driver_assigned",
+      "details": "Driver D-7821 (Lim Wei Ming, Toyota Vios SGP 5512 K) assigned. ETA 2 min.",
+      "id": "EVENT-002"
+    },
+    {
+      "timestamp": "2026-09-28T14:00:00+08:00",
+      "event_type": "trip_started",
+      "details": "Trip started. In-app routing engine assigned planned route via ECP (18.5 km).",
+      "id": "EVENT-003"
+    },
+    {
+      "timestamp": "2026-09-28T14:02:00+08:00",
+      "event_type": "route_deviation_detected",
+      "details": "GPS indicates vehicle deviated from planned route at waypoint 2. Vehicle heading west toward Nicoll Highway instead of east toward ECP.",
+      "id": "EVENT-004"
+    },
+    {
+      "timestamp": "2026-09-28T14:12:00+08:00",
+      "event_type": "route_rejoined",
+      "details": "Vehicle rejoined planned route at ECP junction. Total deviation distance: approximately 6.7 km additional.",
+      "id": "EVENT-005"
+    },
+    {
+      "timestamp": "2026-09-28T14:35:00+08:00",
+      "event_type": "trip_completed",
+      "details": "Trip completed. Actual distance: 25.2 km (planned: 18.5 km). Actual duration: 35 min (estimated: 22 min). Fare charged: $26.61.",
+      "id": "EVENT-006"
+    },
+    {
+      "timestamp": "2026-09-28T14:35:05+08:00",
+      "event_type": "fare_breakdown_generated",
+      "details": "Fare: base $3.50 + distance ($0.55/km x 25.2km = $13.86) + time ($0.25/min x 35min = $8.75) + booking $0.50 = $26.61. Estimated fare based on planned route: $19.68.",
+      "id": "EVENT-007"
+    },
+    {
+      "id": "EVENT-008",
+      "timestamp": "2026-09-28T13:58:00+08:00",
+      "event_type": "road_closure",
+      "affected_route_id": "ROUTE-001",
+      "valid_from": "2026-09-28T13:50:00+08:00",
+      "valid_until": "2026-09-28T15:00:00+08:00",
+      "status": "active",
+      "source": "in_app_routing_alert_feed",
+      "details": "Confirmed closure on the planned ECP segment. Routing engine recommends the recorded Nicoll Highway detour."
+    },
+    {
+      "id": "EVENT-009",
+      "timestamp": "2026-09-28T13:58:00+08:00",
+      "event_type": "road_closure",
+      "affected_route_id": "ROUTE-001",
+      "valid_from": "2026-09-28T13:50:00+08:00",
+      "valid_until": "2026-09-28T15:00:00+08:00",
+      "status": "none",
+      "source": "rider_app_alert_snapshot",
+      "details": "Rider app snapshot reports no active closure for the same route and validity period. The supplied records do not establish which alert snapshot is authoritative."
+    }
+  ]
+}

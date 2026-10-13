@@ -107,7 +107,7 @@ LABELS: dict[str, CaseLabel] = {
         rationale=(
             "Driver deviated 36.2% from planned route (25.2 km vs 18.5 km), "
             "exceeding the 15% policy threshold. Driver claimed traffic but "
-            "no app alerts corroborate. Fare difference is S$7.50 (750 cents). "
+            "no app alerts corroborate. Fare difference is S$6.93 (693 cents). "
             "Judge orders partial refund of the fare difference."
         ),
         evidence_count=31,
@@ -158,7 +158,16 @@ LABELS: dict[str, CaseLabel] = {
             "when fee_eligible is False)."
         ),
     ),
-
+    "DISP-008": CaseLabel(
+        case_id="DISP-008", expected_ruling="uphold_charge",
+        expected_waited_minutes=0, expected_fee_eligible=False, evidence_count=31,
+        rationale="A route- and time-matched active closure corroborates the significant detour. Fare components reconcile; no refund is warranted under the sample exception.",
+    ),
+    "DISP-009": CaseLabel(
+        case_id="DISP-009", expected_ruling="human_review",
+        expected_waited_minutes=0, expected_fee_eligible=False, evidence_count=32,
+        rationale="Two alert snapshots disagree about the same route and validity period. The records do not establish authority; one follow-up cannot resolve the material justification conflict.",
+    ),
 }
 
 

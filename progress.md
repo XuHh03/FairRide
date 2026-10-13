@@ -1,6 +1,19 @@
 # FairRide progress
 
-Updated 5 October 2026. This is a repository-based status snapshot. The example workflow has run locally; a live model provider has not been called.
+Updated 13 October 2026. This snapshot describes the Person A integration branch.
+
+## Current update
+
+- Evaluation v2 distinguishes autonomous rulings, appropriate/unnecessary referrals, and explicit setup/model/validation failures. Live tests require opt-in.
+- Eight fixtures now cover no-show charges and route deviations. DISP-008 is a justified closure detour; DISP-009 has conflicting closure snapshots and a bounded rebuttal.
+- Route policy v1.1 uses explicit route/time/status evidence. Final checks apply confirmed exceptions and reconcile fare components, rates, and totals.
+- Corrected DISP-005's fare difference to 693 cents and DISP-006's estimate to SGD 17.90. Examples and evaluation labels agree.
+- Verification: 70 offline tests pass; six live tests are skipped. Eight example workflows produce six final rulings and two appropriate referrals. Historical saved live results predate these changes; no new live calls were made.
+- See `docs/EVALUATION.md` and `docs/ROUTE_CASES.md` for interfaces and verification. Next: resolve the remaining no-show no-action gap and Judge follow-up context, then recreate the app environment, rehearse the UI, and explicitly evaluate a live provider.
+
+## Historical snapshot — 5 October 2026
+
+The sections below describe the earlier implementation, before the current additions.
 
 ## Done so far
 

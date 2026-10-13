@@ -90,7 +90,9 @@ def build_review_input(case: dict, policy: dict) -> ReviewInput:
                             policy_ids=["POLICY-002"]),
                 DerivedFact(id="FACT-005", value=facts["fare_difference_cents"], unit="SGD cents",
                             formula="(charged_fare - estimated_fare) * 100",
-                            evidence_ids=["TRIP-001", "FARE-005", "FARE-006"],
+                            evidence_ids=[case["trip_data"]["id"]] + [
+                                item["id"] for item in case["fare_items"]
+                                if item["component"] in ("total_charged", "estimated_total")],
                             policy_ids=["POLICY-004"]),
             ],
         )

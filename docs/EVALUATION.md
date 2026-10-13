@@ -4,7 +4,7 @@ Updated 13 October 2026. Evaluation measures correct autonomous resolution separ
 
 ## Labels and categories
 
-`evaluation.LABELS` holds expected outcomes outside model inputs. DISP-002 expects human review because its material entrance ambiguity and timer conflict remain unresolved. The other five cases expect their stated final ruling; human review is not an acceptable substitute.
+`evaluation.LABELS` holds expected outcomes outside model inputs. DISP-002 expects human review because its material entrance ambiguity and timer conflict remain unresolved. DISP-009 expects human review for conflicting route-closure snapshots. The other six cases expect their stated final ruling; human review is not an acceptable substitute.
 
 Each run has one category:
 
@@ -39,7 +39,7 @@ python3 evaluation.py --output /tmp/fairride-example-v2.json
 python3 -m unittest discover -s tests -v
 ```
 
-The first command runs hand-written examples only. It currently gives five correct final rulings and one appropriate referral: 83.3% autonomous resolution and 100% accuracy among the five final rulings. These are integration results, not evidence of live model accuracy.
+The first command runs hand-written examples only. It currently gives six correct final rulings and two appropriate referrals: 75% autonomous resolution and 100% accuracy among the six final rulings. These are integration results, not evidence of live model accuracy.
 
 Live evaluation requires explicit `--live` and configured credentials/model:
 

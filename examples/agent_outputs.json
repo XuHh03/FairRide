@@ -183,7 +183,7 @@
           "policy_ids": ["POLICY-003"]
         },
         {
-          "statement": "The fare was $31.00 but the app estimated $23.50 based on the planned route, a difference of $7.50.",
+          "statement": "The fare was $26.61 but the app estimated $19.68 based on the planned route, a difference of $6.93.",
           "evidence_ids": ["FARE-005", "FARE-006", "TRIP-001"],
           "policy_ids": ["POLICY-004"]
         }
@@ -219,8 +219,8 @@
     "judge_final_ruling": {
       "action": "final_ruling",
       "ruling": "partial_refund",
-      "proposed_action": {"amount_cents": 750, "currency": "SGD"},
-      "explanation": "The route deviation was 36.2%, exceeding the 15% policy threshold. The driver claimed traffic but no app alerts corroborate the claim. The fare difference is $7.50 (750 cents), which should be refunded to the rider.",
+      "proposed_action": {"amount_cents": 693, "currency": "SGD"},
+      "explanation": "The route deviation was 36.2%, exceeding the 15% policy threshold. The driver claimed traffic but no app alerts corroborate the claim. The fare difference is $6.93 (693 cents), which should be refunded to the rider.",
       "evidence_ids": ["ROUTE-001", "ROUTE-002", "FARE-005", "FARE-006", "CHAT-002", "EVENT-008"],
       "policy_ids": ["POLICY-001", "POLICY-002", "POLICY-003", "POLICY-004"],
       "confidence": 0.90
@@ -268,7 +268,7 @@
       ],
       "counterpoints": [
         {
-          "statement": "The rider was charged $21.50 when the app estimated $19.50, a $2.00 difference.",
+          "statement": "The rider was charged $21.50 when the app estimated $17.90, a $3.60 difference.",
           "evidence_ids": ["FARE-005", "FARE-006"],
           "policy_ids": ["POLICY-004"]
         }
@@ -340,6 +340,222 @@
       "evidence_ids": ["TRIP-001", "GPS-002", "GPS-004", "CHAT-002", "EVENT-006"],
       "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"],
       "confidence": 0.90
+    }
+  },
+  "DISP-008": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The charged fare exceeds the planned estimate by SGD 6.93.",
+          "evidence_ids": [
+            "TRIP-001",
+            "FARE-005",
+            "FARE-006"
+          ],
+          "policy_ids": [
+            "POLICY-004"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "A closure alert supports the recorded detour.",
+          "evidence_ids": [
+            "EVENT-008",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-003"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The alert records a closure on the planned segment at trip start.",
+          "evidence_ids": [
+            "EVENT-008"
+          ],
+          "policy_ids": [
+            "POLICY-003"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The actual route is significantly longer than the plan.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-002"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {
+        "amount_cents": 0,
+        "currency": "SGD"
+      },
+      "explanation": "The confirmed closure matches the planned route and trip time. The detour is justified under the sample exception, and fare components agree with the total. No refund is recommended.",
+      "evidence_ids": [
+        "EVENT-008",
+        "ROUTE-001",
+        "ROUTE-002",
+        "FARE-005"
+      ],
+      "policy_ids": [
+        "POLICY-003",
+        "POLICY-005"
+      ]
+    }
+  },
+  "DISP-009": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The charged fare exceeds the planned estimate by SGD 6.93.",
+          "evidence_ids": [
+            "TRIP-001",
+            "FARE-005",
+            "FARE-006"
+          ],
+          "policy_ids": [
+            "POLICY-004"
+          ]
+        },
+        {
+          "statement": "The rider-app snapshot contradicts the closure alert for the same route and time.",
+          "evidence_ids": [
+            "EVENT-008",
+            "EVENT-009"
+          ],
+          "policy_ids": [
+            "POLICY-006"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "A closure alert supports the recorded detour.",
+          "evidence_ids": [
+            "EVENT-008",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-003"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The alert records a closure on the planned segment at trip start.",
+          "evidence_ids": [
+            "EVENT-008"
+          ],
+          "policy_ids": [
+            "POLICY-003"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The actual route is significantly longer than the plan.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-002"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_rebuttal": {
+      "action": "request_rebuttal",
+      "question": "Can the supplied records establish which closure snapshot is authoritative for this route and trip time?",
+      "rebuttal_roles": [
+        "rider_advocate",
+        "driver_advocate"
+      ],
+      "explanation": "The closure records contradict each other, affecting whether a refund is justified.",
+      "evidence_ids": [
+        "EVENT-008",
+        "EVENT-009"
+      ],
+      "policy_ids": [
+        "POLICY-003",
+        "POLICY-006"
+      ]
+    },
+    "judge_human_review": {
+      "action": "human_review",
+      "explanation": "One follow-up did not resolve the conflicting closure snapshots. Refer this material route-justification uncertainty for human review.",
+      "evidence_ids": [
+        "EVENT-008",
+        "EVENT-009"
+      ],
+      "policy_ids": [
+        "POLICY-003",
+        "POLICY-006"
+      ]
+    },
+    "rider_rebuttal_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The alert snapshots disagree for the same route and time; neither source is identified as authoritative in the supplied records.",
+          "evidence_ids": [
+            "EVENT-008",
+            "EVENT-009"
+          ],
+          "policy_ids": [
+            "POLICY-003",
+            "POLICY-006"
+          ]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": [
+        "Which alert source is authoritative for this trip?"
+      ]
+    },
+    "driver_rebuttal_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The alert snapshots disagree for the same route and time; neither source is identified as authoritative in the supplied records.",
+          "evidence_ids": [
+            "EVENT-008",
+            "EVENT-009"
+          ],
+          "policy_ids": [
+            "POLICY-003",
+            "POLICY-006"
+          ]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": [
+        "Which alert source is authoritative for this trip?"
+      ]
     }
   }
 }

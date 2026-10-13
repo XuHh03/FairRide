@@ -4,7 +4,7 @@
     "trip_id": "TRIP-2026-10642",
     "filed_by": "rider",
     "dispute_type": "route_deviation",
-    "description": "Driver took a significantly longer route from Marina Bay Sands to Changi Airport. The app estimated $23.50 but I was charged $31.00. I asked the driver about the route and they said there was traffic, but I don't think that's true.",
+    "description": "Driver took a significantly longer route from Marina Bay Sands to Changi Airport. The app estimated $19.68 but I was charged $26.61. I asked the driver about the route and they said there was traffic, but I don't think that's true.",
     "filed_at": "2026-09-29T10:00:00+08:00",
     "status": "open",
     "id": "TICKET-001"
@@ -53,8 +53,8 @@
     },
     "start_time": "2026-09-28T14:00:00+08:00",
     "end_time": "2026-09-28T14:35:00+08:00",
-    "estimated_fare": 23.50,
-    "charged_fare": 31.00,
+    "estimated_fare": 19.68,
+    "charged_fare": 26.61,
     "fare_currency": "SGD",
     "id": "TRIP-001"
   },
@@ -96,8 +96,8 @@
     {"id": "FARE-002", "component": "distance_charge", "distance_km": 25.2, "rate_per_km": 0.55, "amount": 13.86, "currency": "SGD"},
     {"id": "FARE-003", "component": "time_charge", "duration_min": 35, "rate_per_min": 0.25, "amount": 8.75, "currency": "SGD"},
     {"id": "FARE-004", "component": "booking_fee", "amount": 0.50, "currency": "SGD"},
-    {"id": "FARE-005", "component": "total_charged", "amount": 31.00, "currency": "SGD", "note": "Sum of base + distance + time + booking. Rounded to nearest $0.10."},
-    {"id": "FARE-006", "component": "estimated_total", "amount": 23.50, "currency": "SGD", "note": "App estimate based on planned route (18.5km, 22min) at same fare rates."}
+    {"id": "FARE-005", "component": "total_charged", "amount": 26.61, "currency": "SGD", "note": "Sum of individually rounded components; cent precision, half-up rounding."},
+    {"id": "FARE-006", "component": "estimated_total", "amount": 19.68, "currency": "SGD", "breakdown": {"base_fare": 3.5, "distance_charge": 10.18, "time_charge": 5.5, "booking_fee": 0.5}, "note": "App estimate based on planned route (18.5km, 22min) at same fare rates."}
   ],
   "gps_telemetry": [
     {"timestamp": "2026-09-28T14:00:00+08:00", "lat": 1.2834, "lng": 103.8607, "speed_kmh": 0, "status": "trip_start", "id": "GPS-001"},
@@ -114,16 +114,16 @@
     {"timestamp": "2026-09-28T14:06:00+08:00", "sender": "rider", "type": "message", "content": "Are you sure? My app doesn't show any traffic alerts.", "id": "CHAT-003"},
     {"timestamp": "2026-09-28T14:07:00+08:00", "sender": "driver", "type": "message", "content": "Yes, I know this area well. Don't worry, we'll get there.", "id": "CHAT-004"},
     {"timestamp": "2026-09-28T14:30:00+08:00", "sender": "rider", "type": "message", "content": "This is taking much longer than expected. The fare is going to be way higher than the estimate.", "id": "CHAT-005"},
-    {"timestamp": "2026-09-28T14:36:00+08:00", "sender": "system", "type": "system", "content": "Trip completed. Total fare: $31.00. Estimated fare was $23.50. Difference: $7.50.", "id": "CHAT-006"}
+    {"timestamp": "2026-09-28T14:36:00+08:00", "sender": "system", "type": "system", "content": "Trip completed. Total fare: $26.61. Estimated fare was $19.68. Difference: $6.93.", "id": "CHAT-006"}
   ],
   "app_events": [
-    {"timestamp": "2026-09-28T13:55:00+08:00", "event_type": "booking_confirmed", "details": "Rider R-4502 booked trip TRIP-2026-10642 from Marina Bay Sands to Changi Airport T3. Estimated fare: $23.50. Estimated duration: 22 min.", "id": "EVENT-001"},
+    {"timestamp": "2026-09-28T13:55:00+08:00", "event_type": "booking_confirmed", "details": "Rider R-4502 booked trip TRIP-2026-10642 from Marina Bay Sands to Changi Airport T3. Estimated fare: $19.68. Estimated duration: 22 min.", "id": "EVENT-001"},
     {"timestamp": "2026-09-28T13:55:05+08:00", "event_type": "driver_assigned", "details": "Driver D-7821 (Lim Wei Ming, Toyota Vios SGP 5512 K) assigned. ETA 2 min.", "id": "EVENT-002"},
     {"timestamp": "2026-09-28T14:00:00+08:00", "event_type": "trip_started", "details": "Trip started. In-app routing engine assigned planned route via ECP (18.5 km).", "id": "EVENT-003"},
     {"timestamp": "2026-09-28T14:02:00+08:00", "event_type": "route_deviation_detected", "details": "GPS indicates vehicle deviated from planned route at waypoint 2. Vehicle heading west toward Nicoll Highway instead of east toward ECP.", "id": "EVENT-004"},
     {"timestamp": "2026-09-28T14:12:00+08:00", "event_type": "route_rejoined", "details": "Vehicle rejoined planned route at ECP junction. Total deviation distance: approximately 6.7 km additional.", "id": "EVENT-005"},
-    {"timestamp": "2026-09-28T14:35:00+08:00", "event_type": "trip_completed", "details": "Trip completed. Actual distance: 25.2 km (planned: 18.5 km). Actual duration: 35 min (estimated: 22 min). Fare charged: $31.00.", "id": "EVENT-006"},
-    {"timestamp": "2026-09-28T14:35:05+08:00", "event_type": "fare_breakdown_generated", "details": "Fare: base $3.50 + distance ($0.55/km x 25.2km = $13.86) + time ($0.25/min x 35min = $8.75) + booking $0.50 = $31.00. Estimated fare based on planned route: $23.50.", "id": "EVENT-007"},
+    {"timestamp": "2026-09-28T14:35:00+08:00", "event_type": "trip_completed", "details": "Trip completed. Actual distance: 25.2 km (planned: 18.5 km). Actual duration: 35 min (estimated: 22 min). Fare charged: $26.61.", "id": "EVENT-006"},
+    {"timestamp": "2026-09-28T14:35:05+08:00", "event_type": "fare_breakdown_generated", "details": "Fare: base $3.50 + distance ($0.55/km x 25.2km = $13.86) + time ($0.25/min x 35min = $8.75) + booking $0.50 = $26.61. Estimated fare based on planned route: $19.68.", "id": "EVENT-007"},
     {"timestamp": "2026-09-28T14:36:00+08:00", "event_type": "dispute_filed", "details": "Rider filed dispute: route deviation. Claims driver took longer route without justification. No traffic alerts were active on ECP at time of trip.", "id": "EVENT-008"}
   ]
 }
