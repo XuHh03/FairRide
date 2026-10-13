@@ -20,6 +20,8 @@ Run tests:
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
+Live tests are skipped unless `FAIRRIDE_RUN_LIVE_TESTS=1` and model credentials are configured. Run the offline evaluation with `python3 evaluation.py --output /tmp/fairride-example-v2.json`. See [evaluation scoring](docs/EVALUATION.md) for autonomous resolution, ruling accuracy, escalation/failure categories, and live-run instructions. Historical `evaluation_results.json` uses the older scoring definition.
+
 To enable **Live model**, set `FAIRRIDE_API_KEY` (or `OPENAI_API_KEY`) and `FAIRRIDE_MODEL`. `FAIRRIDE_BASE_URL` defaults to `https://api.openai.com/v1`; set it for another compatible provider. The client sends JSON-mode chat completion requests. Keep credentials in environment variables or deployment secrets, never in the repository. Model latency and token counts appear in the activity log when the provider returns usage data.
 
 ## Project map

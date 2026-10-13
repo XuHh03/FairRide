@@ -237,10 +237,10 @@ def _live_ready() -> bool:
     """Check if live model credentials are configured."""
     key = os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")
     model = os.getenv("FAIRRIDE_MODEL")
-    return bool(key and model)
+    return bool(key and model and os.getenv("FAIRRIDE_RUN_LIVE_TESTS") == "1")
 
 
-@unittest.skipUnless(_live_ready(), "No FAIRRIDE_API_KEY/FAIRRIDE_MODEL set; skipping live tests")
+@unittest.skipUnless(_live_ready(), "Live tests require credentials and FAIRRIDE_RUN_LIVE_TESTS=1")
 class LiveModeEvaluationTests(unittest.TestCase):
     """Run the full workflow against the live API and compare to labels.
 
@@ -255,10 +255,11 @@ class LiveModeEvaluationTests(unittest.TestCase):
         policy = _policy_for_case(case)
         result = run_review(case, policy)  # backend=None → ModelAgentBackend
         self.assertEqual(result.case_id, label.case_id)
+        self.assertIsNone(result.failure_category, msg=str(result.validation_issues))
 
         # If the pipeline routed to human_review, check if it's acceptable
         if result.status == "human_review":
-            if "human_review" in (label.expected_ruling,) + label.acceptable_alternatives:
+            if label.expected_ruling == "human_review":
                 return
             self.fail(
                 f"{label.case_id} routed to human_review but expected "

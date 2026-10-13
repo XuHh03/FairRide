@@ -25,6 +25,7 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
     case_id = case.get("dispute_ticket", {}).get("dispute_id", "unknown")
     activity: list[ActivityEntry] = []
     issues: list[str] = []
+    failure_category = None
     try:
         review = build_review_input(case, policy)
         agent = backend or ModelAgentBackend()
@@ -33,6 +34,7 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
         return WorkflowResult(
             case_id=case_id, status="human_review", activity_log=activity,
             judge_result=_human_review(reason), validation_issues=[reason],
+            failure_category="setup",
         )
 
     async def call_advocate(role: Role, question: str | None = None) -> AdvocateResult:
@@ -96,8 +98,14 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
             decision = await call_judge(rider, driver, rebuttals)
             if decision.action == "request_rebuttal":
                 issues.append("Judge requested a second rebuttal round")
+                failure_category = "validation"
         if decision.action == "final_ruling":
-            issues.extend(validate_final_ruling(case, policy, decision))
+            final_issues = validate_final_ruling(case, policy, decision)
+            material_issues = material_case_issues(case, policy)
+            # Evidence-based escalation is distinct from a malformed/invalid ruling.
+            if any(issue not in material_issues for issue in final_issues):
+                failure_category = "validation"
+            issues.extend(final_issues)
         else:
             issues.extend(material_case_issues(case, policy))
         if issues and decision.action != "human_review":
@@ -113,6 +121,7 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
         return WorkflowResult(
             case_id=case_id, status=status, activity_log=activity,
             judge_result=decision, validation_issues=issues,
+            failure_category=failure_category,
         )
     except Exception as exc:
         # A malformed model response or transport failure must not become a ruling.
@@ -127,6 +136,7 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
             case_id=case_id, status="human_review", activity_log=activity,
             judge_result=_human_review("Agent review could not be validated."),
             validation_issues=issues,
+            failure_category="validation" if isinstance(exc, ValueError) else "model",
         )
 
 

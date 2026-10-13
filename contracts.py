@@ -134,3 +134,4 @@ class WorkflowResult(Contract):
     activity_log: list[ActivityEntry]
     judge_result: JudgeResult
     validation_issues: list[str]
+    failure_category: Literal["setup", "model", "validation"] | None = None

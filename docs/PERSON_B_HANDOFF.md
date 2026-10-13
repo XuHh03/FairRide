@@ -1,5 +1,7 @@
 # Person B handoff — shared foundation v1.0
 
+Evaluation update (13 October 2026): `WorkflowResult` now has optional `failure_category` (`setup`, `model`, `validation`, or null). Preserve it when integrating the workflow; human-review status alone does not identify a successful evidence-based escalation. See [evaluation scoring v2](EVALUATION.md) for definitions and tests.
+
 Updated 5 October 2026. This began as the shared-foundation handoff and now includes the implemented no-show review path. See `progress.md` for the latest status.
 
 ## Implemented by Person A's shared-foundation task

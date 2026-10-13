@@ -5,9 +5,9 @@ outcomes. Both the test suite and the CLI evaluation harness import from
 here to avoid duplication.
 
 Usage (CLI):
-    python evaluate.py                  # example mode only
-    python evaluate.py --live           # also run live mode
-    python evaluate.py --live --runs 3  # 3 live runs per case
+    python evaluation.py                  # example mode only
+    python evaluation.py --live           # also run live mode
+    python evaluation.py --live --runs 3  # 3 live runs per case
 """
 
 import argparse
@@ -50,23 +50,16 @@ class CaseLabel:
 LABELS: dict[str, CaseLabel] = {
     "DISP-002": CaseLabel(
         case_id="DISP-002",
-        expected_ruling="uphold_charge",
+        expected_ruling="human_review",
         expected_waited_minutes=8.0,
         expected_fee_eligible=True,
         rationale=(
-            "Driver waited 8 minutes (meets no-show threshold). "
-            "Entrance ambiguity and EVENT-008 timer conflict exist but are "
-            "not material enough to reverse the charge; Judge upholds."
+            "The time threshold is met, but the designated entrance remains "
+            "unresolved and EVENT-008 conflicts with the sample policy. "
+            "The current material-evidence checks require human review."
         ),
         evidence_count=26,
-        notes=(
-            "Material ambiguities: (1) designated entrance unresolved, "
-            "(2) EVENT-008 conflicts with 8-min threshold. The live API "
-            "returned uphold_charge with confidence 0.90 on one run, but "
-            "the model may also legitimately choose human_review given "
-            "the unresolved entrance ambiguity."
-        ),
-        acceptable_alternatives=("human_review",),
+        notes="Evidence-based escalation is appropriate; setup/model/validation failures are not.",
     ),
     "DISP-003": CaseLabel(
         case_id="DISP-003",
@@ -79,7 +72,6 @@ LABELS: dict[str, CaseLabel] = {
             "Charge is invalid; Judge reverses and refunds full S$5.00."
         ),
         evidence_count=19,
-        acceptable_alternatives=("human_review",),
         notes=(
             "The model sometimes routes to human_review instead of making "
             "a ruling. An uphold_charge ruling would be a true failure "
@@ -99,7 +91,6 @@ LABELS: dict[str, CaseLabel] = {
             "zero messages. Clear driver-favorable case; Judge upholds."
         ),
         evidence_count=26,
-        acceptable_alternatives=("human_review",),
         notes=(
             "The model sometimes over-applies POLICY-005 (GPS does not "
             "establish rider location) and routes to human_review despite "
@@ -120,7 +111,6 @@ LABELS: dict[str, CaseLabel] = {
             "Judge orders partial refund of the fare difference."
         ),
         evidence_count=31,
-        acceptable_alternatives=("human_review",),
         notes=(
             "Route deviation case. An uphold_charge ruling would be a true "
             "failure (validate_final_ruling rejects upholding when deviation "
@@ -139,7 +129,6 @@ LABELS: dict[str, CaseLabel] = {
             "No refund is warranted. Judge upholds the charge (0 cents refund)."
         ),
         evidence_count=25,
-        acceptable_alternatives=("human_review",),
         notes=(
             "HELD-OUT case — prompts were never tuned for below-threshold "
             "route deviation. There is no prompt guidance for route deviation "
@@ -161,7 +150,6 @@ LABELS: dict[str, CaseLabel] = {
             "was not met. Judge reverses and refunds full S$5.00 (500 cents)."
         ),
         evidence_count=17,
-        acceptable_alternatives=("human_review",),
         notes=(
             "HELD-OUT case — tests whether the model follows fee_eligible "
             "guidance even when the narrative suggests the rider deserved "
@@ -170,6 +158,7 @@ LABELS: dict[str, CaseLabel] = {
             "when fee_eligible is False)."
         ),
     ),
+
 }
 
 
@@ -186,9 +175,9 @@ class CaseMetrics:
     status: str               # "completed" or "human_review"
     ruling: str | None        # actual ruling (or action if not final_ruling)
     expected_ruling: str
-    ruling_match: bool       # matches expected or acceptable alternative
+    ruling_match: bool       # correct final ruling AND amount; never an escalation
     amount_cents: int | None
-    amount_correct: bool
+    amount_correct: bool | None  # None when no final amount exists
     confidence: float | None
     validation_issues: list[str]
     citation_error_count: int
@@ -198,6 +187,8 @@ class CaseMetrics:
     judge_tokens: int
     total_tokens: int
     judge_explanation: str
+    category: str             # correct/incorrect ruling, appropriate/unnecessary escalation, operational_failure
+    failure_category: str | None = None
     error: str | None = None
 
 
@@ -264,12 +255,13 @@ def run_single_case(
             status="error", ruling=None,
             expected_ruling=label.expected_ruling,
             ruling_match=False, amount_cents=None,
-            amount_correct=False, confidence=None,
+            amount_correct=None, confidence=None,
             validation_issues=[f"Exception: {exc}"],
             citation_error_count=0, rebuttal_used=False,
             wall_duration_ms=0, advocate_tokens=0,
             judge_tokens=0, total_tokens=0,
-            judge_explanation="", error=str(exc),
+            judge_explanation="", category="operational_failure",
+            failure_category="setup", error=str(exc),
         )
 
     judge = result.judge_result
@@ -277,19 +269,32 @@ def run_single_case(
 
     # Ruling match check
     acceptable = {label.expected_ruling} | set(label.acceptable_alternatives)
-    ruling_match = ruling in acceptable
+    ruling_match = (result.failure_category is None and result.status == "completed"
+                    and judge.action == "final_ruling" and ruling in acceptable)
 
     # Amount correctness
     amount = judge.proposed_action.amount_cents if judge.proposed_action else None
     charge = charged_cents(case)
-    if ruling == "uphold_charge":
+    if ruling in ("uphold_charge", "no_action"):
         amount_correct = amount == 0
     elif ruling == "reverse_charge":
         amount_correct = amount == charge
     elif ruling == "partial_refund":
         amount_correct = amount is not None and 0 < amount < charge
     else:
-        amount_correct = True  # human_review: no amount to verify
+        amount_correct = None  # No final ruling means no amount to score.
+
+    if result.failure_category is not None:
+        category = "operational_failure"
+        ruling_match = False
+        amount_correct = None
+    elif judge.action == "final_ruling" and result.status == "completed":
+        ruling_match = ruling_match and amount_correct is True
+        category = "correct_ruling" if ruling_match else "incorrect_ruling"
+    else:
+        category = ("appropriate_escalation" if label.expected_ruling == "human_review"
+                    else "unnecessary_escalation")
+        ruling_match = False
 
     # Tokens and timing
     adv_tokens, judge_tokens, total_tokens = _extract_token_usage(result.activity_log)
@@ -314,6 +319,8 @@ def run_single_case(
         judge_tokens=judge_tokens,
         total_tokens=total_tokens,
         judge_explanation=judge.explanation,
+        category=category, failure_category=result.failure_category,
+        error="; ".join(result.validation_issues) if result.failure_category else None,
     )
 
 
@@ -323,12 +330,20 @@ def run_single_case(
 
 @dataclass
 class ModeSummary:
-    """Aggregate metrics for one mode across all cases."""
+    """Rates use different denominators; unavailable accuracy serializes as null."""
     mode: str
     total_cases: int
+    final_rulings: int
     ruling_matches: int
-    ruling_match_rate: float
-    abstentions: int          # routed to human_review
+    ruling_accuracy: float | None
+    autonomous_resolution_rate: float
+    clear_cases: int
+    unnecessary_escalations: int
+    unnecessary_escalation_rate: float | None
+    appropriate_escalations: int
+    operational_failures: int
+    operational_failure_rate: float
+    abstentions: int
     abstention_rate: float
     amount_errors: int
     citation_errors: int
@@ -339,34 +354,30 @@ class ModeSummary:
 
 
 def summarize(metrics: list[CaseMetrics], mode: str) -> ModeSummary:
-    """Aggregate a list of per-case metrics into a mode-level summary."""
     n = len(metrics)
-    if n == 0:
-        return ModeSummary(mode, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0.0, 0, None)
-
-    matches = sum(1 for m in metrics if m.ruling_match)
-    abstentions = sum(1 for m in metrics if m.status == "human_review")
-    amount_errors = sum(1 for m in metrics if not m.amount_correct)
-    citation_errors = sum(m.citation_error_count for m in metrics)
-    rebuttals = sum(1 for m in metrics if m.rebuttal_used)
-    avg_wall = sum(m.wall_duration_ms for m in metrics) / n
-    total_tokens = sum(m.total_tokens for m in metrics)
-
+    finals = sum(m.category in ("correct_ruling", "incorrect_ruling") for m in metrics)
+    matches = sum(m.ruling_match for m in metrics)
+    clear = sum(m.expected_ruling != "human_review" for m in metrics)
+    unnecessary = sum(m.category == "unnecessary_escalation" for m in metrics)
+    appropriate = sum(m.category == "appropriate_escalation" for m in metrics)
+    failures = sum(m.category == "operational_failure" for m in metrics)
+    abstentions = unnecessary + appropriate
     confidences = [m.confidence for m in metrics if m.confidence is not None]
-    avg_conf = sum(confidences) / len(confidences) if confidences else None
-
     return ModeSummary(
-        mode=mode, total_cases=n,
-        ruling_matches=matches,
-        ruling_match_rate=matches / n,
-        abstentions=abstentions,
-        abstention_rate=abstentions / n,
-        amount_errors=amount_errors,
-        citation_errors=citation_errors,
-        rebuttals_used=rebuttals,
-        avg_wall_ms=avg_wall,
-        total_tokens=total_tokens,
-        avg_confidence=avg_conf,
+        mode=mode, total_cases=n, final_rulings=finals, ruling_matches=matches,
+        ruling_accuracy=matches / finals if finals else None,
+        autonomous_resolution_rate=finals / n if n else 0,
+        clear_cases=clear, unnecessary_escalations=unnecessary,
+        unnecessary_escalation_rate=unnecessary / clear if clear else None,
+        appropriate_escalations=appropriate,
+        operational_failures=failures, operational_failure_rate=failures / n if n else 0,
+        abstentions=abstentions, abstention_rate=abstentions / n if n else 0,
+        amount_errors=sum(m.amount_correct is False for m in metrics),
+        citation_errors=sum(m.citation_error_count for m in metrics),
+        rebuttals_used=sum(m.rebuttal_used for m in metrics),
+        avg_wall_ms=sum(m.wall_duration_ms for m in metrics) / n if n else 0,
+        total_tokens=sum(m.total_tokens for m in metrics),
+        avg_confidence=sum(confidences) / len(confidences) if confidences else None,
     )
 
 
@@ -374,8 +385,8 @@ def summarize(metrics: list[CaseMetrics], mode: str) -> ModeSummary:
 # Console report
 # ---------------------------------------------------------------------------
 
-def _fmt_pct(val: float) -> str:
-    return f"{val * 100:.0f}%"
+def _fmt_pct(val: float | None) -> str:
+    return "N/A" if val is None else f"{val * 100:.0f}%"
 
 
 def print_report(metrics: list[CaseMetrics], summaries: list[ModeSummary]) -> None:
@@ -392,7 +403,7 @@ def print_report(metrics: list[CaseMetrics], summaries: list[ModeSummary]) -> No
     header = (
         f"  {'Case':<10} {'Mode':<8} {'Run':<4} "
         f"{'Ruling':<16} {'Expected':<16} {'Match':<6} "
-        f"{'Amount':<8} {'Conf':<6} {'Wall ms':<10} {'Tokens':<8} {'Rebut':<6}"
+        f"{'Amount':<8} {'Conf':<6} {'Wall ms':<10} {'Tokens':<8} {'Rebut':<6} {'Category'}"
     )
     print(header)
     print("-" * 100)
@@ -402,13 +413,13 @@ def print_report(metrics: list[CaseMetrics], summaries: list[ModeSummary]) -> No
         expected_str = m.expected_ruling[:14]
         amount_str = str(m.amount_cents) if m.amount_cents is not None else "-"
         conf_str = f"{m.confidence:.2f}" if m.confidence is not None else "-"
-        match_str = "Y" if m.ruling_match else "N"
+        match_str = "Y" if m.ruling_match else "-" if "escalation" in m.category else "N"
         rebut_str = "Y" if m.rebuttal_used else "N"
         print(
             f"  {m.case_id:<10} {m.mode:<8} {m.run:<4} "
             f"{ruling_str:<16} {expected_str:<16} {match_str:<6} "
             f"{amount_str:<8} {conf_str:<6} {m.wall_duration_ms:<10.0f} "
-            f"{m.total_tokens:<8} {rebut_str:<6}"
+            f"{m.total_tokens:<8} {rebut_str:<6} {m.category}"
         )
 
     print()
@@ -418,7 +429,11 @@ def print_report(metrics: list[CaseMetrics], summaries: list[ModeSummary]) -> No
         conf_str = f"{s.avg_confidence:.2f}" if s.avg_confidence is not None else "-"
         print(f"  [{s.mode}]")
         print(f"    Cases:              {s.total_cases}")
-        print(f"    Ruling match rate:  {_fmt_pct(s.ruling_match_rate)} ({s.ruling_matches}/{s.total_cases})")
+        print(f"    Autonomous resolution: {_fmt_pct(s.autonomous_resolution_rate)} ({s.final_rulings}/{s.total_cases})")
+        print(f"    Ruling accuracy:    {_fmt_pct(s.ruling_accuracy)} ({s.ruling_matches}/{s.final_rulings})")
+        print(f"    Unnecessary escalation: {_fmt_pct(s.unnecessary_escalation_rate)} ({s.unnecessary_escalations}/{s.clear_cases} clear cases)")
+        print(f"    Operational failures: {_fmt_pct(s.operational_failure_rate)} ({s.operational_failures}/{s.total_cases})")
+        print(f"    Appropriate escalations: {s.appropriate_escalations}")
         print(f"    Abstention rate:    {_fmt_pct(s.abstention_rate)} ({s.abstentions}/{s.total_cases})")
         print(f"    Amount errors:      {s.amount_errors}")
         print(f"    Citation errors:    {s.citation_errors}")
@@ -473,7 +488,7 @@ def main() -> None:
     for case_id in LABELS:
         m = run_single_case(case_id, "example", policy=None, run=1)
         example_metrics.append(m)
-        status_icon = "OK" if m.ruling_match else "FAIL"
+        status_icon = m.category
         print(f"  {case_id}: {m.ruling} (expected {m.expected_ruling}) [{status_icon}]")
 
     all_metrics.extend(example_metrics)
@@ -493,7 +508,7 @@ def main() -> None:
             for case_id in LABELS:
                 m = run_single_case(case_id, "live", policy=None, run=run_num)
                 live_metrics.append(m)
-                status_icon = "OK" if m.ruling_match else "FAIL"
+                status_icon = m.category
                 print(f"  {case_id}: {m.ruling} (expected {m.expected_ruling}) [{status_icon}] "
                       f"({m.wall_duration_ms:.0f}ms, {m.total_tokens} tokens)")
 
@@ -509,6 +524,7 @@ def main() -> None:
     # --- JSON output ---
     output_path = Path(args.output)
     report_data = {
+        "evaluation_version": "2.0",
         "cases": [asdict(m) for m in all_metrics],
         "summaries": [asdict(s) for s in summaries],
     }
