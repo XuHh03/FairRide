@@ -82,3 +82,11 @@ The user supplied a separate live-test transcript on 14 October 2026: all eleven
 ## Regression coverage
 
 `tests/test_evaluation_scoring.py` verifies correct and incorrect final rulings, clear/ambiguous escalation, missing credentials, model/schema/citation/amount failures, separate metric denominators, all-failed batches, empty summaries, and console N/A behavior.
+
+## Pre-merge review — 14 October 2026
+
+Three live runs of `qwen3.6:35b` passed 32 of 33 strict case checks. Nine checks were mandatory policy referrals with no model calls; 24 exercised the agents. One DISP-002 advocate response exceeded the 1500-character guard and was rejected. Eight Judge decisions required semantic correction; none of the accepted final refunds differed from their fixed expected amounts. All eleven hand-written example UI flows passed.
+
+Full activity was captured locally to inspect rejected Judge responses and cited claims. The audit found incorrect prose even when the final decision was correct: DISP-004's Judge misstated its waiting timeline, DISP-010's advocate used the wrong billable distance, and route explanations retained contradictory intermediate calculations. Some advocates also invented contact obligations or misstated the justified-and-agreed route rule. These are response-quality blockers; PR #2 has not been merged.
+
+The independent code review found and verified two fixes before these runs: safety phrases/app events must trigger referral, and wait-fact provenance must include the GPS evidence that caps physical waiting time. The public summary in `evaluations/pr2-review-2026-10-14.json` records outcomes, rejected structured decisions and source-linked prose findings without raw model discourse. The historical `evaluation_results.json` remains untouched.

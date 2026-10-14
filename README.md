@@ -39,7 +39,7 @@ For repeated measurements and a saved report:
 .venv/bin/python evaluation.py --live --runs 3 --output /tmp/fairride-live-regression.json
 ```
 
-The CLI produces a report; use the unit test for a pass/fail gate. A user-run live batch matched all eleven case expectations, with Judge corrections on three cases; see [progress](progress.md). One batch does not establish production accuracy, and factual support for every generated sentence still needs review.
+The CLI produces a report; use the unit test for a pass/fail gate. The latest three-run review passed 32 of 33 case checks, with one rejected overlong advocate response. All accepted final amounts matched their expected values, but some generated prose contained factual errors; see [the review report](evaluations/pr2-review-2026-10-14.json) and [progress](progress.md). These synthetic cases do not establish production accuracy.
 
 ## Policy and implementation
 
