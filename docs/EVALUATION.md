@@ -6,6 +6,8 @@ Updated 14 October 2026. Policy reference: supplied v2.1. Evaluation measures co
 
 `evaluation.LABELS` holds expected outcomes outside model inputs. DISP-005, DISP-008 and DISP-009 require human review because extra distance exceeds 2 km. DISP-012 expects human review for conflicting historical traffic records after one bounded rebuttal. The other seven cases expect a validated decision and amount; blanket human review is not accepted for clear cases. DISP-002 now meets the selected five-minute scheduled-pickup rule and contact obligations.
 
+Refund amounts, separate goodwill credits and refund bases are fixed expected labels. Scoring does not reuse the application's `policy_outcome` calculation as its answer oracle. The report includes these expectations and the configured model name; expected labels are never sent to agents.
+
 Each run has one category:
 
 - `correct_ruling`: a validated final ruling and amount match the expected outcome.
@@ -17,6 +19,8 @@ Each run has one category:
 `WorkflowResult.failure_category` is an additive optional field: `setup`, `model`, `validation`, or null. Null means no technical/validation failure was recorded. A known material-evidence issue can legitimately cause human review without this field being set. Wrong amounts, unknown citations, malformed responses, and repeated rebuttal requests are validation failures. Scoring reads this field rather than parsing the explanation text.
 
 Operational failures take precedence over the expected label. Even a failure on the ambiguous case must not count as an appropriate referral.
+
+Unsupported Judge referrals on cases with complete evidence and no policy gate fail validation. The live backend gets one bounded decision correction first. Explicit confidence below the policy requirement or material uncertainty remains a referral; generic complexity, an allowed boundary, or an invented threshold is insufficient. Persistent incorrect decisions are operational failures rather than successful human-review outcomes.
 
 ## Metrics and denominators
 
@@ -53,7 +57,27 @@ Live unit tests additionally require `FAIRRIDE_RUN_LIVE_TESTS=1`. Credentials in
 FAIRRIDE_RUN_LIVE_TESTS=1 python3 -m unittest discover -s tests -v
 ```
 
+To run only the evaluation regression suite from the repository root:
+
+```bash
+FAIRRIDE_RUN_LIVE_TESTS=1 .venv/bin/python -m unittest discover -s tests -p test_evaluation.py -v
+```
+
+This makes paid model calls when credentials and `FAIRRIDE_MODEL` are available. Without them the live batch is skipped; inspect the test output before claiming a live pass. Seven clear cases must return their exact expected decision and fixed refund/credit/basis. Mandatory confidence referrals remain safe in production but fail the clear-case regression expectation. Required policy referrals and the ambiguous traffic case must return human review. Setup/model/schema/citation/decision failures fail the batch.
+
+The live unit-test command prints each case number out of eleven, its expected ruling, current workflow stage, and a PASS/FAIL result with ruling, refund, elapsed time and token count. Stage messages are flushed immediately while the review runs, including advocate analysis, Judge review, rebuttal, decision correction and final validation. Mandatory referrals skip agent stages. Failures print their validation issues and remain unittest failures; no artificial completion percentage is shown for individual model calls.
+
+For repeated measurements and a saved report:
+
+```bash
+.venv/bin/python evaluation.py --live --runs 3 --output /tmp/fairride-live-regression.json
+```
+
+This CLI is a report generator, not a pass/fail regression gate; its exit status does not indicate that every case matched. Review case outcomes, autonomous resolution, operational failures and the saved model name. DISP-005, DISP-008 and DISP-009 are referred before model calls, so they exercise policy safeguards rather than model quality. Wording may vary across runs; exact prose is not compared. Automated checks validate schema, source existence, precedents and policy-constrained outputs, but do not fully establish factual support for every sentence. Inspect a sample of arguments/explanations manually, especially after changing models or prompts.
+
 The tracked `evaluation_results.json` predates the supplied policy v2.1 migration. Its blanket-acceptance match rate must not be compared to the new accuracy definition. It is preserved as a historical run; no new paid evaluation was performed for this change.
+
+The user supplied a separate live-test transcript on 14 October 2026: all eleven case checks passed, with Judge corrections on DISP-002, DISP-004 and DISP-011. Two mock-harness checks then failed because the skip attribute was absent in live-enabled mode; both were fixed and reverified without paid calls. The historical JSON was not replaced by that terminal transcript. Repeat runs and claim-support review are still needed.
 
 ## Regression coverage
 

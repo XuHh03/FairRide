@@ -15,13 +15,14 @@ import json
 import os
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 from case_data import load_case, load_policy, policy_for_case
-from checks import charged_cents, material_case_issues, no_show_facts, validate_final_ruling, policy_outcome
+from checks import material_case_issues, no_show_facts, validate_final_ruling
 from contracts import WorkflowResult
 from evidence import build_evidence_index, validate_references
 from workflow import run_review
@@ -45,27 +46,35 @@ class CaseLabel:
     evidence_count: int
     notes: str = ""
     acceptable_alternatives: tuple = ()
+    expected_refund_cents: int | None = None
+    expected_goodwill_credit_cents: int | None = None
+    expected_refund_basis: str | None = None
 
 
 LABELS: dict[str, CaseLabel] = {
     "DISP-002": CaseLabel(case_id="DISP-002", expected_ruling="uphold_charge",
         expected_waited_minutes=6.0, expected_fee_eligible=True,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26,
+        expected_refund_cents=0, expected_goodwill_credit_cents=0, expected_refund_basis="cancellation_fee"),
     "DISP-003": CaseLabel(case_id="DISP-003", expected_ruling="reverse_charge",
         expected_waited_minutes=4.0, expected_fee_eligible=False,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=19),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=19,
+        expected_refund_cents=500, expected_goodwill_credit_cents=0, expected_refund_basis="cancellation_fee"),
     "DISP-004": CaseLabel(case_id="DISP-004", expected_ruling="uphold_charge",
         expected_waited_minutes=9.0, expected_fee_eligible=True,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26,
+        expected_refund_cents=0, expected_goodwill_credit_cents=0, expected_refund_basis="cancellation_fee"),
     "DISP-005": CaseLabel(case_id="DISP-005", expected_ruling="human_review",
         expected_waited_minutes=0, expected_fee_eligible=False,
         rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=32),
     "DISP-006": CaseLabel(case_id="DISP-006", expected_ruling="partial_refund",
         expected_waited_minutes=0, expected_fee_eligible=False,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26,
+        expected_refund_cents=110, expected_goodwill_credit_cents=0, expected_refund_basis="excess_distance_fare"),
     "DISP-007": CaseLabel(case_id="DISP-007", expected_ruling="reverse_charge",
         expected_waited_minutes=5.0, expected_fee_eligible=False,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=17),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=17,
+        expected_refund_cents=500, expected_goodwill_credit_cents=0, expected_refund_basis="cancellation_fee"),
     "DISP-008": CaseLabel(case_id="DISP-008", expected_ruling="human_review",
         expected_waited_minutes=0, expected_fee_eligible=False,
         rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=32),
@@ -74,10 +83,12 @@ LABELS: dict[str, CaseLabel] = {
         rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=34),
     "DISP-010": CaseLabel(case_id="DISP-010", expected_ruling="partial_refund",
         expected_waited_minutes=0, expected_fee_eligible=False,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=20),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=20,
+        expected_refund_cents=83, expected_goodwill_credit_cents=0, expected_refund_basis="excess_distance_fare"),
     "DISP-011": CaseLabel(case_id="DISP-011", expected_ruling="uphold_charge",
         expected_waited_minutes=0, expected_fee_eligible=False,
-        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=20),
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=20,
+        expected_refund_cents=0, expected_goodwill_credit_cents=0, expected_refund_basis="excess_distance_fare"),
     "DISP-012": CaseLabel(case_id="DISP-012", expected_ruling="human_review",
         expected_waited_minutes=0, expected_fee_eligible=False,
         rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=21),
@@ -157,6 +168,7 @@ def run_single_case(
     mode: str,
     policy: dict | None = None,
     run: int = 1,
+    *, on_progress: Callable[[str], None] | None = None,
 ) -> CaseMetrics:
     """Run one case and collect metrics."""
     case = load_case(case_id)
@@ -170,7 +182,8 @@ def run_single_case(
         backend = None  # ModelAgentBackend (live)
 
     try:
-        result = run_review(case, policy, backend)
+        progress_options = {"on_progress": on_progress} if on_progress is not None else {}
+        result = run_review(case, policy, backend, **progress_options)
     except Exception as exc:
         return CaseMetrics(
             case_id=case_id, mode=mode, run=run,
@@ -196,13 +209,10 @@ def run_single_case(
 
     # Amount correctness
     amount = judge.proposed_action.amount_cents if judge.proposed_action else None
-    charge = charged_cents(case)
-    if ruling in ("uphold_charge", "no_action"):
-        amount_correct = amount == 0
-    elif ruling == "reverse_charge":
-        amount_correct = amount == charge
-    elif ruling == "partial_refund":
-        amount_correct = amount == policy_outcome(case, policy)[1]
+    if judge.action == "final_ruling":
+        amount_correct = (amount == label.expected_refund_cents
+                          and judge.proposed_action.goodwill_credit_cents == label.expected_goodwill_credit_cents
+                          and judge.proposed_action.refund_basis == label.expected_refund_basis)
     else:
         amount_correct = None  # No final ruling means no amount to score.
 
@@ -447,6 +457,11 @@ def main() -> None:
     output_path = Path(args.output)
     report_data = {
         "evaluation_version": "2.0",
+        "model": os.getenv("FAIRRIDE_MODEL") if args.live else None,
+        "expected_outcomes": {case_id: {"ruling": label.expected_ruling,
+            "refund_cents": label.expected_refund_cents,
+            "goodwill_credit_cents": label.expected_goodwill_credit_cents,
+            "refund_basis": label.expected_refund_basis} for case_id, label in LABELS.items()},
         "cases": [asdict(m) for m in all_metrics],
         "summaries": [asdict(s) for s in summaries],
     }
