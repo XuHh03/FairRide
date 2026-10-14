@@ -1,6 +1,23 @@
 # FairRide progress
 
-Updated 5 October 2026. This is a repository-based status snapshot. The example workflow has run locally; a live model provider has not been called.
+Updated 14 October 2026. Current work follows the supplied v2.1 reference on the Person A integration branch.
+
+## Current update
+
+- Active source-linked v2.1 policies replace archived sample policies. No-show fees require five physical minutes no earlier than scheduled pickup, verified presence, and both message and call. Invalid charges cannot survive as `no_action`; goodwill credit is separate and requires evidence of driver no-show.
+- Route refunds use additional kilometres and excess-distance fare. Historical traffic, timely notification and consent are checked separately. Justified unnotified detours are referred until the partial formula is confirmed.
+- Shared safety, value, route-distance and fraud/confidence gates prevent prohibited rulings. Missing consent and explicit refusal never count as agreement. Repeated no-show history flags manual account review without executing restrictions.
+- Contract v2.0 adds confidence and refund/credit fields. The second Judge receives its original assessment and question; Python allows one rebuttal round.
+- Live-response handling now resolves declared fact citations to their recorded sources, shares one schema/citation correction retry, and permits one Judge policy-validation correction on clear cases. Persistent response errors are distinguished from evidence-based referrals. Statements have a 1500-character runaway guard; prompts focus on distinct material points without imposing a sentence count.
+- The Streamlit app shows live workflow progress, corrections and citation mappings. Regression tests print case/stage progress and compare exact rulings, refunds, credits and bases against fixed labels outside model input.
+- Verification: 109 offline tests pass, one live batch skipped; all eleven example UI flows pass. After an earlier user-run all-pass batch, three new `qwen3.6:35b` runs passed 32/33 checks. Nine were policy-only referrals and 24 exercised agents. DISP-002 failed its length guard once; eight Judge responses were corrected. No incorrect accepted final amounts were found, but the prose audit found incorrect wait times, invented obligations and conflicting arithmetic. PR #2 remains unmerged pending response-quality work. See `evaluations/pr2-review-2026-10-14.json`.
+- Pre-merge review fixed two verified defects: safety indicators such as car accidents, threats and explicit app safety events now refer before agent calls; the wait fact cites consumed GPS evidence and accurately describes the departure cap.
+- Setup and Person B handoff reflect actual interfaces. Remaining: inspect factual support and initial Judge errors, repeat live evaluation for consistency, confirm partial-refund formula and confidence calibration, and add real historical traffic integration if required.
+- Read `docs/POLICY_V2_1_SPEC.md`, `docs/EVALUATION.md` and `docs/ROUTE_CASES.md`. Saved evaluation results and the historical notes below describe earlier behavior.
+
+## Historical snapshot — 5 October 2026
+
+The sections below describe the earlier implementation, before the current additions.
 
 ## Done so far
 

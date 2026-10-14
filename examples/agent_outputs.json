@@ -1,124 +1,1303 @@
 {
-  "rider_advocate": {
-    "role": "rider_advocate",
-    "claims": [
-      {
-        "statement": "The rider reports waiting at the lobby; the supplied records do not independently establish the rider location.",
-        "evidence_ids": [
-          "TICKET-001"
-        ],
-        "policy_ids": [
-          "POLICY-005"
-        ]
-      }
-    ],
-    "counterpoints": [
-      {
-        "statement": "Recorded driver arrival and cancellation span eight minutes, meeting the sample time condition.",
-        "evidence_ids": [
-          "TRIP-001",
-          "GPS-005",
-          "GPS-008"
-        ],
-        "policy_ids": [
-          "POLICY-001",
-          "POLICY-003"
-        ]
-      }
-    ],
-    "unanswered_questions": [
-      "Was a specific physical entrance designated and communicated to the rider?"
-    ]
-  },
-  "driver_advocate": {
-    "role": "driver_advocate",
-    "claims": [
-      {
-        "statement": "GPS records place the driver at the recorded pickup coordinates at 08:43; an app event also records arrival.",
-        "evidence_ids": [
-          "GPS-005",
-          "EVENT-004"
-        ],
-        "policy_ids": [
-          "POLICY-005"
-        ]
-      },
-      {
-        "statement": "The records show a driver call attempt that was unanswered.",
-        "evidence_ids": [
-          "CHAT-003",
-          "EVENT-007"
-        ],
-        "policy_ids": [
-          "POLICY-005"
-        ]
-      }
-    ],
-    "counterpoints": [
-      {
-        "statement": "The five-minute timer-expiry event says a fee is applicable, while the sample policy uses an eight-minute threshold.",
-        "evidence_ids": [
-          "EVENT-008"
-        ],
-        "policy_ids": [
-          "POLICY-002",
-          "POLICY-003"
-        ]
-      }
-    ],
-    "unanswered_questions": [
-      "Can the case records clarify the designated entrance and the conflicting timer description?"
-    ]
-  },
-  "judge_rebuttal": {
-    "action": "request_rebuttal",
-    "question": "Do the existing records identify a designated physical pickup entrance, beyond the lobby description and coordinates?",
-    "rebuttal_roles": [
-      "rider_advocate",
-      "driver_advocate"
-    ],
-    "explanation": "The driver location is recorded, but the disputed entrance remains unresolved.",
-    "evidence_ids": [
-      "TICKET-001",
-      "TRIP-001",
-      "CHAT-001",
-      "GPS-005"
-    ],
-    "policy_ids": [
-      "POLICY-005",
-      "POLICY-006"
-    ]
-  },
-  "judge_human_review": {
-    "action": "human_review",
-    "explanation": "Refer this case for review if the designated entrance remains materially unresolved after the follow-up. The event description also conflicts with the sample threshold.",
-    "evidence_ids": [
-      "TICKET-001",
-      "TRIP-001",
-      "EVENT-008"
-    ],
-    "policy_ids": [
-      "POLICY-002",
-      "POLICY-003",
-      "POLICY-005",
-      "POLICY-006"
-    ]
-  },
-  "judge_final_ruling": {
-    "action": "final_ruling",
-    "ruling": "uphold_charge",
-    "proposed_action": {
-      "amount_cents": 0,
-      "currency": "SGD"
+  "DISP-002": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Recorded driver location and contacts should be assessed rather than assuming the driver was absent.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "GPS-006",
+            "GPS-007",
+            "GPS-008",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "CHAT-006",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007",
+            "EVENT-008",
+            "EVENT-009",
+            "EVENT-010"
+          ],
+          "policy_ids": [
+            "POLICY-2.1",
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
     },
-    "explanation": "Format example only: an upheld charge recommends zero refund cents. This is not an expected answer for DISP-002; pickup ambiguity and the conflicting event still require assessment.",
-    "evidence_ids": [
-      "TRIP-001"
-    ],
-    "policy_ids": [
-      "POLICY-001",
-      "POLICY-003",
-      "POLICY-004"
-    ]
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Recorded wait after scheduled pickup is 6 minutes; contact obligations met: True.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "GPS-006",
+            "GPS-007",
+            "GPS-008",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "CHAT-006",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007",
+            "EVENT-008",
+            "EVENT-009",
+            "EVENT-010"
+          ],
+          "policy_ids": [
+            "POLICY-2.3",
+            "POLICY-2.1"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Waiting alone cannot validate the fee when either required contact is missing.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "GPS-006",
+            "GPS-007",
+            "GPS-008",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "CHAT-006",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007",
+            "EVENT-008",
+            "EVENT-009",
+            "EVENT-010"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {
+        "amount_cents": 0,
+        "currency": "SGD",
+        "refund_basis": "cancellation_fee",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: uphold_charge, refund 0 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "GPS-005",
+        "GPS-006",
+        "GPS-007",
+        "GPS-008",
+        "CHAT-001",
+        "CHAT-002",
+        "CHAT-003",
+        "CHAT-004",
+        "CHAT-005",
+        "CHAT-006",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "EVENT-004",
+        "EVENT-005",
+        "EVENT-006",
+        "EVENT-007",
+        "EVENT-008",
+        "EVENT-009",
+        "EVENT-010"
+      ],
+      "policy_ids": [
+        "POLICY-2.3",
+        "POLICY-7.3",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-003": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Recorded driver location and contacts should be assessed rather than assuming the driver was absent.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007"
+          ],
+          "policy_ids": [
+            "POLICY-2.1",
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Recorded wait after scheduled pickup is 4 minutes; contact obligations met: False.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007"
+          ],
+          "policy_ids": [
+            "POLICY-2.3",
+            "POLICY-2.1"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Waiting alone cannot validate the fee when either required contact is missing.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "reverse_charge",
+      "proposed_action": {
+        "amount_cents": 500,
+        "currency": "SGD",
+        "refund_basis": "cancellation_fee",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: reverse_charge, refund 500 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "GPS-005",
+        "CHAT-001",
+        "CHAT-002",
+        "CHAT-003",
+        "CHAT-004",
+        "CHAT-005",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "EVENT-004",
+        "EVENT-005",
+        "EVENT-006",
+        "EVENT-007"
+      ],
+      "policy_ids": [
+        "POLICY-2.3",
+        "POLICY-7.3",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-004": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Recorded driver location and contacts should be assessed rather than assuming the driver was absent.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "GPS-006",
+            "GPS-007",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "CHAT-006",
+            "CHAT-007",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007",
+            "EVENT-008",
+            "EVENT-009",
+            "EVENT-010"
+          ],
+          "policy_ids": [
+            "POLICY-2.1",
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Recorded wait after scheduled pickup is 9 minutes; contact obligations met: True.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "GPS-006",
+            "GPS-007",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "CHAT-006",
+            "CHAT-007",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007",
+            "EVENT-008",
+            "EVENT-009",
+            "EVENT-010"
+          ],
+          "policy_ids": [
+            "POLICY-2.3",
+            "POLICY-2.1"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Waiting alone cannot validate the fee when either required contact is missing.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "GPS-005",
+            "GPS-006",
+            "GPS-007",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "CHAT-006",
+            "CHAT-007",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006",
+            "EVENT-007",
+            "EVENT-008",
+            "EVENT-009",
+            "EVENT-010"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {
+        "amount_cents": 0,
+        "currency": "SGD",
+        "refund_basis": "cancellation_fee",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: uphold_charge, refund 0 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "GPS-005",
+        "GPS-006",
+        "GPS-007",
+        "CHAT-001",
+        "CHAT-002",
+        "CHAT-003",
+        "CHAT-004",
+        "CHAT-005",
+        "CHAT-006",
+        "CHAT-007",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "EVENT-004",
+        "EVENT-005",
+        "EVENT-006",
+        "EVENT-007",
+        "EVENT-008",
+        "EVENT-009",
+        "EVENT-010"
+      ],
+      "policy_ids": [
+        "POLICY-2.3",
+        "POLICY-7.3",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-005": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 6.7 km; historical justification is unsupported.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_human_review": {
+      "action": "human_review",
+      "explanation": "Section 6.2: route deviation above 2 km requires human review",
+      "evidence_ids": [
+        "TRIP-001"
+      ],
+      "policy_ids": [
+        "POLICY-6.2"
+      ]
+    }
+  },
+  "DISP-006": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 2 km; historical justification is unsupported.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "partial_refund",
+      "proposed_action": {
+        "amount_cents": 110,
+        "currency": "SGD",
+        "refund_basis": "excess_distance_fare",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: partial_refund, refund 110 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "GPS-005",
+        "CHAT-001",
+        "CHAT-002",
+        "CHAT-003",
+        "CHAT-004",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "EVENT-004",
+        "EVENT-005",
+        "EVENT-006",
+        "ROUTE-001",
+        "ROUTE-002",
+        "FARE-001",
+        "FARE-002",
+        "FARE-003",
+        "FARE-004",
+        "FARE-005",
+        "FARE-006",
+        "TRAFFIC-001"
+      ],
+      "policy_ids": [
+        "POLICY-1.3",
+        "POLICY-7.1",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-007": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Recorded driver location and contacts should be assessed rather than assuming the driver was absent.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006"
+          ],
+          "policy_ids": [
+            "POLICY-2.1",
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Recorded wait after scheduled pickup is 5 minutes; contact obligations met: False.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006"
+          ],
+          "policy_ids": [
+            "POLICY-2.3",
+            "POLICY-2.1"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Waiting alone cannot validate the fee when either required contact is missing.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001",
+            "GPS-001",
+            "GPS-002",
+            "GPS-003",
+            "GPS-004",
+            "CHAT-001",
+            "CHAT-002",
+            "CHAT-003",
+            "CHAT-004",
+            "CHAT-005",
+            "EVENT-001",
+            "EVENT-002",
+            "EVENT-003",
+            "EVENT-004",
+            "EVENT-005",
+            "EVENT-006"
+          ],
+          "policy_ids": [
+            "POLICY-2.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "reverse_charge",
+      "proposed_action": {
+        "amount_cents": 500,
+        "currency": "SGD",
+        "refund_basis": "cancellation_fee",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: reverse_charge, refund 500 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "CHAT-001",
+        "CHAT-002",
+        "CHAT-003",
+        "CHAT-004",
+        "CHAT-005",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "EVENT-004",
+        "EVENT-005",
+        "EVENT-006"
+      ],
+      "policy_ids": [
+        "POLICY-2.3",
+        "POLICY-7.3",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-008": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 6.7 km; historical justification is confirmed.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_human_review": {
+      "action": "human_review",
+      "explanation": "Section 6.2: route deviation above 2 km requires human review",
+      "evidence_ids": [
+        "TRIP-001"
+      ],
+      "policy_ids": [
+        "POLICY-6.2"
+      ]
+    }
+  },
+  "DISP-009": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001",
+            "TRAFFIC-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 6.7 km; historical justification is unknown.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001",
+            "TRAFFIC-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_human_review": {
+      "action": "human_review",
+      "explanation": "Section 6.2: route deviation above 2 km requires human review",
+      "evidence_ids": [
+        "TRIP-001"
+      ],
+      "policy_ids": [
+        "POLICY-6.2"
+      ]
+    }
+  },
+  "DISP-010": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 1.5 km; historical justification is unsupported.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "partial_refund",
+      "proposed_action": {
+        "amount_cents": 83,
+        "currency": "SGD",
+        "refund_basis": "excess_distance_fare",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: partial_refund, refund 83 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "CHAT-001",
+        "CHAT-002",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "ROUTE-001",
+        "ROUTE-002",
+        "FARE-001",
+        "FARE-002",
+        "FARE-003",
+        "FARE-004",
+        "FARE-005",
+        "FARE-006",
+        "TRAFFIC-001"
+      ],
+      "policy_ids": [
+        "POLICY-1.3",
+        "POLICY-7.1",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-011": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 1.5 km; historical justification is confirmed.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_final_ruling": {
+      "action": "final_ruling",
+      "ruling": "uphold_charge",
+      "proposed_action": {
+        "amount_cents": 0,
+        "currency": "SGD",
+        "refund_basis": "excess_distance_fare",
+        "goodwill_credit_cents": 0
+      },
+      "confidence": 0.98,
+      "explanation": "Apply v2.1: uphold_charge, refund 0 cents and separate goodwill 0 cents. The precedent is considered for similarity or distinction; this is a hand-written example, not a model output.",
+      "evidence_ids": [
+        "TICKET-001",
+        "TRIP-001",
+        "GPS-001",
+        "GPS-002",
+        "GPS-003",
+        "GPS-004",
+        "CHAT-001",
+        "CHAT-002",
+        "EVENT-001",
+        "EVENT-002",
+        "EVENT-003",
+        "ROUTE-001",
+        "ROUTE-002",
+        "FARE-001",
+        "FARE-002",
+        "FARE-003",
+        "FARE-004",
+        "FARE-005",
+        "FARE-006",
+        "TRAFFIC-001"
+      ],
+      "policy_ids": [
+        "POLICY-1.3",
+        "POLICY-7.1",
+        "POLICY-6.3"
+      ]
+    }
+  },
+  "DISP-012": {
+    "rider_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The rider disputes the charge and asks that the supplied policy be applied.",
+          "evidence_ids": [
+            "TICKET-001",
+            "TRIP-001"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "Verified traffic and timely notification can justify a detour; historical evidence must match this segment and time.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001",
+            "TRAFFIC-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.2",
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "driver_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "Additional distance is 1.5 km; historical justification is unknown.",
+          "evidence_ids": [
+            "ROUTE-001",
+            "ROUTE-002",
+            "TRAFFIC-001",
+            "TRAFFIC-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [
+        {
+          "statement": "The excess distance component can be refundable even when the full trip was completed.",
+          "evidence_ids": [
+            "FARE-002",
+            "ROUTE-001",
+            "ROUTE-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.3"
+          ]
+        }
+      ],
+      "unanswered_questions": []
+    },
+    "judge_rebuttal": {
+      "action": "request_rebuttal",
+      "question": "Which historical traffic snapshot is authoritative for this route segment and deviation time?",
+      "rebuttal_roles": [
+        "rider_advocate",
+        "driver_advocate"
+      ],
+      "explanation": "The historical traffic records conflict.",
+      "evidence_ids": [
+        "TRAFFIC-001",
+        "TRAFFIC-002"
+      ],
+      "policy_ids": [
+        "POLICY-1.4"
+      ]
+    },
+    "judge_human_review": {
+      "action": "human_review",
+      "explanation": "One follow-up did not resolve the conflicting historical traffic snapshots.",
+      "evidence_ids": [
+        "TRAFFIC-001",
+        "TRAFFIC-002"
+      ],
+      "policy_ids": [
+        "POLICY-1.4",
+        "POLICY-6.2"
+      ]
+    },
+    "rider_rebuttal_advocate": {
+      "role": "rider_advocate",
+      "claims": [
+        {
+          "statement": "The supplied snapshots disagree and do not identify an authoritative record.",
+          "evidence_ids": [
+            "TRAFFIC-001",
+            "TRAFFIC-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": [
+        "Which historical traffic snapshot is authoritative for this route segment and deviation time?"
+      ]
+    },
+    "driver_rebuttal_advocate": {
+      "role": "driver_advocate",
+      "claims": [
+        {
+          "statement": "The supplied snapshots disagree and do not identify an authoritative record.",
+          "evidence_ids": [
+            "TRAFFIC-001",
+            "TRAFFIC-002"
+          ],
+          "policy_ids": [
+            "POLICY-1.4"
+          ]
+        }
+      ],
+      "counterpoints": [],
+      "unanswered_questions": [
+        "Which historical traffic snapshot is authoritative for this route segment and deviation time?"
+      ]
+    }
   }
 }

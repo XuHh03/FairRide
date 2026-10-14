@@ -1,0 +1,233 @@
+{
+  "dispute_ticket": {
+    "dispute_id": "DISP-004",
+    "trip_id": "TRIP-2026-10587",
+    "filed_by": "rider",
+    "dispute_type": "no_show_charge",
+    "description": "I was charged a $5.00 cancellation fee but I don't think it's fair. The driver said I was a no-show but I was just running a few minutes late from the MRT. I got to the pickup point right after the driver left.",
+    "filed_at": "2026-09-25T09:30:00+08:00",
+    "status": "open",
+    "id": "TICKET-001"
+  },
+  "rider_profile": {
+    "rider_id": "R-8841",
+    "name": "Jagdeep Singh",
+    "account_age_days": 120,
+    "total_trips": 18,
+    "avg_rating": 4.1,
+    "dispute_history": {
+      "total_disputes": 2,
+      "upheld": 0,
+      "rejected": 2
+    },
+    "fraud_flags": 0,
+    "payment_method": "credit_card"
+  },
+  "driver_profile": {
+    "driver_id": "D-3340",
+    "name": "Wong Lai Fun",
+    "account_age_days": 1200,
+    "total_trips": 5102,
+    "avg_rating": 4.95,
+    "dispute_history": {
+      "total_disputes": 0,
+      "upheld_against": 0,
+      "rejected": 0
+    },
+    "fraud_flags": 0,
+    "vehicle": "Hyundai Sonata (SGP 3301 H)"
+  },
+  "trip_data": {
+    "trip_id": "TRIP-2026-10587",
+    "rider_id": "R-8841",
+    "driver_id": "D-3340",
+    "pickup_location": {
+      "name": "Grand Hyatt Singapore, Main Driveway Taxi Stand",
+      "lat": 1.2959,
+      "lng": 103.8557
+    },
+    "dropoff_location": {
+      "name": "Singapore Expo",
+      "lat": 1.3185,
+      "lng": 103.9619
+    },
+    "scheduled_time": "2026-09-25T09:00:00+08:00",
+    "driver_arrival_time": "2026-09-25T08:57:00+08:00",
+    "driver_wait_start": "2026-09-25T08:57:00+08:00",
+    "cancellation_time": "2026-09-25T09:09:00+08:00",
+    "cancellation_fee": 5.0,
+    "cancellation_reason": "rider_no_show",
+    "id": "TRIP-001"
+  },
+  "gps_telemetry": [
+    {
+      "timestamp": "2026-09-25T08:50:00+08:00",
+      "lat": 1.3010,
+      "lng": 103.8580,
+      "speed_kmh": 40,
+      "status": "en_route",
+      "id": "GPS-001"
+    },
+    {
+      "timestamp": "2026-09-25T08:54:00+08:00",
+      "lat": 1.2980,
+      "lng": 103.8565,
+      "speed_kmh": 25,
+      "status": "en_route",
+      "id": "GPS-002"
+    },
+    {
+      "timestamp": "2026-09-25T08:57:00+08:00",
+      "lat": 1.2959,
+      "lng": 103.8557,
+      "speed_kmh": 0,
+      "status": "arrived",
+      "id": "GPS-003"
+    },
+    {
+      "timestamp": "2026-09-25T09:00:00+08:00",
+      "lat": 1.2959,
+      "lng": 103.8557,
+      "speed_kmh": 0,
+      "status": "waiting",
+      "id": "GPS-004"
+    },
+    {
+      "timestamp": "2026-09-25T09:03:00+08:00",
+      "lat": 1.2959,
+      "lng": 103.8557,
+      "speed_kmh": 0,
+      "status": "waiting",
+      "id": "GPS-005"
+    },
+    {
+      "timestamp": "2026-09-25T09:06:00+08:00",
+      "lat": 1.2959,
+      "lng": 103.8557,
+      "speed_kmh": 0,
+      "status": "waiting",
+      "id": "GPS-006"
+    },
+    {
+      "timestamp": "2026-09-25T09:09:00+08:00",
+      "lat": 1.2959,
+      "lng": 103.8557,
+      "speed_kmh": 0,
+      "status": "cancelled",
+      "id": "GPS-007"
+    }
+  ],
+  "chat_logs": [
+    {
+      "timestamp": "2026-09-25T08:57:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "I've arrived at the Grand Hyatt main driveway taxi stand. Silver Hyundai Sonata, plate SGP 3301 H.",
+      "id": "CHAT-001"
+    },
+    {
+      "timestamp": "2026-09-25T09:00:30+08:00",
+      "sender": "driver",
+      "type": "call",
+      "content": "Outgoing call to rider — not answered (rang 25s, no response).",
+      "id": "CHAT-002"
+    },
+    {
+      "timestamp": "2026-09-25T09:01:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "Hi, I'm at the main driveway taxi stand. Please come down when you're ready.",
+      "id": "CHAT-003"
+    },
+    {
+      "timestamp": "2026-09-25T09:04:00+08:00",
+      "sender": "driver",
+      "type": "call",
+      "content": "Second outgoing call to rider — not answered (rang 20s, no response).",
+      "id": "CHAT-004"
+    },
+    {
+      "timestamp": "2026-09-25T09:05:30+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "I've been waiting 8 minutes. I'll have to cancel if you don't arrive soon.",
+      "id": "CHAT-005"
+    },
+    {
+      "timestamp": "2026-09-25T09:08:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "Sorry, I've waited long enough. Cancelling the trip.",
+      "id": "CHAT-006"
+    },
+    {
+      "timestamp": "2026-09-25T09:09:00+08:00",
+      "sender": "system",
+      "type": "system",
+      "content": "Trip cancelled by driver. Reason: rider_no_show. Cancellation fee of $5.00 applied.",
+      "id": "CHAT-007"
+    }
+  ],
+  "app_events": [
+    {
+      "timestamp": "2026-09-25T08:52:00+08:00",
+      "event_type": "booking_confirmed",
+      "details": "Rider R-8841 booked trip TRIP-2026-10587 from Grand Hyatt Singapore to Singapore Expo. Scheduled pickup 09:00.",
+      "id": "EVENT-001"
+    },
+    {
+      "timestamp": "2026-09-25T08:52:10+08:00",
+      "event_type": "driver_assigned",
+      "details": "Driver D-3340 (Wong Lai Fun, Hyundai Sonata SGP 3301 H) assigned. ETA 5 min.",
+      "id": "EVENT-002"
+    },
+    {
+      "timestamp": "2026-09-25T08:57:00+08:00",
+      "event_type": "driver_arrived",
+      "details": "Driver GPS within 5m of pickup point (Grand Hyatt main driveway). Speed 0 km/h. Auto-arrival confirmed.",
+      "id": "EVENT-003"
+    },
+    {
+      "timestamp": "2026-09-25T08:57:05+08:00",
+      "event_type": "rider_notified",
+      "details": "Push notification + in-app alert sent to rider: 'Your driver has arrived.'",
+      "id": "EVENT-004"
+    },
+    {
+      "timestamp": "2026-09-25T08:57:10+08:00",
+      "event_type": "wait_timer_started",
+      "details": "Free wait timer started. 5 min free wait period ends at 09:02. No-show threshold at 09:05 (8 min).",
+      "id": "EVENT-005"
+    },
+    {
+      "timestamp": "2026-09-25T09:00:30+08:00",
+      "event_type": "driver_called_rider",
+      "details": "Driver initiated in-app call to rider. Call rang 25s, no answer.",
+      "id": "EVENT-006"
+    },
+    {
+      "timestamp": "2026-09-25T09:04:00+08:00",
+      "event_type": "driver_called_rider",
+      "details": "Driver initiated second in-app call to rider. Call rang 20s, no answer.",
+      "id": "EVENT-007"
+    },
+    {
+      "timestamp": "2026-09-25T09:05:00+08:00",
+      "event_type": "no_show_threshold_reached",
+      "details": "No-show time condition met. Driver waited 8 minutes (08:57 to 09:05). Cancellation fee now applicable per policy.",
+      "id": "EVENT-008"
+    },
+    {
+      "timestamp": "2026-09-25T09:09:00+08:00",
+      "event_type": "cancellation_fee_applied",
+      "details": "Cancellation fee of $5.00 charged to rider payment method (credit card). Total driver wait: 12 minutes.",
+      "id": "EVENT-009"
+    },
+    {
+      "timestamp": "2026-09-25T09:09:05+08:00",
+      "event_type": "driver_released",
+      "details": "Driver D-3340 released from trip. Trip status: cancelled (rider_no_show).",
+      "id": "EVENT-010"
+    }
+  ]
+}

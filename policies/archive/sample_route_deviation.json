@@ -1,0 +1,34 @@
+{
+  "policy_id": "sample_route_deviation",
+  "version": "1.1",
+  "status": "sample_only_not_ryde_policy",
+  "fee_goes_to": "rider_refund",
+  "max_deviation_pct": 15.0,
+  "refund_basis": "fare_difference",
+  "clauses": [
+    {
+      "id": "POLICY-001",
+      "text": "Compare the planned route distance from the in-app routing engine to the actual route distance reconstructed from GPS. The deviation percentage is (actual - planned) / planned * 100. This is a sample assumption."
+    },
+    {
+      "id": "POLICY-002",
+      "text": "A route deviation above 15% of the planned distance is considered significant and requires justification from the driver."
+    },
+    {
+      "id": "POLICY-003",
+      "text": "Acceptable justification includes documented road closures, traffic incidents shown in app alerts, or rider-requested route changes. The driver's verbal claim of traffic without corroborating app alerts is not sufficient justification. In sample records, corroboration uses structured traffic_alert, road_closure, or rider_route_change events with affected_route_id, a trip-start-matched validity period, and status active. A status of none is negative evidence; unknown or conflicting snapshots require human review. A confirmed justification permits retaining the fare despite significant deviation."
+    },
+    {
+      "id": "POLICY-004",
+      "text": "If a significant deviation is unjustified, the rider is entitled to a partial refund equal to the fare difference between the actual charged fare and the estimated fare based on the planned route. The refund is in SGD cents. No real payment is executed."
+    },
+    {
+      "id": "POLICY-005",
+      "text": "GPS telemetry is evidence of the vehicle's actual route. Fare items are evidence of the charged amounts. Both must be checked for consistency. A driver may not charge for distance not traveled on the actual route. For these synthetic fixtures, billed distance and time must match the actual route record. The supplied estimate breakdown uses planned distance and duration at the same base, booking, distance, and time rates, with half-up rounding to cents."
+    },
+    {
+      "id": "POLICY-006",
+      "text": "Do not decide fare validity from ratings, dispute history, or fraud flags. Refer unresolved contradictions or missing route records for human review."
+    }
+  ]
+}

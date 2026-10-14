@@ -1,0 +1,83 @@
+{
+  "dispute_ticket": {
+    "dispute_id": "DISP-007",
+    "trip_id": "TRIP-2026-10815",
+    "filed_by": "rider",
+    "dispute_type": "no_show_charge",
+    "description": "I was charged a $5.00 cancellation fee. I went to Harbourfront Centre instead of VivoCity by mistake. I messaged the driver that I was coming from the wrong place and it would take me a few minutes. He only waited 5 minutes before cancelling. That's not fair — I was on my way and I told him where I was.",
+    "filed_at": "2026-10-05T09:20:00+08:00",
+    "status": "open",
+    "id": "TICKET-001"
+  },
+  "rider_profile": {
+    "rider_id": "R-6301",
+    "name": "Lim Siu Hui",
+    "account_age_days": 90,
+    "total_trips": 12,
+    "avg_rating": 4.3,
+    "dispute_history": {
+      "total_disputes": 0,
+      "upheld": 0,
+      "rejected": 0
+    },
+    "fraud_flags": 0,
+    "payment_method": "credit_card"
+  },
+  "driver_profile": {
+    "driver_id": "D-9120",
+    "name": "Goh Chee Seng",
+    "account_age_days": 450,
+    "total_trips": 980,
+    "avg_rating": 4.5,
+    "dispute_history": {
+      "total_disputes": 2,
+      "upheld_against": 1,
+      "rejected": 1
+    },
+    "fraud_flags": 0,
+    "vehicle": "Mitsubishi Attrage (SGP 7733 J)"
+  },
+  "trip_data": {
+    "trip_id": "TRIP-2026-10815",
+    "rider_id": "R-6301",
+    "driver_id": "D-9120",
+    "pickup_location": {
+      "name": "VivoCity Taxi Stand",
+      "lat": 1.2640,
+      "lng": 103.8220
+    },
+    "dropoff_location": {
+      "name": "Universal Studios Singapore",
+      "lat": 1.2540,
+      "lng": 103.8240
+    },
+    "scheduled_time": "2026-10-05T09:00:00+08:00",
+    "driver_arrival_time": "2026-10-05T09:00:00+08:00",
+    "driver_wait_start": "2026-10-05T09:00:00+08:00",
+    "cancellation_time": "2026-10-05T09:05:00+08:00",
+    "cancellation_fee": 5.0,
+    "cancellation_reason": "rider_no_show",
+    "id": "TRIP-001"
+  },
+  "gps_telemetry": [
+    {"timestamp": "2026-10-05T08:55:00+08:00", "lat": 1.2700, "lng": 103.8200, "speed_kmh": 40, "status": "en_route", "id": "GPS-001"},
+    {"timestamp": "2026-10-05T09:00:00+08:00", "lat": 1.2640, "lng": 103.8220, "speed_kmh": 0, "status": "arrived", "id": "GPS-002"},
+    {"timestamp": "2026-10-05T09:03:00+08:00", "lat": 1.2640, "lng": 103.8220, "speed_kmh": 0, "status": "waiting", "id": "GPS-003"},
+    {"timestamp": "2026-10-05T09:05:00+08:00", "lat": 1.2640, "lng": 103.8220, "speed_kmh": 0, "status": "cancelled", "id": "GPS-004"}
+  ],
+  "chat_logs": [
+    {"timestamp": "2026-10-05T09:01:00+08:00", "sender": "driver", "type": "message", "content": "I've arrived at VivoCity taxi stand. White Mitsubishi Attrage SGP 7733 J.", "id": "CHAT-001"},
+    {"timestamp": "2026-10-05T09:03:00+08:00", "sender": "rider", "type": "message", "content": "Sorry, I went to Harbourfront Centre instead of VivoCity. I'm walking over, give me a few minutes.", "id": "CHAT-002"},
+    {"timestamp": "2026-10-05T09:04:00+08:00", "sender": "driver", "type": "message", "content": "I've already been waiting. I have another booking soon. Please hurry.", "id": "CHAT-003"},
+    {"timestamp": "2026-10-05T09:05:00+08:00", "sender": "system", "type": "system", "content": "Trip cancelled by driver. Reason: rider_no_show. Cancellation fee of $5.00 applied.", "id": "CHAT-004"},
+    {"timestamp": "2026-10-05T09:07:00+08:00", "sender": "rider", "type": "message", "content": "I just arrived at VivoCity. You left after only 5 minutes and I told you I was coming!", "id": "CHAT-005"}
+  ],
+  "app_events": [
+    {"timestamp": "2026-10-05T08:50:00+08:00", "event_type": "booking_confirmed", "details": "Rider R-6301 booked trip TRIP-2026-10815 from VivoCity Taxi Stand to Universal Studios Singapore. Scheduled pickup 09:00.", "id": "EVENT-001"},
+    {"timestamp": "2026-10-05T08:50:05+08:00", "event_type": "driver_assigned", "details": "Driver D-9120 (Goh Chee Seng, Mitsubishi Attrage SGP 7733 J) assigned. ETA 5 min.", "id": "EVENT-002"},
+    {"timestamp": "2026-10-05T09:00:00+08:00", "event_type": "driver_arrived", "details": "Driver GPS within 20m of pickup point. Speed 0 km/h. Auto-arrival confirmed.", "id": "EVENT-003"},
+    {"timestamp": "2026-10-05T09:00:05+08:00", "event_type": "rider_notified", "details": "Push notification sent to rider: 'Your driver has arrived.'", "id": "EVENT-004"},
+    {"timestamp": "2026-10-05T09:00:10+08:00", "event_type": "wait_timer_started", "details": "Free wait timer started. 5 min free wait period ends at 09:05. No-show threshold: 8 min.", "id": "EVENT-005"},
+    {"timestamp": "2026-10-05T09:05:00+08:00", "event_type": "cancellation_fee_applied", "details": "Driver cancelled trip. Reason: rider_no_show. Cancellation fee of $5.00 charged to rider.", "id": "EVENT-006"}
+  ]
+}

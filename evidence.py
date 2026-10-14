@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from checks import no_show_facts
+from checks import no_show_facts, route_deviation_facts, required_confidence
 from contracts import (
     AdvocateResult, DerivedFact, EvidenceRecord, JudgeResult, ReviewInput, SamplePolicy,
 )
@@ -10,7 +10,10 @@ from contracts import (
 
 def build_evidence_index(case: dict) -> dict[str, EvidenceRecord]:
     index = {}
-    for section in ("dispute_ticket", "trip_data", "gps_telemetry", "chat_logs", "app_events"):
+    for section in ("dispute_ticket", "trip_data", "gps_telemetry", "chat_logs",
+                    "app_events", "route_data", "fare_items", "traffic_data"):
+        if section not in case:
+            continue
         records = case[section] if isinstance(case[section], list) else [case[section]]
         for record in records:
             evidence_id = record.get("id")
@@ -36,32 +39,43 @@ def build_policy_index(policy: dict) -> dict:
 
 
 def build_review_input(case: dict, policy: dict) -> ReviewInput:
-    """Normalize the current no-show fixture; profiles are not agent evidence."""
-    if case["dispute_ticket"]["dispute_type"] != "no_show_charge":
-        raise ValueError("Derived facts currently support no_show_charge only")
+    dtype = case["dispute_ticket"]["dispute_type"]
+    if policy["dispute_type"] != dtype:
+        raise ValueError("Policy category does not match the case")
     evidence = build_evidence_index(case)
     build_policy_index(policy)
-    facts = no_show_facts(case, policy)
-    trip_id = case["trip_data"]["id"]
-    fee_cents = Decimal(str(policy["cancellation_fee_after_wait"])) * 100
-    if fee_cents != fee_cents.to_integral_value():
-        raise ValueError("Policy fee must have at most two decimal places")
-    return ReviewInput(
-        case_id=case["dispute_ticket"]["dispute_id"],
-        dispute_type=case["dispute_ticket"]["dispute_type"],
-        evidence=list(evidence.values()), policy=SamplePolicy.model_validate(policy),
-        facts=[
-            DerivedFact(id="FACT-001", value=facts["waited_minutes"], unit="minutes",
-                        formula=f"(trip_data.cancellation_time - trip_data.{policy['wait_start_event']}) / 60 seconds",
-                        evidence_ids=[trip_id], policy_ids=["POLICY-001"]),
-            DerivedFact(id="FACT-002", value=facts["fee_eligible"], unit="boolean",
-                        formula="waited_minutes >= no_show_threshold_min (time condition only)",
-                        evidence_ids=[trip_id], policy_ids=["POLICY-001", "POLICY-003"]),
-            DerivedFact(id="FACT-003", value=int(fee_cents), unit="SGD cents",
-                        formula="Decimal(cancellation_fee_after_wait) * 100",
-                        evidence_ids=[], policy_ids=["POLICY-004"]),
-        ],
-    )
+    facts = []
+    if dtype == "no_show_charge":
+        calculated = no_show_facts(case, policy)
+        definitions = [
+            ("waited_minutes", "minutes", "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero", ["POLICY-2.1"]),
+            ("fee_eligible", "boolean", "pickup presence AND five-minute wait AND message AND call AND timely arrival", ["POLICY-2.1", "POLICY-2.3", "POLICY-2.4"]),
+            ("message_count", "count", "driver messages before cancellation", ["POLICY-2.3"]),
+            ("call_count", "count", "unique driver call attempts before cancellation", ["POLICY-2.3"]),
+            ("goodwill_credit_cents", "SGD cents", "500 if driver no-show and no contact; separate from refund", ["POLICY-2.4"]),
+        ]
+        refs = [record.id for record in evidence.values() if record.source in ("trip_data", "chat_logs", "app_events", "gps_telemetry")]
+    elif dtype == "route_deviation":
+        calculated = route_deviation_facts(case, policy)
+        definitions = [
+            ("planned_distance_km", "km", "planned road route distance", ["POLICY-1.4"]),
+            ("actual_distance_km", "km", "supplied GPS-reconstructed route distance", ["POLICY-1.4"]),
+            ("deviation_km", "km", "actual minus planned km", ["POLICY-1.3", "POLICY-1.4"]),
+            ("excess_distance_cents", "SGD cents", "max(0, additional_km) * distance_rate *100, half-up rounded", ["POLICY-1.3"]),
+            ("justification", "state", "route/time-matched historical traffic evidence", ["POLICY-1.4"]),
+            ("rider_informed", "boolean", "driver route notice before or at deviation", ["POLICY-1.2"]),
+            ("rider_agreed", "boolean", "rider acknowledgment of notice by deviation", ["POLICY-1.4"]),
+        ]
+        refs = [record.id for record in evidence.values() if record.source in ("trip_data", "route_data", "fare_items", "traffic_data", "chat_logs", "app_events")]
+    else:
+        raise ValueError(f"Unsupported dispute type: {dtype}")
+    for number, (name, unit, formula, policy_ids) in enumerate(definitions, 1):
+        source_ids = [record.id for record in evidence.values() if record.source in ("trip_data", "gps_telemetry")] if name == "waited_minutes" else refs
+        facts.append(DerivedFact(id=f"FACT-{number:03d}", name=name, value=calculated[name],
+                                 unit=unit, formula=formula, evidence_ids=source_ids, policy_ids=policy_ids))
+    return ReviewInput(case_id=case["dispute_ticket"]["dispute_id"], dispute_type=dtype,
+                       evidence=list(evidence.values()), policy=SamplePolicy.model_validate(policy),
+                       facts=facts, required_confidence=required_confidence(case))
 
 
 def validate_references(
@@ -70,9 +84,39 @@ def validate_references(
     """Check source existence, not whether a source supports a claim."""
     evidence = build_evidence_index(case)
     clauses = build_policy_index(policy)
+    return citation_issues(result, evidence, clauses)
+
+
+def citation_issues(result: AdvocateResult | JudgeResult, evidence_ids, policy_ids) -> list[str]:
+    """Validate the two citation namespaces against their supplied ID sets."""
     claims = result.claims + result.counterpoints if isinstance(result, AdvocateResult) else [result]
     issues = []
     for claim in claims:
-        issues.extend(f"Unknown evidence ID: {ref}" for ref in claim.evidence_ids if ref not in evidence)
-        issues.extend(f"Unknown policy ID: {ref}" for ref in claim.policy_ids if ref not in clauses)
+        issues.extend(f"Unknown evidence ID: {ref}" for ref in claim.evidence_ids if ref not in evidence_ids)
+        issues.extend(f"Unknown policy ID: {ref}" for ref in claim.policy_ids if ref not in policy_ids)
     return issues
+
+
+def resolve_fact_citations(result: AdvocateResult | JudgeResult, review: ReviewInput):
+    """Expand declared derived facts into their sources without rewriting arguments."""
+    resolved = result.model_copy(deep=True)
+    facts = {fact.id: fact for fact in review.facts}
+    evidence_ids = {record.id for record in review.evidence}
+    items = ([(f"claims.{i}", claim) for i, claim in enumerate(resolved.claims)]
+             + [(f"counterpoints.{i}", claim) for i, claim in enumerate(resolved.counterpoints)]
+             if isinstance(resolved, AdvocateResult) else [("judge", resolved)])
+    resolutions = []
+    for location, item in items:
+        sources = []
+        changed = False
+        for ref in item.evidence_ids:
+            fact = facts.get(ref)
+            if fact and fact.evidence_ids and all(source in evidence_ids for source in fact.evidence_ids):
+                sources.extend(fact.evidence_ids)
+                resolutions.append({"location": location, "fact_id": ref, "evidence_ids": list(fact.evidence_ids)})
+                changed = True
+            else:
+                sources.append(ref)
+        if changed:
+            item.evidence_ids = list(dict.fromkeys(sources))
+    return resolved, resolutions
