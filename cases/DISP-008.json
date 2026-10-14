@@ -335,5 +335,17 @@
       "source": "in_app_routing_alert_feed",
       "details": "Confirmed closure on the planned ECP segment. Routing engine recommends the recorded Nicoll Highway detour."
     }
+  ],
+  "traffic_data": [
+    {
+      "id": "TRAFFIC-001",
+      "source": "historical_traffic_api_fixture",
+      "affected_route_id": "ROUTE-001",
+      "segment": "Planned road segment at the recorded deviation",
+      "valid_from": "2026-09-28T14:00:00+08:00",
+      "valid_until": "2026-09-28T14:35:00+08:00",
+      "status": "congested",
+      "note": "Synthetic historical API response fixture; no live traffic query was made."
+    }
   ]
 }

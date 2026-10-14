@@ -1,3 +1,5 @@
+> Historical proposal, superseded on14October2026 by `POLICY_V2_1_SPEC.md` and `PERSON_B_HANDOFF.md`. Do not use its old policy, package, stub, model defaults or signatures as current implementation instructions.
+
 # FairRide — Product Spec: Increment 1
 
 **Increment:** No-show end-to-end loop

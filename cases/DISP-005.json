@@ -125,5 +125,17 @@
     {"timestamp": "2026-09-28T14:35:00+08:00", "event_type": "trip_completed", "details": "Trip completed. Actual distance: 25.2 km (planned: 18.5 km). Actual duration: 35 min (estimated: 22 min). Fare charged: $26.61.", "id": "EVENT-006"},
     {"timestamp": "2026-09-28T14:35:05+08:00", "event_type": "fare_breakdown_generated", "details": "Fare: base $3.50 + distance ($0.55/km x 25.2km = $13.86) + time ($0.25/min x 35min = $8.75) + booking $0.50 = $26.61. Estimated fare based on planned route: $19.68.", "id": "EVENT-007"},
     {"timestamp": "2026-09-28T14:36:00+08:00", "event_type": "dispute_filed", "details": "Rider filed dispute: route deviation. Claims driver took longer route without justification. No traffic alerts were active on ECP at time of trip.", "id": "EVENT-008"}
+  ],
+  "traffic_data": [
+    {
+      "id": "TRAFFIC-001",
+      "source": "historical_traffic_api_fixture",
+      "affected_route_id": "ROUTE-001",
+      "segment": "Planned road segment at the recorded deviation",
+      "valid_from": "2026-09-28T14:00:00+08:00",
+      "valid_until": "2026-09-28T14:35:00+08:00",
+      "status": "no_congestion",
+      "note": "Synthetic historical API response fixture; no live traffic query was made."
+    }
   ]
 }

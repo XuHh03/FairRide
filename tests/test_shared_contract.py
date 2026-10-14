@@ -14,7 +14,7 @@ from evidence import build_evidence_index, build_review_input, validate_referenc
 class SharedContractTests(unittest.TestCase):
     def setUp(self):
         self.case = load_case("DISP-002")
-        self.policy = load_policy("sample_no_show")
+        self.policy = load_policy("ryde_v2_1_no_show")
 
     def test_citation_resolves_to_original_record(self):
         record = build_evidence_index(self.case)["GPS-005"]
@@ -36,7 +36,7 @@ class SharedContractTests(unittest.TestCase):
         self.assertEqual(review.case_id, "DISP-002")
         self.assertNotIn("fraud_flags", review.model_dump_json())
         fact = next(f for f in review.facts if f.id == "FACT-001")
-        self.assertEqual(fact.value, 8)
+        self.assertEqual(fact.value, 6)
         self.assertEqual(fact.evidence_ids, ["TRIP-001"])
         self.assertIn("cancellation_time", fact.formula)
 
@@ -77,7 +77,7 @@ class SharedContractTests(unittest.TestCase):
         policy["wait_start_event"] = "scheduled_time"
         facts = no_show_facts(self.case, policy)
         self.assertEqual(facts["waited_minutes"], 6)
-        self.assertFalse(facts["fee_eligible"])
+        self.assertTrue(facts["fee_eligible"])
 
 
 if __name__ == "__main__":

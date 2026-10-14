@@ -1,47 +1,23 @@
-# Route scenario coverage — 13 October 2026
+# Route coverage under supplied policy v2.1
 
-All fixtures and route policy rules are synthetic. Examples are hand-written; expected outcomes live in `evaluation.py`, outside agent input.
+Updated 14 October 2026. Cases and historical traffic responses are synthetic development fixtures. The governing reference is the supplied policy in `data/`; it has not been independently verified as public Ryde policy.
 
-| Case | Evidence | Expected outcome |
+| Case | Evidence | Expected result |
 |---|---|---|
-| DISP-005 | Significant 36.2% deviation; driver traffic claim lacks supporting alerts | Partial refund of SGD 6.93 |
-| DISP-006 | 12.1% deviation, below the sample threshold | Uphold charge, zero refund |
-| DISP-008 | Significant deviation; confirmed closure matches planned route and trip time | Uphold charge, zero refund |
-| DISP-009 | Two closure snapshots disagree for the same route and validity period | One follow-up, then human review if conflict remains unresolved |
+| DISP-005 | 6.7 km extra | Mandatory human review: above 2 km |
+| DISP-006 | 2 km extra, historical report of no congestion | Refund excess-distance fare: SGD 1.10 |
+| DISP-008 | 6.7 km extra, traffic justification | Mandatory human review: above 2 km |
+| DISP-009 | 6.7 km extra, conflicting historical records | Mandatory human review before model calls |
+| DISP-010 | 1.5 km extra, no congestion | Refund excess-distance fare: SGD 0.83 |
+| DISP-011 | 1.5 km extra, congestion, timely notice and consent | Uphold charge |
+| DISP-012 | 1.5 km extra, conflicting historical records | One rebuttal, then human review if unresolved |
 
-DISP-008/009 intentionally share route and fare assumptions with DISP-005 to isolate the effect of justification evidence. They are development contrasts, not held-out production accuracy evidence.
+Additional distance at most 1 km receives no refund. Automatic route decisions require additional distance at most 2 km and confidence at least 80%, or 95% with either party fraud-flagged. Shared safety and value gates also apply. An unjustified detour refunds only the extra distance charge, rounded half-up to cents; total fare differences and time charges are not the refund basis.
 
-## Evidence and sample policy v1.1
+For a justified but unnotified detour, the user chose human review until the source's partial-refund formula is confirmed. A justified route without rider consent is also referred; consent is not inferred from a refusal.
 
-App events of type `traffic_alert`, `road_closure`, or `rider_route_change` supply `affected_route_id`, `valid_from`, `valid_until`, and `status`. Validity is checked at the recorded trip start for these fixtures. The period is inclusive.
+`traffic_data` records must name the planned route, cover the deviation time, and identify a historical traffic API source (or explicitly marked fixture). `congested` supports justification; `no_congestion` does not. Missing, unknown or contradictory records remain uncertainty. App-alert keywords cannot substitute for historical traffic records. No live traffic API adapter exists.
 
-- `active`: positive supporting evidence when route and time match.
-- `none`: negative evidence; never positive corroboration.
-- `unknown`/`conflicting`, or simultaneous active/none snapshots of the same exception kind: material uncertainty requiring human review.
-- A driver statement without corroboration does not justify significant deviation under this sample policy. Unsupported justification can yield a refund; conflicting evidence yields a referral.
+Fare consistency checks still compare component sums, rates, distances, durations and supplied estimates. Source IDs remain stable and derived facts cite their actual source records. Expected answers remain in `evaluation.py`, outside model inputs.
 
-`checks.route_justification` supplies the same rule to final validation. A confirmed exception permits retaining a significant-deviation fare and prevents a deviation refund. Structured snapshots are synthetic source records; arbitrary narrative words such as “traffic” do not establish confirmation.
-
-## Fare corrections
-
-DISP-005 now follows its existing rates:
-
-- Charged: 3.50 base + 13.86 distance + 8.75 time + 0.50 booking = **26.61**.
-- Estimated: 3.50 + 10.18 + 5.50 + 0.50 = **19.68**.
-- Difference: **6.93**, or **693 cents**.
-
-DISP-006's actual components already total 21.50. Its estimate at the stated rates is corrected to **17.90**, making its fare difference **3.60**. It remains below the deviation threshold and receives no refund.
-
-Component amounts use half-up rounding to cents. Fare totals, trip fields, and displayed/system records are reconciled. Deterministic checks compare actual components, rate calculations, trip totals, and an explicitly supplied estimate breakdown. Derived fare facts resolve the real source IDs rather than assuming particular IDs.
-
-Historical `evaluation_results.json` contains earlier fare values and scoring; generate a fresh report before comparing current outcomes.
-
-## Integration and verification
-
-- Both new cases appear in the Streamlit selector and batch evaluation.
-- DISP-009 has case-specific, cited rebuttal examples referencing the conflicting alerts.
-- `tests/test_route_scenarios.py` covers the new outcomes, refund rejection for a justified route, negative/irrelevant/out-of-period alerts, rider-requested exceptions, conflicting fare records, and provenance after source IDs change.
-- The full suite has 70 offline passes and six skipped live tests. All eight example workflows match their categories: six final rulings and two appropriate referrals.
-- No new live-model evaluation or UI execution was performed. Use `python3 evaluation.py --output /tmp/fairride-route-cases.json` for an offline integration run.
-
-Remaining work for Person B: the no-show `no_action` gap and explicit previous-question context in the second Judge call identified in the progress review remain separate tasks.
+Run `python3 evaluation.py --output /tmp/fairride-v21.json` for the eleven-case example batch. Seven decisions and four referrals match their labels. These hand-written examples do not measure live model accuracy. Earlier `evaluation_results.json` uses obsolete policy and scoring.

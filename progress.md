@@ -1,15 +1,16 @@
 # FairRide progress
 
-Updated 13 October 2026. This snapshot describes the Person A integration branch.
+Updated 14 October 2026. Current work follows the supplied v2.1 reference on the Person A integration branch.
 
 ## Current update
 
-- Evaluation v2 distinguishes autonomous rulings, appropriate/unnecessary referrals, and explicit setup/model/validation failures. Live tests require opt-in.
-- Eight fixtures now cover no-show charges and route deviations. DISP-008 is a justified closure detour; DISP-009 has conflicting closure snapshots and a bounded rebuttal.
-- Route policy v1.1 uses explicit route/time/status evidence. Final checks apply confirmed exceptions and reconcile fare components, rates, and totals.
-- Corrected DISP-005's fare difference to 693 cents and DISP-006's estimate to SGD 17.90. Examples and evaluation labels agree.
-- Verification: 70 offline tests pass; six live tests are skipped. Eight example workflows produce six final rulings and two appropriate referrals. Historical saved live results predate these changes; no new live calls were made.
-- See `docs/EVALUATION.md` and `docs/ROUTE_CASES.md` for interfaces and verification. Next: resolve the remaining no-show no-action gap and Judge follow-up context, then recreate the app environment, rehearse the UI, and explicitly evaluate a live provider.
+- Active source-linked v2.1 policies replace archived sample policies. No-show fees require five physical minutes no earlier than scheduled pickup, verified presence, and both message and call. Invalid charges cannot survive as `no_action`; goodwill credit is separate and requires evidence of driver no-show.
+- Route refunds use additional kilometres and excess-distance fare. Historical traffic, timely notification and consent are checked separately. Justified unnotified detours are referred until the partial formula is confirmed.
+- Shared safety, value, route-distance and fraud/confidence gates prevent prohibited rulings. Missing consent and explicit refusal never count as agreement. Repeated no-show history flags manual account review without executing restrictions.
+- Contract v2.0 adds confidence and refund/credit fields. The second Judge receives its original assessment and question; Python allows one rebuttal round.
+- Eleven cases and examples match the new policy. Verification: 65 offline tests pass, one live batch skipped. Example evaluation gives seven validated decisions and four appropriate referrals, no operational failures. These are hand-written examples, not live accuracy evidence.
+- Setup and Person B handoff reflect actual interfaces. Remaining: install/rehearse Streamlit, explicitly evaluate a live provider, confirm partial-refund formula and confidence calibration, and add real historical traffic integration if required.
+- Read `docs/POLICY_V2_1_SPEC.md`, `docs/EVALUATION.md` and `docs/ROUTE_CASES.md`. Saved evaluation results and the historical notes below describe earlier behavior.
 
 ## Historical snapshot — 5 October 2026
 

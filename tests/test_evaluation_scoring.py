@@ -15,7 +15,7 @@ class DecisionBackend(ExampleAgentBackend):
         self.decision = decision
         self.error = error
 
-    async def judge(self, review, rider_argument, driver_argument, rebuttals=None):
+    async def judge(self, review, rider_argument, driver_argument, rebuttals=None, previous_assessment=None):
         if self.error:
             raise self.error
         return AgentCall(JudgeResult.model_validate(self.decision))
@@ -34,9 +34,9 @@ class EvaluationScoringTests(unittest.TestCase):
         }))
 
     def test_clear_case_labels_do_not_accept_human_review(self):
-        self.assertEqual(LABELS["DISP-002"].expected_ruling, "human_review")
+        self.assertEqual(LABELS["DISP-005"].expected_ruling, "human_review")
         for case_id, label in LABELS.items():
-            if case_id != "DISP-002":
+            if label.expected_ruling != "human_review":
                 self.assertNotIn("human_review", label.acceptable_alternatives)
 
     def test_correct_refund_is_an_autonomous_resolution(self):
@@ -55,7 +55,7 @@ class EvaluationScoringTests(unittest.TestCase):
         self.assertEqual(summarize([metric], "example").unnecessary_escalation_rate, 1)
 
     def test_ambiguous_case_escalation_is_appropriate_but_not_autonomous(self):
-        metric = run_single_case("DISP-002", "example")
+        metric = run_single_case("DISP-005", "example")
         self.assertEqual(metric.category, "appropriate_escalation")
         self.assertFalse(metric.ruling_match)
         summary = summarize([metric], "example")
@@ -88,28 +88,28 @@ class EvaluationScoringTests(unittest.TestCase):
     def test_wrong_valid_final_ruling_reduces_accuracy(self):
         metric = self.score("DISP-004", DecisionBackend({
             "action": "final_ruling", "ruling": "reverse_charge",
-            "proposed_action": {"amount_cents": 500},
+            "proposed_action": {"amount_cents": 500, "refund_basis": "cancellation_fee"},
             "explanation": "Incorrect full refund despite valid wait.",
-            "evidence_ids": ["TRIP-001"], "policy_ids": ["POLICY-003"],
+            "evidence_ids": ["TRIP-001"], "policy_ids": ["POLICY-2.3", "POLICY-7.3"], "confidence": 0.98,
         }))
-        self.assertEqual(metric.category, "incorrect_ruling")
+        self.assertEqual(metric.category, "operational_failure")
         summary = summarize([metric], "example")
-        self.assertEqual(summary.autonomous_resolution_rate, 1)
-        self.assertEqual(summary.ruling_accuracy, 0)
+        self.assertEqual(summary.autonomous_resolution_rate, 0)
+        self.assertIsNone(summary.ruling_accuracy)
 
     def test_invalid_refund_is_a_validation_failure(self):
         metric = self.score("DISP-003", DecisionBackend({
             "action": "final_ruling", "ruling": "reverse_charge",
-            "proposed_action": {"amount_cents": 400},
+            "proposed_action": {"amount_cents": 400, "refund_basis": "cancellation_fee"},
             "explanation": "Refund the charge.", "evidence_ids": ["TRIP-001"],
-            "policy_ids": ["POLICY-003"],
+            "policy_ids": ["POLICY-2.3", "POLICY-7.3"], "confidence": 0.98,
         }))
         self.assertEqual(metric.failure_category, "validation")
         self.assertEqual(metric.category, "operational_failure")
 
     def test_all_failed_reviews_have_zero_resolution_and_na_accuracy(self):
         with patch.dict(os.environ, {}, clear=True):
-            metrics = [run_single_case(cid, "live") for cid in LABELS]
+            metrics = [run_single_case(cid, "live") for cid in ("DISP-002", "DISP-003", "DISP-004", "DISP-007", "DISP-010", "DISP-011")]
         summary = summarize(metrics, "live")
         self.assertEqual(summary.operational_failure_rate, 1)
         self.assertEqual(summary.autonomous_resolution_rate, 0)
@@ -125,7 +125,7 @@ class EvaluationScoringTests(unittest.TestCase):
             failure = run_single_case("DISP-004", "live")
         metrics = [run_single_case("DISP-003", "example"),
                    self.escalate("DISP-004"),
-                   run_single_case("DISP-002", "example"), failure]
+                   run_single_case("DISP-005", "example"), failure]
         summary = summarize(metrics, "example")
         self.assertEqual(summary.autonomous_resolution_rate, 0.25)
         self.assertEqual(summary.ruling_accuracy, 1)

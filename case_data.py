@@ -17,7 +17,7 @@ def policy_for_case(case: dict) -> dict:
     """Load the appropriate policy based on the case's dispute type."""
     dtype = case["dispute_ticket"]["dispute_type"]
     if dtype == "no_show_charge":
-        return load_policy("sample_no_show")
+        return load_policy("ryde_v2_1_no_show")
     if dtype == "route_deviation":
-        return load_policy("sample_route_deviation")
+        return load_policy("ryde_v2_1_route_deviation")
     raise ValueError(f"No policy configured for dispute type: {dtype}")

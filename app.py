@@ -17,16 +17,19 @@ from workflow import run_review
 st.set_page_config(page_title="FairRide | Dispute review", layout="wide")
 
 # Case selector — switch between all supported dispute cases
-case_options = ["DISP-002", "DISP-003", "DISP-004", "DISP-005", "DISP-006", "DISP-007", "DISP-008", "DISP-009"]
+case_options = [f"DISP-{number:03d}" for number in range(2, 13)]
 case_labels = {
-    "DISP-002": "DISP-002 — No-show · Ambiguous (driver waited 8 min, entrance unclear)",
-    "DISP-003": "DISP-003 — No-show · Rider-favorable (driver late, waited 4 min)",
-    "DISP-004": "DISP-004 — No-show · Driver-favorable (driver early, waited 12 min)",
-    "DISP-005": "DISP-005 — Route deviation · Rider-favorable (36% longer route)",
-    "DISP-006": "DISP-006 — Route deviation · Below threshold (12% deviation, no refund)",
-    "DISP-007": "DISP-007 — No-show · Rider-favorable, $5 fee (rider at wrong mall, 5 min wait)",
-    "DISP-008": "DISP-008 — Route deviation · Justified closure detour",
-    "DISP-009": "DISP-009 — Route deviation · Conflicting closure records",
+    "DISP-002": "DISP-002 — No-show · Recorded arrival and both contacts",
+    "DISP-003": "DISP-003 — No-show · Late arrival and missing call",
+    "DISP-004": "DISP-004 — No-show · Both contact obligations met",
+    "DISP-005": "DISP-005 — Route deviation · Above 2 km AI limit",
+    "DISP-006": "DISP-006 — Route deviation · 2 km, no congestion",
+    "DISP-007": "DISP-007 — No-show · Five-minute wait, missing call",
+    "DISP-008": "DISP-008 — Route deviation · Justified, above AI limit",
+    "DISP-009": "DISP-009 — Route deviation · Large and conflicting records",
+    "DISP-010": "DISP-010 — Route deviation · 1.5 km, unjustified",
+    "DISP-011": "DISP-011 — Route deviation · 1.5 km, verified and agreed",
+    "DISP-012": "DISP-012 — Route deviation · Conflicting traffic history",
 }
 selected_case_id = st.selectbox(
     "Select a case", case_options,
@@ -59,7 +62,7 @@ dispute_titles = {
 }
 
 st.title("FairRide")
-st.caption("Digital Native track | Sample-policy dispute review prototype")
+st.caption("Digital Native track | Project reference v2.1 | Dispute review prototype")
 st.subheader(f"{ticket['dispute_id']}: {dispute_titles.get(dtype, dtype)}")
 st.write(ticket["description"])
 
@@ -78,7 +81,7 @@ with left:
     st.metric(left_metric_label, left_metric_value)
 with right:
     st.metric(right_metric_label, right_metric_value)
-st.info("This is a sample policy, not an official Ryde rule. A result recommends an action; no payment is executed.")
+st.info("Governing reference: supplied RydeResolve policy v2.1. Demo records are synthetic. Recommendations do not execute payments or account actions.")
 
 live_ready = bool((os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")) and os.getenv("FAIRRIDE_MODEL"))
 mode = st.radio(
@@ -99,13 +102,21 @@ result = st.session_state.get("review_result")
 if result:
     st.divider()
     st.subheader("Review result")
-    st.caption(f"Source: {st.session_state.review_mode}. Sample policy version {policy['version']}.")
+    st.caption(f"Source: {st.session_state.review_mode}. Project policy version {policy['version']}.")
     if result.status == "completed":
         st.success(f"Proposed ruling: {result.judge_result.ruling}")
         st.metric("Recommended rider refund", f"S${result.judge_result.proposed_action.amount_cents / 100:.2f}")
+        if result.judge_result.proposed_action.goodwill_credit_cents:
+            st.metric("Separate goodwill credit", f"S${result.judge_result.proposed_action.goodwill_credit_cents / 100:.2f}")
+        if result.judge_result.confidence is not None:
+            st.caption(f"Agent-reported confidence: {result.judge_result.confidence:.0%}")
     else:
         st.warning("Human review required")
     st.write(result.judge_result.explanation)
+    for flag in result.account_review_flags:
+        st.warning(flag)
+    if result.mandatory_escalation:
+        st.caption("Human review is required by the governing policy.")
     if result.validation_issues:
         st.write("**Review issues**")
         for issue in result.validation_issues:
@@ -165,12 +176,12 @@ if result:
             elif source_id in clauses:
                 st.write(clauses[source_id].text)
 
-with st.expander("Full sample policy and source evidence"):
+with st.expander("Governing policy and source evidence"):
     st.json(policy)
     evidence_sections = {
         k: case[k] for k in
         ("trip_data", "gps_telemetry", "chat_logs", "app_events",
-         "route_data", "fare_items")
+         "route_data", "fare_items", "traffic_data")
         if k in case
     }
     st.json(evidence_sections)

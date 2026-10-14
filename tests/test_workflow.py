@@ -12,11 +12,7 @@ from workflow import run_review, run_review_async
 
 
 def resolvable_case() -> dict:
-    case = copy.deepcopy(load_case("DISP-002"))
-    case["trip_data"]["pickup_location"]["designated_entrance"] = "Main lobby entrance"
-    event = next(item for item in case["app_events"] if item["id"] == "EVENT-008")
-    event["details"] = "The five-minute free wait period expired; no-show threshold has not yet been reached."
-    return case
+    return copy.deepcopy(load_case("DISP-004"))
 
 
 class FixedJudgeBackend(ExampleAgentBackend):
@@ -25,7 +21,7 @@ class FixedJudgeBackend(ExampleAgentBackend):
         self.decision = decision
         self.judge_calls = 0
 
-    async def judge(self, review, rider_argument, driver_argument, rebuttals=None):
+    async def judge(self, review, rider_argument, driver_argument, rebuttals=None, previous_assessment=None):
         self.judge_calls += 1
         return AgentCall(JudgeResult.model_validate(self.decision))
 
@@ -33,30 +29,30 @@ class FixedJudgeBackend(ExampleAgentBackend):
 def final_decision(ruling="uphold_charge", amount=0):
     return {
         "action": "final_ruling", "ruling": ruling,
-        "proposed_action": {"amount_cents": amount, "currency": "SGD"},
+        "proposed_action": {"amount_cents": amount, "currency": "SGD", "refund_basis": "cancellation_fee"},
         "explanation": "Proposed sample-policy result based on the recorded trip and threshold.",
         "evidence_ids": ["TRIP-001", "GPS-005"],
-        "policy_ids": ["POLICY-001", "POLICY-003", "POLICY-004"],
+        "policy_ids": ["POLICY-2.1", "POLICY-2.3", "POLICY-7.3"],
+        "confidence": 0.98,
     }
 
 
 class WorkflowTests(unittest.TestCase):
     def setUp(self):
-        self.case = load_case("DISP-002")
-        self.policy = load_policy("sample_no_show")
+        self.case = load_case("DISP-004")
+        self.policy = load_policy("ryde_v2_1_no_show")
 
     def test_example_walkthrough_reaches_human_review_after_one_rebuttal(self):
-        result = run_review(self.case, self.policy, ExampleAgentBackend())
+        result = run_review(load_case("DISP-012"), load_policy("ryde_v2_1_route_deviation"), ExampleAgentBackend())
         self.assertEqual(result.status, "human_review")
         self.assertEqual(result.judge_result.action, "human_review")
         self.assertEqual(sum(entry.event == "rebuttal" for entry in result.activity_log), 2)
         self.assertEqual(sum(entry.actor == "judge" for entry in result.activity_log), 2)
-        self.assertTrue(any("EVENT-008" in issue for issue in result.validation_issues))
-        self.assertTrue(any("entrance" in issue for issue in result.validation_issues))
+        self.assertTrue(any("traffic" in issue.lower() for issue in result.validation_issues))
         self.assertTrue(any("wall_duration_ms" in entry.output for entry in result.activity_log))
 
     def test_unsupported_final_ruling_is_referred_to_human(self):
-        result = run_review(self.case, self.policy, FixedJudgeBackend(final_decision()))
+        result = run_review(self.case, self.policy, FixedJudgeBackend(final_decision("reverse_charge", 400)))
         self.assertEqual(result.status, "human_review")
         self.assertTrue(result.validation_issues)
         self.assertEqual(result.judge_result.action, "human_review")
@@ -68,11 +64,11 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(result.validation_issues, [])
         wrong = run_review(case, self.policy, FixedJudgeBackend(final_decision("reverse_charge", 400)))
         self.assertEqual(wrong.status, "human_review")
-        self.assertTrue(any("Full reversal" in issue for issue in wrong.validation_issues))
+        self.assertTrue(any("refund cents" in issue for issue in wrong.validation_issues))
 
     def test_second_rebuttal_request_is_stopped(self):
-        backend = FixedJudgeBackend(ExampleAgentBackend().examples["DISP-002"]["judge_rebuttal"])
-        result = run_review(self.case, self.policy, backend)
+        backend = FixedJudgeBackend(ExampleAgentBackend().examples["DISP-012"]["judge_rebuttal"])
+        result = run_review(load_case("DISP-012"), load_policy("ryde_v2_1_route_deviation"), backend)
         self.assertEqual(backend.judge_calls, 2)
         self.assertEqual(result.status, "human_review")
         self.assertIn("Judge requested a second rebuttal round", result.validation_issues)

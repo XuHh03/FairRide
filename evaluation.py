@@ -21,7 +21,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from case_data import load_case, load_policy, policy_for_case
-from checks import charged_cents, material_case_issues, no_show_facts, validate_final_ruling
+from checks import charged_cents, material_case_issues, no_show_facts, validate_final_ruling, policy_outcome
 from contracts import WorkflowResult
 from evidence import build_evidence_index, validate_references
 from workflow import run_review
@@ -48,126 +48,39 @@ class CaseLabel:
 
 
 LABELS: dict[str, CaseLabel] = {
-    "DISP-002": CaseLabel(
-        case_id="DISP-002",
-        expected_ruling="human_review",
-        expected_waited_minutes=8.0,
-        expected_fee_eligible=True,
-        rationale=(
-            "The time threshold is met, but the designated entrance remains "
-            "unresolved and EVENT-008 conflicts with the sample policy. "
-            "The current material-evidence checks require human review."
-        ),
-        evidence_count=26,
-        notes="Evidence-based escalation is appropriate; setup/model/validation failures are not.",
-    ),
-    "DISP-003": CaseLabel(
-        case_id="DISP-003",
-        expected_ruling="reverse_charge",
-        expected_waited_minutes=4.0,
-        expected_fee_eligible=False,
-        rationale=(
-            "Driver arrived 5 min late (08:50 vs scheduled 08:45), waited "
-            "only 4 min (below 8-min threshold), fee_eligible=False. "
-            "Charge is invalid; Judge reverses and refunds full S$5.00."
-        ),
-        evidence_count=19,
-        notes=(
-            "The model sometimes routes to human_review instead of making "
-            "a ruling. An uphold_charge ruling would be a true failure "
-            "(validate_final_ruling rejects upholding when fee_eligible "
-            "is False)."
-        ),
-    ),
-    "DISP-004": CaseLabel(
-        case_id="DISP-004",
-        expected_ruling="uphold_charge",
-        expected_waited_minutes=12.0,
-        expected_fee_eligible=True,
-        rationale=(
-            "Driver arrived 3 min early (08:57), waited 12 min (well above "
-            "8-min threshold), unambiguous pickup (Grand Hyatt main driveway "
-            "taxi stand), two unanswered calls, three messages, rider sent "
-            "zero messages. Clear driver-favorable case; Judge upholds."
-        ),
-        evidence_count=26,
-        notes=(
-            "The model sometimes over-applies POLICY-005 (GPS does not "
-            "establish rider location) and routes to human_review despite "
-            "the time threshold being met and two unanswered calls. This "
-            "is a model caution issue, not a system bug. A reverse_charge "
-            "ruling would be a true failure."
-        ),
-    ),
-    "DISP-005": CaseLabel(
-        case_id="DISP-005",
-        expected_ruling="partial_refund",
-        expected_waited_minutes=0,  # N/A for route deviation
-        expected_fee_eligible=False,  # N/A for route deviation
-        rationale=(
-            "Driver deviated 36.2% from planned route (25.2 km vs 18.5 km), "
-            "exceeding the 15% policy threshold. Driver claimed traffic but "
-            "no app alerts corroborate. Fare difference is S$6.93 (693 cents). "
-            "Judge orders partial refund of the fare difference."
-        ),
-        evidence_count=31,
-        notes=(
-            "Route deviation case. An uphold_charge ruling would be a true "
-            "failure (validate_final_ruling rejects upholding when deviation "
-            "exceeds threshold). The model may route to human_review if it "
-            "cannot verify the traffic claim."
-        ),
-    ),
-    "DISP-006": CaseLabel(
-        case_id="DISP-006",
-        expected_ruling="uphold_charge",
-        expected_waited_minutes=0,  # N/A for route deviation
-        expected_fee_eligible=False,  # N/A for route deviation
-        rationale=(
-            "Driver deviated 12.1% from planned route (18.5 km vs 16.5 km), "
-            "below the 15% policy threshold. deviation_significant is False. "
-            "No refund is warranted. Judge upholds the charge (0 cents refund)."
-        ),
-        evidence_count=25,
-        notes=(
-            "HELD-OUT case — prompts were never tuned for below-threshold "
-            "route deviation. There is no prompt guidance for route deviation "
-            "rulings (only no-show decision guidance exists). A partial_refund "
-            "would be a true failure (validate_final_ruling checks that "
-            "partial_refund equals fare_difference_cents, but the model should "
-            "not order a refund when deviation is below threshold)."
-        ),
-    ),
-    "DISP-007": CaseLabel(
-        case_id="DISP-007",
-        expected_ruling="reverse_charge",
-        expected_waited_minutes=5.0,
-        expected_fee_eligible=False,
-        rationale=(
-            "Driver waited 5 min (below 8-min threshold), fee_eligible=False. "
-            "The rider went to the wrong mall but communicated this to the "
-            "driver. Despite the rider being at fault, the policy threshold "
-            "was not met. Judge reverses and refunds full S$5.00 (500 cents)."
-        ),
-        evidence_count=17,
-        notes=(
-            "HELD-OUT case — tests whether the model follows fee_eligible "
-            "guidance even when the narrative suggests the rider deserved "
-            "the charge (rider went to wrong mall). An uphold_charge would "
-            "be a true failure (validate_final_ruling rejects upholding "
-            "when fee_eligible is False)."
-        ),
-    ),
-    "DISP-008": CaseLabel(
-        case_id="DISP-008", expected_ruling="uphold_charge",
-        expected_waited_minutes=0, expected_fee_eligible=False, evidence_count=31,
-        rationale="A route- and time-matched active closure corroborates the significant detour. Fare components reconcile; no refund is warranted under the sample exception.",
-    ),
-    "DISP-009": CaseLabel(
-        case_id="DISP-009", expected_ruling="human_review",
-        expected_waited_minutes=0, expected_fee_eligible=False, evidence_count=32,
-        rationale="Two alert snapshots disagree about the same route and validity period. The records do not establish authority; one follow-up cannot resolve the material justification conflict.",
-    ),
+    "DISP-002": CaseLabel(case_id="DISP-002", expected_ruling="uphold_charge",
+        expected_waited_minutes=6.0, expected_fee_eligible=True,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26),
+    "DISP-003": CaseLabel(case_id="DISP-003", expected_ruling="reverse_charge",
+        expected_waited_minutes=4.0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=19),
+    "DISP-004": CaseLabel(case_id="DISP-004", expected_ruling="uphold_charge",
+        expected_waited_minutes=9.0, expected_fee_eligible=True,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26),
+    "DISP-005": CaseLabel(case_id="DISP-005", expected_ruling="human_review",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=32),
+    "DISP-006": CaseLabel(case_id="DISP-006", expected_ruling="partial_refund",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=26),
+    "DISP-007": CaseLabel(case_id="DISP-007", expected_ruling="reverse_charge",
+        expected_waited_minutes=5.0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=17),
+    "DISP-008": CaseLabel(case_id="DISP-008", expected_ruling="human_review",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=32),
+    "DISP-009": CaseLabel(case_id="DISP-009", expected_ruling="human_review",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=34),
+    "DISP-010": CaseLabel(case_id="DISP-010", expected_ruling="partial_refund",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=20),
+    "DISP-011": CaseLabel(case_id="DISP-011", expected_ruling="uphold_charge",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=20),
+    "DISP-012": CaseLabel(case_id="DISP-012", expected_ruling="human_review",
+        expected_waited_minutes=0, expected_fee_eligible=False,
+        rationale="Supplied v2.1 policy and case conditions; see docs/POLICY_V2_1_SPEC.md.", evidence_count=21),
 }
 
 
@@ -289,7 +202,7 @@ def run_single_case(
     elif ruling == "reverse_charge":
         amount_correct = amount == charge
     elif ruling == "partial_refund":
-        amount_correct = amount is not None and 0 < amount < charge
+        amount_correct = amount == policy_outcome(case, policy)[1]
     else:
         amount_correct = None  # No final ruling means no amount to score.
 
@@ -301,7 +214,7 @@ def run_single_case(
         ruling_match = ruling_match and amount_correct is True
         category = "correct_ruling" if ruling_match else "incorrect_ruling"
     else:
-        category = ("appropriate_escalation" if label.expected_ruling == "human_review"
+        category = ("appropriate_escalation" if (label.expected_ruling == "human_review" or result.mandatory_escalation)
                     else "unnecessary_escalation")
         ruling_match = False
 

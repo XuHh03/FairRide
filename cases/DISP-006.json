@@ -118,5 +118,17 @@
     {"timestamp": "2026-10-01T14:02:00+08:00", "event_type": "route_deviation_detected", "details": "GPS indicates minor route deviation. Vehicle heading north on Bukit Batok Road. Deviation: approximately 2 km additional distance so far.", "id": "EVENT-004"},
     {"timestamp": "2026-10-01T14:10:00+08:00", "event_type": "route_rejoined", "details": "Vehicle rejoined planned route corridor at AYE. Total deviation distance: approximately 2.0 km additional.", "id": "EVENT-005"},
     {"timestamp": "2026-10-01T14:30:00+08:00", "event_type": "trip_completed", "details": "Trip completed. Actual distance: 18.5 km (planned: 16.5 km). Actual duration: 30 min (estimated: 20 min). Fare charged: $21.50.", "id": "EVENT-006"}
+  ],
+  "traffic_data": [
+    {
+      "id": "TRAFFIC-001",
+      "source": "historical_traffic_api_fixture",
+      "affected_route_id": "ROUTE-001",
+      "segment": "Planned road segment at the recorded deviation",
+      "valid_from": "2026-10-01T14:00:00+08:00",
+      "valid_until": "2026-10-01T14:30:00+08:00",
+      "status": "no_congestion",
+      "note": "Synthetic historical API response fixture; no live traffic query was made."
+    }
   ]
 }

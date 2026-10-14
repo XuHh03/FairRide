@@ -1,0 +1,244 @@
+{
+  "dispute_ticket": {
+    "dispute_id": "DISP-012",
+    "trip_id": "TRIP-2026-11012",
+    "filed_by": "rider",
+    "dispute_type": "route_deviation",
+    "description": "The app estimated SGD11.33 but charged SGD12.90 after a longer route to East Coast Park. Please review the route and communication records.",
+    "filed_at": "2026-09-29T10:00:00+08:00",
+    "status": "open",
+    "id": "TICKET-001",
+    "disputed_amount_cents": 83
+  },
+  "rider_profile": {
+    "rider_id": "R-4502",
+    "name": "Sarah Tan",
+    "account_age_days": 200,
+    "total_trips": 45,
+    "avg_rating": 4.7,
+    "dispute_history": {
+      "total_disputes": 1,
+      "upheld": 1,
+      "rejected": 0
+    },
+    "fraud_flags": 0,
+    "payment_method": "credit_card"
+  },
+  "driver_profile": {
+    "driver_id": "D-7821",
+    "name": "Lim Wei Ming",
+    "account_age_days": 800,
+    "total_trips": 3200,
+    "avg_rating": 4.6,
+    "dispute_history": {
+      "total_disputes": 3,
+      "upheld_against": 2,
+      "rejected": 1
+    },
+    "fraud_flags": 0,
+    "vehicle": "Toyota Vios (SGP 5512 K)"
+  },
+  "trip_data": {
+    "trip_id": "TRIP-2026-11012",
+    "rider_id": "R-4502",
+    "driver_id": "D-7821",
+    "pickup_location": {
+      "name": "Marina Bay Sands",
+      "lat": 1.2834,
+      "lng": 103.8607
+    },
+    "dropoff_location": {
+      "name": "East Coast Park",
+      "lat": 1.3,
+      "lng": 103.909
+    },
+    "start_time": "2026-09-28T14:00:00+08:00",
+    "end_time": "2026-09-28T14:18:00+08:00",
+    "estimated_fare": 11.33,
+    "charged_fare": 12.9,
+    "fare_currency": "SGD",
+    "id": "TRIP-001"
+  },
+  "route_data": [
+    {
+      "id": "ROUTE-001",
+      "type": "planned",
+      "distance_km": 6.5,
+      "estimated_duration_min": 15,
+      "source": "synthetic_in_app_routing_engine",
+      "route_name": "Direct road route to East Coast Park",
+      "waypoints": [
+        {
+          "name": "Marina Bay Sands",
+          "lat": 1.2834,
+          "lng": 103.8607
+        },
+        {
+          "name": "East Coast Park",
+          "lat": 1.3,
+          "lng": 103.909
+        }
+      ]
+    },
+    {
+      "id": "ROUTE-002",
+      "type": "actual",
+      "distance_km": 8.0,
+      "actual_duration_min": 18,
+      "source": "synthetic_gps_reconstruction",
+      "route_name": "Recorded alternate road route",
+      "waypoints": [
+        {
+          "name": "Marina Bay Sands",
+          "lat": 1.2834,
+          "lng": 103.8607
+        },
+        {
+          "lat": 1.305,
+          "lng": 103.87
+        },
+        {
+          "name": "East Coast Park",
+          "lat": 1.3,
+          "lng": 103.909
+        }
+      ]
+    }
+  ],
+  "fare_items": [
+    {
+      "id": "FARE-001",
+      "component": "base_fare",
+      "amount": 3.5,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-002",
+      "component": "distance_charge",
+      "distance_km": 8.0,
+      "rate_per_km": 0.55,
+      "amount": 4.4,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-003",
+      "component": "time_charge",
+      "duration_min": 18,
+      "rate_per_min": 0.25,
+      "amount": 4.5,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-004",
+      "component": "booking_fee",
+      "amount": 0.5,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-005",
+      "component": "total_charged",
+      "amount": 12.9,
+      "currency": "SGD"
+    },
+    {
+      "id": "FARE-006",
+      "component": "estimated_total",
+      "amount": 11.33,
+      "currency": "SGD",
+      "breakdown": {
+        "base_fare": 3.5,
+        "distance_charge": 3.58,
+        "time_charge": 3.75,
+        "booking_fee": 0.5
+      }
+    }
+  ],
+  "gps_telemetry": [
+    {
+      "id": "GPS-001",
+      "timestamp": "2026-09-28T14:00:00+08:00",
+      "lat": 1.2834,
+      "lng": 103.8607,
+      "status": "trip_start"
+    },
+    {
+      "id": "GPS-002",
+      "timestamp": "2026-09-28T14:02:00+08:00",
+      "lat": 1.292,
+      "lng": 103.858,
+      "status": "deviation_start"
+    },
+    {
+      "id": "GPS-003",
+      "timestamp": "2026-09-28T14:08:00+08:00",
+      "lat": 1.305,
+      "lng": 103.87,
+      "status": "on_detour"
+    },
+    {
+      "id": "GPS-004",
+      "timestamp": "2026-09-28T14:18:00+08:00",
+      "lat": 1.3,
+      "lng": 103.909,
+      "status": "trip_end"
+    }
+  ],
+  "chat_logs": [
+    {
+      "id": "CHAT-001",
+      "timestamp": "2026-09-28T14:03:00+08:00",
+      "sender": "rider",
+      "type": "message",
+      "content": "Why have we left the planned route?"
+    },
+    {
+      "id": "CHAT-002",
+      "timestamp": "2026-09-28T14:04:00+08:00",
+      "sender": "driver",
+      "type": "message",
+      "content": "There was traffic; I took an alternate route."
+    }
+  ],
+  "app_events": [
+    {
+      "id": "EVENT-001",
+      "timestamp": "2026-09-28T14:00:00+08:00",
+      "event_type": "trip_started",
+      "details": "Trip started on the planned6.5km road route."
+    },
+    {
+      "id": "EVENT-002",
+      "timestamp": "2026-09-28T14:02:00+08:00",
+      "event_type": "route_deviation_detected",
+      "details": "The recorded actual route diverged at this time."
+    },
+    {
+      "id": "EVENT-003",
+      "timestamp": "2026-09-28T14:18:00+08:00",
+      "event_type": "trip_completed",
+      "details": "Trip complete, actual8km and18minutes. FareSGD12.90."
+    }
+  ],
+  "traffic_data": [
+    {
+      "id": "TRAFFIC-001",
+      "source": "historical_traffic_api_fixture",
+      "affected_route_id": "ROUTE-001",
+      "segment": "Planned road segment at the recorded deviation",
+      "valid_from": "2026-09-28T14:00:00+08:00",
+      "valid_until": "2026-09-28T14:18:00+08:00",
+      "status": "congested",
+      "note": "Synthetic historical API response fixture; no live traffic query was made."
+    },
+    {
+      "id": "TRAFFIC-002",
+      "source": "historical_traffic_api_fixture",
+      "affected_route_id": "ROUTE-001",
+      "segment": "Planned road segment at the recorded deviation",
+      "valid_from": "2026-09-28T14:00:00+08:00",
+      "valid_until": "2026-09-28T14:18:00+08:00",
+      "status": "no_congestion",
+      "note": "Synthetic historical API response fixture; no live traffic query was made."
+    }
+  ]
+}

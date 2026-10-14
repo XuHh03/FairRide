@@ -1,0 +1,56 @@
+{
+  "policy_id": "ryde_v2_1_no_show",
+  "version": "2.1",
+  "status": "supplied_project_reference",
+  "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+  "effective_date": "2026-01-01",
+  "dispute_type": "no_show_charge",
+  "fee_goes_to": "rider_refund_or_driver_compensation",
+  "clauses": [
+    {
+      "id": "POLICY-2.1",
+      "text": "Section 2.1: Five-minute free wait from scheduled pickup time. Early arrival earns no pre-schedule credit. Implementation interpretation: a late driver must also spend five physical minutes at pickup after arrival."
+    },
+    {
+      "id": "POLICY-2.2",
+      "text": "Section 2.2: A valid driver-cancelled rider no-show incurs SGD 5.00, transferred to the driver as compensation."
+    },
+    {
+      "id": "POLICY-2.3",
+      "text": "Section 2.3: Before cancellation, driver must send at least one in-app chat message AND attempt at least one in-app phone call. Failure of either obligation voids the fee."
+    },
+    {
+      "id": "POLICY-2.4",
+      "text": "Section 2.4: Driver must arrive by scheduled pickup plus 5 minutes. Rider may cancel at no charge when driver fails this arrival condition. Driver no-show plus no contact qualifies for a separate SGD 5 goodwill credit."
+    },
+    {
+      "id": "POLICY-2.5",
+      "text": "Section 2.5: At least 3 no-show cancellations within a rolling 30 days flag the rider for human account review; do not suspend accounts or infer fee validity from history."
+    },
+    {
+      "id": "POLICY-7.3",
+      "text": "Precedent 7.3, DISP-2026-0211: Driver waited 6 minutes but made no message or call. SGD 5 cancellation fee reversed. Relevant when contact obligations are missing; it is not the answer label for the current case."
+    },
+    {
+      "id": "POLICY-5.1",
+      "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+    },
+    {
+      "id": "POLICY-6.1",
+      "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+    },
+    {
+      "id": "POLICY-6.2",
+      "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+    },
+    {
+      "id": "POLICY-6.3",
+      "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+    }
+  ],
+  "wait_start_event": "scheduled_time",
+  "free_wait_time_min": 5,
+  "no_show_threshold_min": 5,
+  "cancellation_fee_after_wait": 5.0,
+  "refund_basis": "cancellation_fee"
+}

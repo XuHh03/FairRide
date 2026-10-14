@@ -4,7 +4,7 @@ import asyncio
 from time import perf_counter
 
 from agents import AgentBackend, AgentCall, ModelAgentBackend
-from checks import material_case_issues, validate_final_ruling
+from checks import material_case_issues, validate_final_ruling, escalation_issues, account_review_flags
 from contracts import ActivityEntry, AdvocateResult, JudgeResult, Role, WorkflowResult
 from evidence import build_review_input, validate_references
 
@@ -26,7 +26,16 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
     activity: list[ActivityEntry] = []
     issues: list[str] = []
     failure_category = None
+    mandatory_escalation = False
     try:
+        gates = escalation_issues(case, policy)
+        if gates:
+            return WorkflowResult(
+                case_id=case_id, status="human_review", activity_log=[ActivityEntry(
+                    actor="system", event="policy_escalation",
+                    output={"reasons": gates, "wall_duration_ms": round((perf_counter()-started)*1000)})],
+                judge_result=_human_review("; ".join(gates), policy_ids=["POLICY-5.1", "POLICY-6.1", "POLICY-6.2"]),
+                validation_issues=gates, mandatory_escalation=True, account_review_flags=account_review_flags(case))
         review = build_review_input(case, policy)
         agent = backend or ModelAgentBackend()
     except Exception as exc:
@@ -61,9 +70,10 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
     async def call_judge(
         rider: AdvocateResult, driver: AdvocateResult,
         rebuttals: list[AdvocateResult] | None = None,
+        previous_assessment: JudgeResult | None = None,
     ) -> JudgeResult:
         started = perf_counter()
-        call: AgentCall[JudgeResult] = await agent.judge(review, rider, driver, rebuttals)
+        call: AgentCall[JudgeResult] = await agent.judge(review, rider, driver, rebuttals, previous_assessment=previous_assessment)
         result = JudgeResult.model_validate(call.result)
         refs = validate_references(result, case, policy)
         if refs:
@@ -95,10 +105,16 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
             rebuttals = await asyncio.gather(
                 *(call_advocate(role, decision.question) for role in roles)
             )
-            decision = await call_judge(rider, driver, rebuttals)
+            decision = await call_judge(rider, driver, rebuttals, previous_assessment=decision)
             if decision.action == "request_rebuttal":
                 issues.append("Judge requested a second rebuttal round")
                 failure_category = "validation"
+        if decision.action == "final_ruling":
+            gates = escalation_issues(case, policy, decision.confidence, final=True)
+            if gates:
+                mandatory_escalation = True
+                issues.extend(gates)
+                decision = _human_review("; ".join(gates), decision.evidence_ids, decision.policy_ids)
         if decision.action == "final_ruling":
             final_issues = validate_final_ruling(case, policy, decision)
             material_issues = material_case_issues(case, policy)
@@ -121,7 +137,7 @@ async def run_review_async(case: dict, policy: dict, backend: AgentBackend | Non
         return WorkflowResult(
             case_id=case_id, status=status, activity_log=activity,
             judge_result=decision, validation_issues=issues,
-            failure_category=failure_category,
+            failure_category=failure_category, mandatory_escalation=mandatory_escalation, account_review_flags=account_review_flags(case),
         )
     except Exception as exc:
         # A malformed model response or transport failure must not become a ruling.

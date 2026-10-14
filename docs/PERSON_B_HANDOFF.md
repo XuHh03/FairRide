@@ -1,111 +1,73 @@
-# Person B handoff — shared foundation v1.0
+# Person B handoff — policy v2.1, contract v2.0
 
-Evaluation update (13 October 2026): `WorkflowResult` now has optional `failure_category` (`setup`, `model`, `validation`, or null). Preserve it when integrating the workflow; human-review status alone does not identify a successful evidence-based escalation. See [evaluation scoring v2](EVALUATION.md) for definitions and tests.
+Updated 14 October 2026. The user selected the supplied Ryde Dispute Resolution Policy v2.1 as the governing project reference. Read `POLICY_V2_1_SPEC.md` before changing behavior. Earlier synthetic policies are archived and are not loaded by the active workflow.
 
-Route update (13 October 2026): DISP-008/009, route policy v1.1, route exception checks, fare consistency checks, and example evaluation are implemented. See [route scenarios](ROUTE_CASES.md) for the evidence format and corrected fare values. No new live provider run or UI verification has been performed.
+## Implemented
 
-Updated 5 October 2026. This began as the shared-foundation handoff and now includes the implemented no-show review path. See `progress.md` for the latest status.
-
-## Implemented by Person A's shared-foundation task
-
-- `contracts.py`: Pydantic v2 input/output schemas, unknown-field rejection, cited claims, Judge action constraints, integer refund cents, and contract version `1.0`.
-- `evidence.py`: evidence lookup, policy lookup, agent-input preparation, and citation existence checks.
-- `cases/DISP-002.json`: explicit, stable IDs on the ticket, trip, GPS, chats, and app events. Original record values are retained; profile history remains in the raw fixture but is excluded from agent input.
-- `policies/sample_no_show.json`: version `1.0`, six individually identified sample clauses, and explicit policy assumptions.
-- `checks.py`: waiting-time calculation now follows `wait_start_event`. The fixture still gives eight minutes with the arrival-based rule.
-- `examples/agent_outputs.json`: hand-written examples of both advocates and all three Judge actions. These are interface examples, not model results or evaluation labels.
-- `agents.py` and `workflow.py`: the original typed signatures now have live and example backends plus a one-round controller.
-- `tests/test_shared_contract.py`: executable shared-interface checks, alongside existing no-show tests.
-
-## Current implementation limit
-
-The model client, three role calls, rebuttal execution, no-show final amount checks, and result UI are implemented. The hand-written example walkthrough has been verified; the live endpoint has only been tested with a mocked HTTP response. No real provider call, route-deviation facts, multi-case evaluation, or payment execution has been verified.
+- No-show calculation uses five physical pickup minutes no earlier than scheduled pickup, verified arrival, and both a message and call before cancellation. Invalid fees cannot survive through `no_action`. A driver no-show without contact has a separate goodwill-credit recommendation.
+- Route calculations use additional kilometres and excess-distance fare. Historical traffic evidence, timely notification and acknowledgment are checked separately. Routes above 2 km, safety, high value and insufficient confidence are policy referrals.
+- User decision: justified but unnotified routes are referred until the source's unspecified partial-refund formula is confirmed.
+- The second Judge receives its original assessment/question and an exhausted rebuttal budget. Python still enforces one round.
+- Eleven cases, example outputs, evaluation labels and citations are migrated. Example responses are hand-written, not model results.
+- The policy includes category-relevant precedent clauses. Profiles/history remain excluded from agent input; a derived confidence requirement reflects fraud flags. Verified rolling no-show records may flag the account for manual review, not establish fault.
 
 ## Public interfaces
 
-| Function | Input | Output |
-|---|---|---|
-| `case_data.load_case(case_id)` | `"DISP-002"` | Raw case dictionary |
-| `case_data.load_policy(policy_id)` | `"sample_no_show"` | Raw policy dictionary |
-| `evidence.build_evidence_index(case)` | Raw case | ID → `EvidenceRecord` |
-| `evidence.build_policy_index(policy)` | Raw policy | Clause ID → `PolicyClause` |
-| `evidence.build_review_input(case, policy)` | Raw case and policy | `ReviewInput` |
-| `evidence.validate_references(result, case, policy)` | Parsed advocate/Judge result and raw records | Error strings; empty list means all cited IDs exist |
-| `agents.rider_advocate(review)` | `ReviewInput` | `AdvocateResult` from configured live model |
-| `agents.driver_advocate(review)` | `ReviewInput` | `AdvocateResult` from configured live model |
-| `agents.judge(review, rider_argument, driver_argument, rebuttals=None)` | Shared typed input and outputs | `JudgeResult` from configured live model |
-| `workflow.run_review(case, policy, backend=None)` | Raw case and policy; optional injectable backend | Validated `WorkflowResult` |
+| Function | Input → output |
+|---|---|
+| `load_case(case_id)` | Case ID → raw case dictionary |
+| `policy_for_case(case)` | Raw case → active v2.1 policy dictionary |
+| `build_evidence_index(case)` | Raw case → ID-to-`EvidenceRecord` lookup |
+| `build_policy_index(policy)` | Policy → clause lookup, including relevant precedent |
+| `build_review_input(case, policy)` | Raw records → contract-v2 `ReviewInput` |
+| `validate_references(result, case, policy)` | Parsed result → unknown-ID issues |
+| `run_review(case, policy, backend=None)` | Records + optional backend → `WorkflowResult` |
+| `AgentBackend.advocate(review, role, question=None)` | Async call → `AgentCall[AdvocateResult]` |
+| `AgentBackend.judge(review, rider_argument, driver_argument, rebuttals=None, previous_assessment=None)` | Async call → `AgentCall[JudgeResult]` |
 
-To split file ownership later, move the advocate functions to `agents/advocates.py` and Judge to `agents/judge.py`, replacing the current `agents.py`. Keep these signatures and imports compatible. Do not create both the same-named module and package as competing implementations.
+The synchronous `rider_advocate`, `driver_advocate` and `judge` wrappers remain in `agents.py`; the workflow uses the async backend interface. Custom backends must accept `previous_assessment`. Model clients and Judge share the configured model; there is no separate Judge-model environment variable.
 
-## Runnable integration example — no API key needed
+## Runnable example — no API key
 
 Run from the repository root after installing `requirements.txt`:
 
 ```python
-import json
-from pathlib import Path
+from agents import ExampleAgentBackend
+from case_data import load_case, policy_for_case
+from evidence import build_review_input
+from workflow import run_review
 
-from case_data import load_case, load_policy
-from contracts import AdvocateResult, JudgeResult
-from evidence import build_review_input, validate_references
-
-case = load_case("DISP-002")
-policy = load_policy("sample_no_show")
+case = load_case("DISP-012")
+policy = policy_for_case(case)
 review = build_review_input(case, policy)
-examples = json.loads(Path("examples/agent_outputs.json").read_text())
-rider = AdvocateResult.model_validate(examples["rider_advocate"])
-driver = AdvocateResult.model_validate(examples["driver_advocate"])
-judge_output = JudgeResult.model_validate(examples["judge_rebuttal"])
-for result in (rider, driver, judge_output):
-    assert validate_references(result, case, policy) == []
-print(review.case_id, judge_output.action)
+result = run_review(case, policy, ExampleAgentBackend())
+print(review.contract_version, policy["version"], result.status)
+assert result.failure_category is None
+assert sum(entry.actor == "judge" for entry in result.activity_log) == 2
 ```
 
-Use `review.model_dump(mode="json")` for model input. Parse a JSON string with `AdvocateResult.model_validate_json(text)` or `JudgeResult.model_validate_json(text)`. Use `model_json_schema()` when your model provider supports a JSON schema response format. Validate citations after parsing every response, including rebuttals.
+For direct fixture access, use `examples[case_id][role]`: examples are grouped by case. They are never model inputs.
 
-## Evidence conventions
+## Contracts and source IDs
 
-- IDs are case-local: `TICKET-001`, `TRIP-001`, `GPS-001`–`GPS-008`, `CHAT-001`–`CHAT-006`, and `EVENT-001`–`EVENT-010` in this fixture.
-- Every source record carries its own explicit ID. Never regenerate IDs from array positions after edits. New records receive new unused IDs; reordered records keep their IDs.
-- Policy IDs are `POLICY-001`–`POLICY-006` within the selected policy version. Store the case ID and policy version with results.
-- `EvidenceRecord.source` identifies the original section; `.data` contains its original fields without the ID wrapper. For example, `build_evidence_index(case)["GPS-005"]` resolves the 08:43 GPS record.
-- `FACT-001`–`FACT-003` are derived facts, not raw-source IDs. They retain formulas and source/policy citations. Cite those original IDs in claims, not a `FACT-*` ID.
-- `validate_references` checks existence only. It does not prove that a cited record supports a statement, enforce a policy, or establish refund eligibility.
-- Do not send the original sample document or expected outcomes to agents; the original document may contain an expected ruling. Use the prepared `ReviewInput`.
+- `Policy` carries version 2.1, `supplied_project_reference` status, source path, effective date, category, clauses and relevant thresholds. `SamplePolicy` is only an import alias for integration compatibility.
+- `ReviewInput.contract_version` is 2.0. It contains source evidence, named derived facts, policy and `required_confidence`. Facts may be numeric, boolean or a state string. Cite underlying records, not `FACT-*` IDs.
+- Original IDs remain stable. Historical traffic evidence uses `TRAFFIC-*`; policy section IDs are `POLICY-1.3`, `POLICY-2.3`, etc. Category precedents are `POLICY-7.1` or `POLICY-7.3`.
+- Every final ruling cites a relevant precedent and explains similarity or distinction. A precedent amount is not a general refund formula.
+- `proposed_action.amount_cents` is the rider refund; `goodwill_credit_cents` is separate. `refund_basis` is `cancellation_fee` or `excess_distance_fare`. All amounts are integer SGD cents. No actual payment occurs.
+- `WorkflowResult.failure_category` distinguishes setup/model/validation failures. `mandatory_escalation` identifies required policy referrals, which are not failures. `account_review_flags` recommends human account review without executing restrictions.
+- Log entries contain serialized results under `entry.output["result"]`, plus timing and permitted usage fields. Mandatory policy referrals may have only system entries because no Judge call is permitted.
 
-## Sample policy choices
+## Decisions and limits
 
-These are implementation assumptions, not official Ryde policy:
+Five minutes is inclusive. Early arrival does not count; a late driver must spend five physical minutes after arrival. This late-arrival interpretation is documented, not stated explicitly in the source. Notification and acknowledgment are required by the deviation point in this implementation.
 
-1. Waiting starts at recorded driver arrival, including arrival before scheduled pickup. Here 08:43–08:51 is eight minutes. Starting at scheduled pickup instead would give six minutes.
-2. Five minutes is the free-wait period; eight minutes is the no-show time threshold. The five-minute expiry alone is insufficient for the eight-minute condition.
-3. The sample charge is SGD 5.00, designated as driver compensation.
-4. GPS describes the recorded driver location; it cannot establish where the rider stood or which entrance was designated. There is no independent mandatory contact-count rule in this sample.
-5. Ratings, dispute history, and fraud flags do not determine fee validity.
-6. Material unresolved contradictions or missing evidence require human review.
+Use an explicit disputed amount where supplied; otherwise the charge is the conservative value bound. Confidence is self-reported and gated by policy; empirical calibration and a credibility weighting formula remain unavailable. Do not invent them.
 
-Known conflict: `EVENT-008` says the charge becomes applicable after five minutes. That wording conflicts with the eight-minute sample rule. Preserve and expose the contradiction; do not rewrite the source record. `fee_eligible` in `checks.py` is only the time-threshold condition, not a final policy-compliant ruling.
+Historical traffic records are supplied input or clearly marked synthetic API-response fixtures. No live traffic adapter is implemented. Missing traffic data must not become affirmative proof of no congestion. Fare/surge, property damage, and other categories remain unsupported and are referred; the supplied documents are retained for future work.
 
-## Actions and outcomes
+## Verify and continue
 
-- `request_rebuttal`: requires a nonblank `question` and `rebuttal_roles`; no ruling or proposed action. Target roles are `rider_advocate` and/or `driver_advocate`.
-- `final_ruling`: requires `ruling` and `proposed_action`; no follow-up question.
-- `human_review`: requires an explanation; no ruling or proposed action. Human review is an action/status, not a ruling enum.
-- Rulings: `uphold_charge` (keep fee, zero refund), `reverse_charge` (recommend returning the full charged amount), `partial_refund` (return part of it), and `no_action` (no monetary change).
-- `proposed_action.amount_cents` means refund to the rider, not the original charge. It must be a nonnegative integer; currency is `SGD`. Uphold/no-action require zero cents. Python verifies a reversal equals the charge and a partial refund is positive and below the charge.
-- Confidence is optional and bounded from 0 to 1. It cannot override evidence or policy checks.
-- `WorkflowResult.status` is `completed` or `human_review`; it includes an activity log, Judge result, and validation issues. Person B must ensure status matches the validated result.
+Run `FAIRRIDE_RUN_LIVE_TESTS=0 python3 -m unittest discover -s tests -v` and `python3 evaluation.py --output /tmp/fairride-v21.json`.
 
-## Remaining work
-
-1. Configure a permitted model endpoint and evaluate actual responses, latency, token use, and provider compatibility. The backend accepts `FAIRRIDE_API_KEY` or `OPENAI_API_KEY`, `FAIRRIDE_MODEL`, and optional `FAIRRIDE_BASE_URL`.
-2. Add rider-favorable, driver-favorable, and ambiguous no-show cases, keeping expected answers outside model input.
-3. Add route-deviation records, sample policy, facts, checks, and case selection in the UI.
-4. Evaluate citation support and case outcomes. ID existence and the current deterministic checks cannot prove every natural-language claim.
-
-## Verification and interface changes
-
-Run `.venv/bin/python -m unittest discover -s tests -v`. Sixteen tests pass, covering wait facts, contracts, example workflow, concurrent advocates, rebuttal limit, amount checks, and mocked client request shape. No live AI behavior is tested.
-
-When changing a shared interface, update `contracts.py`, this handoff, the examples, and relevant tests together. Notify the other person before integrating incompatible changes.
+Next: review the migration, configure/rehearse the app, evaluate the live provider explicitly, confirm the partial-refund and confidence-calibration details with organizers, and add a real historical-traffic adapter if required. Commit/push only when requested. Update contracts, examples, docs and tests together for interface changes.

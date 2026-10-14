@@ -30,6 +30,7 @@ class AgentBackend(Protocol):
     async def judge(
         self, review: ReviewInput, rider_argument: AdvocateResult,
         driver_argument: AdvocateResult, rebuttals: list[AdvocateResult] | None = None,
+        previous_assessment: JudgeResult | None = None,
     ) -> AgentCall[JudgeResult]: ...
 
 
@@ -88,117 +89,20 @@ class ChatClient:
             raise ValueError("Model returned an invalid JSON response") from exc
 
 
-_ADVOCATE_INSTRUCTIONS = """You are the {role} in a sample rider-driver dispute review.
+_ADVOCATE_INSTRUCTIONS = """You are the {role} reviewing a ride dispute under the supplied project policy v2.1.
+Return one JSON object: role, claims, counterpoints, unanswered_questions. Each claim/counterpoint has statement, evidence_ids, policy_ids; arrays are never null. Role must be exactly {role}. Every claim has at least one source or policy citation.
+Represent your assigned side, acknowledge counterevidence, and distinguish allegations from verified facts. Apply only the supplied v2.1 clauses and Python facts: five post-schedule pickup minutes AND both message/call contacts for no-show; route tolerance in km and excess-distance fare, not percentages or the entire fare difference.
+Copy only IDs present in supplied evidence or policy clauses. Never cite FACT-* as evidence: cite its underlying source records. Applicable section and precedent IDs such as POLICY-2.3 and POLICY-7.3 are valid; do not invent IDs.
+Traffic justification requires the supplied historical traffic records matched to route segment and trip time. Narrative app alerts and driver assertions alone are not historical verification. Never invent missing API data, agreement, credibility scores, or a partial-refund formula.
+If answering follow_up_question, answer that specific question from supplied sources. Safety or mandatory policy thresholds require referral, not fault assignment. No hidden reasoning; JSON only."""
 
-Return ONE JSON object with EXACTLY these top-level fields:
-- "role": must be exactly "{role}"
-- "claims": array of objects. Each object has "statement" (non-empty string), "evidence_ids" (array of strings), "policy_ids" (array of strings).
-- "counterpoints": same structure as claims.
-- "unanswered_questions": array of strings.
-
-Example (copy the structure, fill with real content from the records):
-  {
-    "role": "{role}",
-    "claims": [
-      {"statement": "The driver arrived late.", "evidence_ids": ["TRIP-001"], "policy_ids": ["POLICY-003"]}
-    ],
-    "counterpoints": [
-      {"statement": "The rider was not at the pickup.", "evidence_ids": ["CHAT-002"], "policy_ids": ["POLICY-001"]}
-    ],
-    "unanswered_questions": ["Was the designated entrance clearly communicated?"]
-  }
-
-Field rules:
-- All array fields (claims, counterpoints, unanswered_questions) must be JSON arrays. Never use null. Use [] when empty.
-- Each claim and counterpoint must have at least one entry in evidence_ids or policy_ids.
-- "statement" must be a non-empty string.
-
-Evidence ID rules (CRITICAL — violations cause system rejection):
-- evidence_ids must reference SOURCE RECORDS, never derived facts.
-  The payload contains a "facts" array with IDs like FACT-001, FACT-002.
-  These are COMPUTED conclusions, NOT citable evidence. NEVER put FACT-* in evidence_ids.
-  If a fact supports your claim, cite the underlying source records instead.
-  WRONG: "evidence_ids": ["FACT-001"]
-  RIGHT: "evidence_ids": ["GPS-005", "EVENT-004"]
-- Copy evidence IDs exactly as they appear in the supplied records. Each ID has exactly ONE prefix and ONE number.
-- Valid evidence prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-, ROUTE-, FARE-.
-  Valid policy prefix: POLICY-.
-- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, ROUTE-001, FARE-002, POLICY-003.
-- NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
-- NEVER put evidence IDs in policy_ids, or policy IDs in evidence_ids. ROUTE-002 goes in evidence_ids; POLICY-003 goes in policy_ids.
-
-Conduct:
-- Represent uncertainty and the opposing side fairly. A citation must support the exact statement.
-- Never infer a rider's location from driver GPS, decide from profile history, or treat the sample policy as official.
-- If asked a follow-up question, answer only from supplied records and say when they cannot answer it.
-- No hidden reasoning or invented records. Return JSON only, no markdown."""
-
-_JUDGE_INSTRUCTIONS = """You are an impartial reviewer of a sample rider-driver dispute.
-
-Return ONE JSON object with EXACTLY these fields:
-{
-  "action": "final_ruling",
-  "question": null,
-  "rebuttal_roles": [],
-  "ruling": "uphold_charge",
-  "proposed_action": {"amount_cents": 0, "currency": "SGD"},
-  "explanation": "Your reasoning here.",
-  "evidence_ids": ["GPS-005"],
-  "policy_ids": ["POLICY-003"],
-  "confidence": 0.85
-}
-
-Action rules (choose one):
-- "request_rebuttal": Set question to a non-empty string and rebuttal_roles to ["rider_advocate"] or ["driver_advocate"]. Set ruling to null and omit proposed_action.
-- "final_ruling": Set ruling to one of: "uphold_charge", "reverse_charge", "partial_refund", "no_action". Set proposed_action.amount_cents. Set question to null and rebuttal_roles to [].
-- "human_review": Set ruling to null and omit proposed_action. Set question to null and rebuttal_roles to [].
-
-Field rules:
-- All array fields (rebuttal_roles, evidence_ids, policy_ids) must be JSON arrays. Never use null for arrays. Use [] when empty.
-- question must be null when action is not request_rebuttal. Do NOT send an empty string "".
-- proposed_action must be present ONLY for final_ruling. Omit it (or set to null) for other actions.
-- explanation must be a non-empty string.
-- confidence is a number between 0.0 and 1.0. Use null if you have none.
-
-Evidence ID rules (CRITICAL — violations cause system rejection):
-- evidence_ids must reference SOURCE RECORDS, never derived facts.
-  The payload contains a "facts" array with IDs like FACT-001, FACT-002.
-  These are COMPUTED conclusions, NOT citable evidence. NEVER put FACT-* in evidence_ids.
-  If a fact supports your ruling, cite the underlying source records instead.
-  WRONG: "evidence_ids": ["FACT-001"]
-  RIGHT: "evidence_ids": ["GPS-005", "EVENT-004"]
-- Copy evidence IDs exactly as they appear in the supplied records. Each ID has exactly ONE prefix and ONE number.
-- Valid evidence prefixes: GPS-, CHAT-, EVENT-, TRIP-, TICKET-, ROUTE-, FARE-.
-  Valid policy prefix: POLICY-.
-- Example correct IDs: GPS-005, CHAT-003, EVENT-004, TRIP-001, TICKET-001, ROUTE-001, FARE-002, POLICY-003.
-- NEVER combine or merge prefixes. "CHATTICKET-001" is INVALID. To cite a chat and a ticket, use ["CHAT-001", "TICKET-001"].
-- NEVER put evidence IDs in policy_ids, or policy IDs in evidence_ids. ROUTE-002 goes in evidence_ids; POLICY-003 goes in policy_ids.
-
-Amount rules (amount_cents is the SGD refund TO the rider, in integer cents):
-- "uphold_charge": 0 (no refund)
-- "reverse_charge": full charge amount (use the actual charged amount from the case records)
-- "partial_refund": between 0 and the full charge (exclusive)
-
-Decision guidance:
-- The review includes Python-calculated facts. Use them to apply the policy threshold and guide your ruling.
-- Check the dispute_type in the review to determine which facts and threshold apply.
-
-For no_show_charge disputes:
-- If fee_eligible is true (driver waited at or beyond the no-show threshold), uphold_charge (0 refund) is appropriate.
-- If fee_eligible is false (driver waited below the threshold), reverse_charge (full refund) is appropriate.
-- The wait-time threshold is the decisive factor. Do not abstain merely because GPS does not prove the rider's exact position.
-
-For route_deviation disputes:
-- If deviation_significant is true (actual route exceeds the policy threshold), partial_refund of the fare_difference is appropriate — unless the driver's justification is corroborated by app alerts, documented road closures, or rider-requested changes. A confirmed exception supports uphold_charge with zero refund.
-- Check structured alert affected_route_id, valid_from/valid_until, and status. Active, route- and time-matched records support an exception; status none does not. Conflicting or unknown snapshots require clarification and then human_review if unresolved. Negative statements such as no traffic alerts are not positive corroboration.
-- If deviation_significant is false (deviation within the acceptable range), uphold_charge (0 refund) is appropriate.
-- If the driver claimed traffic but no app alerts corroborate it, the deviation is unjustified and a refund is warranted.
-
-General:
-- Make a final_ruling when the calculated facts clearly support one side.
-- Route to human_review ONLY when material evidence is genuinely missing, contradictory, or the case is truly ambiguous after considering the calculated facts.
-- Source-ID existence alone is not proof. Treat the sample policy as not official.
-- Never use rider/driver history or invent records. Return JSON only, no markdown."""
+_JUDGE_INSTRUCTIONS = """You are the impartial Judge under the supplied project reference Ryde Dispute Resolution Policy v2.1.
+Return JSON matching output_schema. Actions are request_rebuttal, final_ruling, human_review. A request needs a question and target roles, no ruling/action amount. Human review has no ruling or proposed_action. Final ruling needs decisive source/policy citations and the relevant supplied precedent clause: compare its facts rather than treating it as this case's answer.
+Use policy and Python facts consistently. No-show requires the five-minute post-schedule physical wait, verified arrival, and at least one message AND call before cancellation. Missing contact obligations void the fee even after five minutes; neither uphold_charge nor no_action may retain an invalid fee. Driver no-show without contact permits a separate SGD 5 goodwill credit.
+Route tolerance is <=1 km; above 2 km requires human review. For eligible smaller deviations, require historical traffic evidence. An unjustified detour gets full refund of the excess DISTANCE component, represented as partial_refund of the trip with refund_basis=excess_distance_fare. Do not refund time charges or the whole fare. Justified and timely informed/agreed routes retain the fare. A justified but unnotified route is referred because its partial-refund formula is unspecified. Missing/conflicting evidence is not affirmative proof of no congestion.
+Safety incidents and disputes above SGD 50 require human review. Route rulings need confidence >=0.80. Either party's fraud flag raises the required threshold to 0.95; the provided required_confidence already reflects that gate. Confidence must consider evidence completeness, policy clarity, precedent alignment and available credibility context; explain its basis, do not invent scores or claim empirical calibration. A flag does not establish fault.
+proposed_action.amount_cents is a refund TO the rider; goodwill_credit_cents is separate, both nonnegative integer SGD cents. refund_basis is cancellation_fee or excess_distance_fare. No actual payment or account action is executed.
+If previous_assessment is present, answer its exact question using rebuttals. rebuttal_round_complete=true means no additional question is permitted: finalize or refer. Never invent sources, cite FACT-* IDs, or leak hidden reasoning. JSON only."""
 
 
 class ModelAgentBackend:
@@ -217,12 +121,16 @@ class ModelAgentBackend:
     async def judge(
         self, review: ReviewInput, rider_argument: AdvocateResult,
         driver_argument: AdvocateResult, rebuttals: list[AdvocateResult] | None = None,
+        previous_assessment: JudgeResult | None = None,
     ) -> AgentCall[JudgeResult]:
         payload = {
             "review": review.model_dump(mode="json"),
             "rider_argument": rider_argument.model_dump(mode="json"),
             "driver_argument": driver_argument.model_dump(mode="json"),
             "rebuttals": [item.model_dump(mode="json") for item in rebuttals or []],
+            "previous_assessment": previous_assessment.model_dump(mode="json") if previous_assessment else None,
+            "rebuttal_round_complete": previous_assessment is not None,
+            "output_schema": JudgeResult.model_json_schema(),
         }
         output, usage = await self.client.complete_json(_JUDGE_INSTRUCTIONS, payload)
         return AgentCall(JudgeResult.model_validate(output), usage)
@@ -249,7 +157,7 @@ class ExampleAgentBackend:
                 "claims": [{
                     "statement": "The supplied records do not resolve the material question asked.",
                     "evidence_ids": ["TRIP-001", "TICKET-001"],
-                    "policy_ids": ["POLICY-005"],
+                    "policy_ids": ["POLICY-1.4"],
                 }],
                 "counterpoints": [],
                 "unanswered_questions": [question],
@@ -261,6 +169,7 @@ class ExampleAgentBackend:
     async def judge(
         self, review: ReviewInput, rider_argument: AdvocateResult,
         driver_argument: AdvocateResult, rebuttals: list[AdvocateResult] | None = None,
+        previous_assessment: JudgeResult | None = None,
     ) -> AgentCall[JudgeResult]:
         case_examples = self.examples.get(review.case_id)
         if not case_examples:
@@ -283,5 +192,6 @@ def driver_advocate(review: ReviewInput) -> AdvocateResult:
 def judge(
     review: ReviewInput, rider_argument: AdvocateResult,
     driver_argument: AdvocateResult, rebuttals: list[AdvocateResult] | None = None,
+    previous_assessment: JudgeResult | None = None,
 ) -> JudgeResult:
-    return asyncio.run(ModelAgentBackend().judge(review, rider_argument, driver_argument, rebuttals)).result
+    return asyncio.run(ModelAgentBackend().judge(review, rider_argument, driver_argument, rebuttals, previous_assessment)).result

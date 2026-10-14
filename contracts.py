@@ -1,4 +1,4 @@
-"""Shared JSON contracts. Version 1; serialize with model_dump(mode='json')."""
+"""Shared JSON contracts. Version 2; serialize with model_dump(mode='json')."""
 
 from typing import Literal
 
@@ -24,10 +24,13 @@ class PolicyClause(Contract):
     text: str = Field(min_length=1)
 
 
-class SamplePolicy(Contract):
+class Policy(Contract):
     policy_id: str
     version: str
-    status: Literal["sample_only_not_ryde_policy"]
+    status: Literal["supplied_project_reference"]
+    source_reference: str
+    effective_date: str
+    dispute_type: Literal["no_show_charge", "route_deviation"]
     fee_goes_to: str
     clauses: list[PolicyClause]
     # No-show specific (optional — present only for no_show_charge policies)
@@ -36,13 +39,19 @@ class SamplePolicy(Contract):
     no_show_threshold_min: int | None = Field(default=None, ge=0)
     cancellation_fee_after_wait: float | None = Field(default=None, ge=0)
     # Route deviation specific (optional — present only for route_deviation policies)
-    max_deviation_pct: float | None = Field(default=None, ge=0)
+    tolerance_km: float | None = Field(default=None, ge=0)
+    max_ai_deviation_km: float | None = Field(default=None, ge=0)
     refund_basis: str | None = None
+
+
+# Preserve the import name used by the existing backend integration.
+SamplePolicy = Policy
 
 
 class DerivedFact(Contract):
     id: str
-    value: int | float | bool
+    value: int | float | bool | str
+    name: str = ""
     unit: str
     formula: str
     evidence_ids: list[str]
@@ -50,12 +59,13 @@ class DerivedFact(Contract):
 
 
 class ReviewInput(Contract):
-    contract_version: Literal["1.0"] = "1.0"
+    contract_version: Literal["2.0"] = "2.0"
     case_id: str
     dispute_type: str
     evidence: list[EvidenceRecord]
     policy: SamplePolicy
     facts: list[DerivedFact]
+    required_confidence: float = Field(default=0, ge=0, le=1)
 
 
 class Claim(Contract):
@@ -82,6 +92,8 @@ class ProposedAction(Contract):
 
     amount_cents: int = Field(ge=0, strict=True)
     currency: Literal["SGD"] = "SGD"
+    refund_basis: Literal["cancellation_fee", "excess_distance_fare"] | None = None
+    goodwill_credit_cents: int = Field(default=0, ge=0, strict=True)
 
 
 class JudgeResult(Contract):
@@ -135,3 +147,5 @@ class WorkflowResult(Contract):
     judge_result: JudgeResult
     validation_issues: list[str]
     failure_category: Literal["setup", "model", "validation"] | None = None
+    mandatory_escalation: bool = False
+    account_review_flags: list[str] = Field(default_factory=list)

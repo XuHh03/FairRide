@@ -1,45 +1,35 @@
 # FairRide
 
-FairRide is a Streamlit prototype for evidence-based rider–driver dispute review in the Tencent Cloud hackathon Digital Native track. It supports eight sample cases across no-show charges and route deviations, including justified and ambiguous detours. Policies are synthetic and **not official Ryde policies**. The review recommends an outcome or human referral; it never issues a payment.
+FairRide reviews no-show charges and route deviations using Rider Advocate, Driver Advocate and Judge roles, cited evidence, and deterministic policy checks. It follows the supplied **RydeResolve Policy v2.1** project reference. Eleven demo cases are synthetic; recommendations never execute payments or account actions.
 
-The app has two clearly labeled modes. **Example walkthrough** runs hand-written agent responses through the real controller and validation, with no API key. **Live model** calls an OpenAI-compatible chat completions endpoint; it requires configuration and has not been verified against a live provider in this repository. For `DISP-002`, the supplied app event conflicts with the sample policy and the physical pickup entrance is unresolved, so the example correctly ends in human review.
-
-## Run locally
+## Run
 
 Use Python 3.12 or newer:
 
 ```bash
-python3.12 -m venv .venv
+python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -m streamlit run app.py
 ```
 
-Run tests:
+Example walkthroughs require no API key. For live calls, set required `FAIRRIDE_API_KEY` (or `OPENAI_API_KEY`) and `FAIRRIDE_MODEL`. Optional `FAIRRIDE_BASE_URL` selects an OpenAI-compatible endpoint. `.env.example` lists supported settings; keep real credentials out of Git. No separate Judge-model or stub environment switch is implemented.
 
 ```bash
-.venv/bin/python -m unittest discover -s tests -v
+FAIRRIDE_RUN_LIVE_TESTS=0 python3 -m unittest discover -s tests -v
+python3 evaluation.py --output /tmp/fairride-v21.json
 ```
 
-Live tests are skipped unless `FAIRRIDE_RUN_LIVE_TESTS=1` and model credentials are configured. Run the offline evaluation with `python3 evaluation.py --output /tmp/fairride-example-v2.json`. See [evaluation scoring](docs/EVALUATION.md) for autonomous resolution, ruling accuracy, escalation/failure categories, and live-run instructions. Historical `evaluation_results.json` uses the older scoring definition.
+The live test batch requires `FAIRRIDE_RUN_LIVE_TESTS=1` and credentials. CLI `--live` is also explicit opt-in. Latest policy behavior has not been evaluated against a live provider.
 
-To enable **Live model**, set `FAIRRIDE_API_KEY` (or `OPENAI_API_KEY`) and `FAIRRIDE_MODEL`. `FAIRRIDE_BASE_URL` defaults to `https://api.openai.com/v1`; set it for another compatible provider. The client sends JSON-mode chat completion requests. Keep credentials in environment variables or deployment secrets, never in the repository. Model latency and token counts appear in the activity log when the provider returns usage data.
+## Policy and implementation
 
-## Project map
+- `policies/ryde_v2_1_*.json`: active, source-linked policy and category precedents. Earlier rules are archived.
+- `checks.py`: waiting/contact/location calculations, route and excess-distance fare, safety/value/confidence safeguards, and final validation.
+- `contracts.py`, `evidence.py`: contract v2.0, source lookup and prepared inputs; citation existence is not proof of claim support.
+- `agents.py`, `workflow.py`: live/example backends, concurrent advocates, one rebuttal round, and original-question context on the second Judge call.
+- `cases/`, `examples/`, `evaluation.py`: raw records, separate hand-written responses and separate expected labels.
+- `app.py`: case review, activity, cited evidence, refund and separate goodwill-credit recommendations.
 
-| Path | Purpose |
-|---|---|
-| `app.py` | Case review, activity log, cited sources, timing, and result |
-| `case_data.py` | Load case and sample-policy fixtures |
-| `contracts.py` | Pydantic input/output schemas and valid actions |
-| `evidence.py` | Source lookups, normalized agent input, and citation-existence checks |
-| `checks.py` | No-show facts, known material conflicts, and ruling/amount checks |
-| `agents.py` | Live model backend and hand-written example backend |
-| `workflow.py` | Parallel initial advocates, Judge, one rebuttal round, validation, and referral |
-| `cases/`, `policies/` | Eight cases and versioned sample policies for two dispute types |
-| `tests/` | Calculation, contract, workflow, and client-shape tests |
-| `examples/` | Hand-written agent output fixtures, never AI decisions |
-| `data/` | Supplied original document, retained for reference only |
+Traffic evidence is supplied input or explicitly synthetic historical-API fixtures; no live traffic adapter exists. Partial excess-distance refunds for justified but unnotified detours are referred until the undefined formula is confirmed. Confidence gates are enforced, but empirical calibration is still unverified. Unsupported categories are referred.
 
-`evidence.validate_references` checks whether IDs exist, not whether a statement is true. The final checks catch specific known conflicts and amount errors; they are not a general proof of evidence support. Rider and driver history is excluded from model input and must not determine fee validity.
-
-See [the project guide](docs/PROJECT_GUIDE.md), [the shared handoff](docs/PERSON_B_HANDOFF.md), and [progress](progress.md) for design decisions, interfaces, and next steps. [Route scenarios](docs/ROUTE_CASES.md) documents the new cases, fare corrections, and justification rules.
+Read [the guide](docs/PROJECT_GUIDE.md), [v2.1 spec](docs/POLICY_V2_1_SPEC.md), [handoff](docs/PERSON_B_HANDOFF.md), and [evaluation definitions](docs/EVALUATION.md). Historical saved results and older increment 1 proposals do not describe the current policy.

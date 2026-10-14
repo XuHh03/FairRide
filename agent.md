@@ -22,14 +22,15 @@ Read this before changing the repository. The current project is a Python/Stream
 
 ## Implementation rules
 
-1. Preserve the public function signatures in `docs/PERSON_B_HANDOFF.md` unless the team updates the contract, examples, documentation, and tests together. If splitting `agents.py`, replace it with an `agents/` package; do not keep competing module and package implementations.
-2. Keep raw case evidence and expected evaluation answers separate. Send agents `evidence.build_review_input(case, policy)`, which excludes rider and driver profile history. Do not send the original sample document or answer labels to a model.
-3. Preserve explicit source IDs when editing case records. New records need unused IDs. Cite source and policy IDs, not derived `FACT-*` IDs, in agent claims. Validate every parsed agent response with the Pydantic contract and `evidence.validate_references`.
-4. Citation existence does not establish that a claim is true. Check decisive claims against source content, sample-policy conditions, and Python-calculated amounts. Refer material missing or contradictory facts to human review.
-5. Treat `policies/sample_no_show.json` as a synthetic policy, never an official Ryde rule. Its wait clock starts at recorded driver arrival; the five-minute free wait and eight-minute no-show threshold are distinct. `EVENT-008` conflicts with that threshold. Preserve and surface the conflict.
-6. Do not use ratings, dispute counts, or fraud flags to decide this individual fee. GPS locates the recorded driver position but does not prove the rider's position or the designated entrance.
-7. `proposed_action.amount_cents` is an integer SGD refund recommendation. Calculate and validate money in Python using integer cents or `Decimal`; model output must not execute a payment. Limit rebuttal to one round and show visible agent actions and cited outputs, not hidden reasoning.
+1. Follow the supplied project policy v2.1 and `docs/POLICY_V2_1_SPEC.md`; archived samples and older increment1 proposals are not governing instructions.
+2. Use contractv2.0 and the interfaces in `docs/PERSON_B_HANDOFF.md`. The second Judge receives its prior assessment/question and an exhausted rebuttal budget.
+3. Preserve raw source IDs. Source citations may include historical `TRAFFIC-*`; policy IDs identify exact sections and precedents. Do not cite computed FACT-* records as raw evidence.
+4. Keep expected labels, original answer-bearing sample documents and raw profile history out of agent input. The required confidence reflects fraud flags; flags affect review thresholds, not fault. Verified rolling no-show records may recommend account review without executing restrictions.
+5. Five-minute no-show eligibility also needs verified pickup presence, a message and a call before cancellation. Neither no_action nor another outcome may retain an invalid charge.
+6. Route rules use additional kilometres and excess-distance fare, historical traffic and timely notification/agreement. Mandatory policy referrals must precede Judge rulings. Do not invent the unspecified partial-refund percentage.
+7. Validate schemas, sources, policy conditions, integer refund/credit amounts and escalation gates. Source existence alone does not establish semantic support. Show cited outputs, not hidden reasoning.
+8. No actual payments, credits, suspensions or live API calls without authorization. Standard tests must not call providers; live tests require explicit opt-in.
 
 ## Immediate work
 
-Evaluate the live model path with an actual provider, then add contrasting no-show cases and route-deviation support. The example walkthrough is hand-written and must never be described as a model result. See `progress.md` for the ordered work and current verification status.
+Review the migration and current limitations, then configure/rehearse the UI and explicitly evaluate a live provider. Refer to `progress.md` for the current state.

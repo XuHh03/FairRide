@@ -1,16 +1,16 @@
 # Evaluation scoring v2
 
-Updated 13 October 2026. Evaluation measures correct autonomous resolution separately from referrals and failures. It does not change the application's human-review fallback.
+Updated 14 October 2026. Policy reference: supplied v2.1. Evaluation measures correct autonomous resolution separately from referrals and failures. It does not change the application's human-review fallback.
 
 ## Labels and categories
 
-`evaluation.LABELS` holds expected outcomes outside model inputs. DISP-002 expects human review because its material entrance ambiguity and timer conflict remain unresolved. DISP-009 expects human review for conflicting route-closure snapshots. The other six cases expect their stated final ruling; human review is not an acceptable substitute.
+`evaluation.LABELS` holds expected outcomes outside model inputs. DISP-005, DISP-008 and DISP-009 require human review because extra distance exceeds 2 km. DISP-012 expects human review for conflicting historical traffic records after one bounded rebuttal. The other seven cases expect a validated decision and amount; blanket human review is not accepted for clear cases. DISP-002 now meets the selected five-minute scheduled-pickup rule and contact obligations.
 
 Each run has one category:
 
 - `correct_ruling`: a validated final ruling and amount match the expected outcome.
 - `incorrect_ruling`: a validated final ruling has the wrong outcome or amount.
-- `appropriate_escalation`: an evidence-based referral on a case explicitly labelled human review.
+- `appropriate_escalation`: an evidence-based referral on a case labelled human review, or a mandatory policy referral (including a confidence gate).
 - `unnecessary_escalation`: an evidence-based referral on a case with a clear expected ruling.
 - `operational_failure`: setup, model/transport, schema, citation, invalid-ruling, or rebuttal-limit failure prevented validated processing.
 
@@ -39,7 +39,7 @@ python3 evaluation.py --output /tmp/fairride-example-v2.json
 python3 -m unittest discover -s tests -v
 ```
 
-The first command runs hand-written examples only. It currently gives six correct final rulings and two appropriate referrals: 75% autonomous resolution and 100% accuracy among the six final rulings. These are integration results, not evidence of live model accuracy.
+The first command runs hand-written examples only. It currently gives seven correct final rulings and four appropriate referrals: 63.6% autonomous resolution and 100% accuracy among the seven final rulings. These are integration results, not evidence of live model accuracy.
 
 Live evaluation requires explicit `--live` and configured credentials/model:
 
@@ -53,7 +53,7 @@ Live unit tests additionally require `FAIRRIDE_RUN_LIVE_TESTS=1`. Credentials in
 FAIRRIDE_RUN_LIVE_TESTS=1 python3 -m unittest discover -s tests -v
 ```
 
-The tracked `evaluation_results.json` predates v2. Its blanket-acceptance match rate must not be compared to the new accuracy definition. It is preserved as a historical run; no new paid evaluation was performed for this change.
+The tracked `evaluation_results.json` predates the supplied policy v2.1 migration. Its blanket-acceptance match rate must not be compared to the new accuracy definition. It is preserved as a historical run; no new paid evaluation was performed for this change.
 
 ## Regression coverage
 
