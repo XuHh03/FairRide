@@ -37,7 +37,7 @@ class SharedContractTests(unittest.TestCase):
         self.assertNotIn("fraud_flags", review.model_dump_json())
         fact = next(f for f in review.facts if f.id == "FACT-001")
         self.assertEqual(fact.value, 6)
-        self.assertEqual(fact.evidence_ids, ["TRIP-001"])
+        self.assertEqual(fact.evidence_ids, ["TRIP-001"] + [record["id"] for record in self.case["gps_telemetry"]])
         self.assertIn("cancellation_time", fact.formula)
 
     def test_unknown_evidence_and_policy_citations_are_reported(self):
@@ -50,6 +50,18 @@ class SharedContractTests(unittest.TestCase):
         self.assertEqual(len(issues), 2)
         self.assertTrue(any("GPS-999" in issue for issue in issues))
         self.assertTrue(any("POLICY-999" in issue for issue in issues))
+
+    def test_wait_fact_cites_the_gps_departure_used_in_its_calculation(self):
+        case = copy.deepcopy(load_case("DISP-004"))
+        case["gps_telemetry"] = [case["gps_telemetry"][2], {
+            "id": "GPS-DEPARTED", "timestamp": "2026-09-25T09:00:00+08:00",
+            "lat": 1.33, "lng": 103.87, "status": "departed"}]
+        review = build_review_input(case, policy_for_case(case))
+        fact = next(f for f in review.facts if f.name == "waited_minutes")
+        self.assertEqual(fact.value, 0)
+        self.assertIn("GPS-DEPARTED", fact.evidence_ids)
+        self.assertIn("departure", fact.formula)
+        self.assertIn("GPS", fact.formula)
 
     def test_judge_action_requires_matching_fields(self):
         invalid = [

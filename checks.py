@@ -141,9 +141,12 @@ def required_confidence(case: dict) -> float:
 
 def escalation_issues(case: dict, policy: dict, confidence: float | None = None, *, final=False) -> list[str]:
     ticket = case["dispute_ticket"]
-    text = " ".join([ticket["description"]] + [r.get("content", "") for r in case.get("chat_logs", [])])
+    events = case.get("app_events", [])
+    text = " ".join([ticket["description"]] + [r.get("content", "") for r in case.get("chat_logs", [])]
+                    + [r.get("details", "") for r in events])
     issues = []
-    if ticket.get("safety_flag") or re.search(r"\b(unsafe|reckless|dangerous driving|harass\w*|assault|threaten\w*|traffic accident|inappropriate\w*|verbal(?:ly)? abus\w*|physical(?:ly)? abus\w*)\b", text, re.I):
+    if (ticket.get("safety_flag") or any(r.get("event_type") == "safety_incident" for r in events)
+            or re.search(r"\b(unsafe|reckless|dangerous driving|harass\w*|assault|threat\w*|(?:traffic|car|vehicle) accident|inappropriate\w*|verbal(?:ly)? abus\w*|physical(?:ly)? abus\w*)\b", text, re.I)):
         issues.append("Section 5: safety indicator requires human review without an AI ruling")
         return issues
     dtype = ticket["dispute_type"]

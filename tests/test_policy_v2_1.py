@@ -158,6 +158,32 @@ class PolicyV21Tests(unittest.TestCase):
         case["dispute_ticket"]["description"] = "The driver behaved inappropriately and verbally abused me."
         self.assertTrue(escalation_issues(case, policy_for_case(case)))
 
+    def test_car_accident_and_threat_require_referral_without_agent_calls(self):
+        class MustNotCall(ExampleAgentBackend):
+            async def advocate(self, *args, **kwargs):
+                raise AssertionError("Safety incidents must not call agents")
+
+        for description in ("The driver was in a car accident during the trip.", "The driver made a threat against me."):
+            with self.subTest(description=description):
+                case = copy.deepcopy(load_case("DISP-004"))
+                case["dispute_ticket"]["description"] = description
+                result = run_review(case, policy_for_case(case), MustNotCall())
+                self.assertTrue(result.mandatory_escalation)
+                self.assertIsNone(result.failure_category)
+                self.assertIsNone(result.judge_result.proposed_action)
+
+    def test_safety_app_event_requires_referral_before_agents(self):
+        case = copy.deepcopy(load_case("DISP-004"))
+        case["app_events"].append({"id": "EVENT-SAFETY", "event_type": "safety_incident", "details": "Traffic accident during the trip."})
+        result = run_review(case, policy_for_case(case), ExampleAgentBackend())
+        self.assertTrue(result.mandatory_escalation)
+        self.assertEqual(len(result.activity_log), 1)
+
+    def test_safety_indicators_in_event_details_are_checked(self):
+        case = copy.deepcopy(load_case("DISP-004"))
+        case["app_events"].append({"id": "EVENT-SAFETY", "event_type": "rider_report", "details": "The driver made a threat against me."})
+        self.assertTrue(escalation_issues(case, policy_for_case(case)))
+
     def test_explicit_rider_refusal_is_not_agreement(self):
         case = copy.deepcopy(load_case("DISP-011"))
         case["chat_logs"][1].update(content="I do not agree.", route_change_acknowledged=False)

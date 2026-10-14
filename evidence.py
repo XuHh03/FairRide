@@ -44,12 +44,11 @@ def build_review_input(case: dict, policy: dict) -> ReviewInput:
         raise ValueError("Policy category does not match the case")
     evidence = build_evidence_index(case)
     build_policy_index(policy)
-    trip_id = case["trip_data"]["id"]
     facts = []
     if dtype == "no_show_charge":
         calculated = no_show_facts(case, policy)
         definitions = [
-            ("waited_minutes", "minutes", "cancellation_time minus max(scheduled_time, driver_arrival_time)", ["POLICY-2.1"]),
+            ("waited_minutes", "minutes", "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero", ["POLICY-2.1"]),
             ("fee_eligible", "boolean", "pickup presence AND five-minute wait AND message AND call AND timely arrival", ["POLICY-2.1", "POLICY-2.3", "POLICY-2.4"]),
             ("message_count", "count", "driver messages before cancellation", ["POLICY-2.3"]),
             ("call_count", "count", "unique driver call attempts before cancellation", ["POLICY-2.3"]),
@@ -71,7 +70,7 @@ def build_review_input(case: dict, policy: dict) -> ReviewInput:
     else:
         raise ValueError(f"Unsupported dispute type: {dtype}")
     for number, (name, unit, formula, policy_ids) in enumerate(definitions, 1):
-        source_ids = [trip_id] if name == "waited_minutes" else refs
+        source_ids = [record.id for record in evidence.values() if record.source in ("trip_data", "gps_telemetry")] if name == "waited_minutes" else refs
         facts.append(DerivedFact(id=f"FACT-{number:03d}", name=name, value=calculated[name],
                                  unit=unit, formula=formula, evidence_ids=source_ids, policy_ids=policy_ids))
     return ReviewInput(case_id=case["dispute_ticket"]["dispute_id"], dispute_type=dtype,
