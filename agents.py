@@ -12,7 +12,10 @@ from pathlib import Path
 from typing import Generic, Protocol, TypeVar
 from urllib import error, request
 
+from pydantic import ValidationError
+
 from contracts import AdvocateResult, JudgeResult, ReviewInput, Role
+from evidence import citation_issues, resolve_fact_citations
 
 
 T = TypeVar("T", AdvocateResult, JudgeResult)
@@ -22,6 +25,9 @@ T = TypeVar("T", AdvocateResult, JudgeResult)
 class AgentCall(Generic[T]):
     result: T
     usage: dict = field(default_factory=dict)
+    citation_retries: int = 0
+    schema_retries: int = 0
+    citation_resolutions: list[dict] = field(default_factory=list)
 
 
 class AgentBackend(Protocol):
@@ -91,17 +97,24 @@ class ChatClient:
 
 _ADVOCATE_INSTRUCTIONS = """You are the {role} reviewing a ride dispute under the supplied project policy v2.1.
 Return one JSON object: role, claims, counterpoints, unanswered_questions. Each claim/counterpoint has statement, evidence_ids, policy_ids; arrays are never null. Role must be exactly {role}. Every claim has at least one source or policy citation.
+Match output_schema. Convey the main points and decisive evidence clearly. Include all distinct material claims: points that could affect the ruling, refund or need for clarification. Use one point per claim; combine multiple supporting records into that claim's citations. Do not repeat arguments or calculations across claims or counterpoints. Aim for one or two short sentences per statement; add a brief clarification when needed for accuracy. The 1500-character limit is a runaway-response guard, not a target length. Give the conclusion and decisive evidence only; omit deliberation, repetition, self-questioning and descriptions of how you decided what to write. Counterpoints are optional; do not invent objections to fill the list.
+You may concede that the evidence supports the other side, or return no claims when your side lacks support. Present only evidence-supported arguments. Never invent a policy obligation or treat an unverified allegation as an established fact. Use the supplied Python calculations rather than re-deriving the same arithmetic repeatedly.
 Represent your assigned side, acknowledge counterevidence, and distinguish allegations from verified facts. Apply only the supplied v2.1 clauses and Python facts: five post-schedule pickup minutes AND both message/call contacts for no-show; route tolerance in km and excess-distance fare, not percentages or the entire fare difference.
-Copy only IDs present in supplied evidence or policy clauses. Never cite FACT-* as evidence: cite its underlying source records. Applicable section and precedent IDs such as POLICY-2.3 and POLICY-7.3 are valid; do not invent IDs.
+evidence_ids may contain only allowed_evidence_ids; policy_ids may contain only allowed_policy_ids. POLICY-* belongs only in policy_ids. Never cite FACT-* as evidence: use the fact's underlying evidence_ids. Do not invent IDs.
 Traffic justification requires the supplied historical traffic records matched to route segment and trip time. Narrative app alerts and driver assertions alone are not historical verification. Never invent missing API data, agreement, credibility scores, or a partial-refund formula.
 If answering follow_up_question, answer that specific question from supplied sources. Safety or mandatory policy thresholds require referral, not fault assignment. No hidden reasoning; JSON only."""
 
 _JUDGE_INSTRUCTIONS = """You are the impartial Judge under the supplied project reference Ryde Dispute Resolution Policy v2.1.
 Return JSON matching output_schema. Actions are request_rebuttal, final_ruling, human_review. A request needs a question and target roles, no ruling/action amount. Human review has no ruling or proposed_action. Final ruling needs decisive source/policy citations and the relevant supplied precedent clause: compare its facts rather than treating it as this case's answer.
+Every action requires a nonempty explanation, including request_rebuttal and human_review. Give a concise evidence-based reason; do not omit this field or substitute the question for it.
+evidence_ids may contain only allowed_evidence_ids; policy_ids may contain only allowed_policy_ids. POLICY-* belongs only in policy_ids. FACT-* is not a source: cite its underlying evidence_ids instead.
 Use policy and Python facts consistently. No-show requires the five-minute post-schedule physical wait, verified arrival, and at least one message AND call before cancellation. Missing contact obligations void the fee even after five minutes; neither uphold_charge nor no_action may retain an invalid fee. Driver no-show without contact permits a separate SGD 5 goodwill credit.
+Read numeric thresholds from decision_rules and Python facts. POLICY-1.3 is a section identifier, not a distance threshold. Route tolerance is 1 km and the AI limit is 2 km inclusive: exactly 2.0 km is permitted. An unjustified detour refunds ALL excess-distance fare using excess_distance_cents; its formula is known. Only a JUSTIFIED but UNNOTIFIED detour has an unspecified partial-component formula. Do not apply that uncertainty to an unjustified detour. The outcome partial_refund means refunding one component of the trip, even when that component is refunded in full.
 Route tolerance is <=1 km; above 2 km requires human review. For eligible smaller deviations, require historical traffic evidence. An unjustified detour gets full refund of the excess DISTANCE component, represented as partial_refund of the trip with refund_basis=excess_distance_fare. Do not refund time charges or the whole fare. Justified and timely informed/agreed routes retain the fare. A justified but unnotified route is referred because its partial-refund formula is unspecified. Missing/conflicting evidence is not affirmative proof of no congestion.
 Safety incidents and disputes above SGD 50 require human review. Route rulings need confidence >=0.80. Either party's fraud flag raises the required threshold to 0.95; the provided required_confidence already reflects that gate. Confidence must consider evidence completeness, policy clarity, precedent alignment and available credibility context; explain its basis, do not invent scores or claim empirical calibration. A flag does not establish fault.
 proposed_action.amount_cents is a refund TO the rider; goodwill_credit_cents is separate, both nonnegative integer SGD cents. refund_basis is cancellation_fee or excess_distance_fare. No actual payment or account action is executed.
+Compare the case with decision_rules.required_precedent_id and include that ID in policy_ids on every final ruling. Human review requires a mandatory policy gate, material evidence uncertainty, or confidence below review.required_confidence; when confidence is insufficient, return its numeric value and an evidence-based explanation. A permitted boundary or generic complexity alone is not a referral reason.
+If validation_feedback is present, correct the previous response using its exact errors and policy-derived requirements. Do not invent an uncertainty or raise confidence just to pass validation. Reassess honestly; output a complete final_ruling or supported human_review, never another rebuttal request.
 If previous_assessment is present, answer its exact question using rebuttals. rebuttal_round_complete=true means no additional question is permitted: finalize or refer. Never invent sources, cite FACT-* IDs, or leak hidden reasoning. JSON only."""
 
 
@@ -109,19 +122,62 @@ class ModelAgentBackend:
     def __init__(self, client: ChatClient | None = None):
         self.client = client or ChatClient(ModelConfig.from_env())
 
+    async def _call_with_validation_retry(self, instructions: str, payload: dict, review: ReviewInput, result_type: type[T]) -> AgentCall[T]:
+        evidence_ids = [record.id for record in review.evidence]
+        policy_ids = [clause.id for clause in review.policy.clauses]
+        payload = {**payload, "allowed_evidence_ids": evidence_ids, "allowed_policy_ids": policy_ids}
+        usage = {}
+        citation_retries = 0
+        schema_retries = 0
+        for attempt in range(2):
+            output, call_usage = await self.client.complete_json(instructions, payload)
+            for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                value = call_usage.get(key)
+                if isinstance(value, int) and not isinstance(value, bool):
+                    usage[key] = usage.get(key, 0) + value
+            try:
+                result = result_type.model_validate(output)
+            except ValidationError as exc:
+                errors = exc.errors(include_url=False, include_context=False, include_input=False)
+                # Keep the runaway-length guard strict; never silently truncate arguments.
+                if any(item["type"] in ("string_too_long", "too_long") for item in errors):
+                    raise
+                issues = [f"{'.'.join(str(part) for part in item['loc']) or 'response'}: {item['msg']}" for item in errors]
+                if attempt == 1:
+                    raise ValueError("Schema correction failed: " + "; ".join(issues)) from None
+                schema_retries = 1
+                payload = {**payload, "schema_correction": {
+                    "previous_response": output, "errors": issues,
+                    "instruction": "Return a complete JSON object matching output_schema. Fix the listed missing or invalid fields. Preserve the intended action, role, question, evidence and policy meaning. Judge responses always need a concise evidence-based explanation. Do not fabricate missing facts or issue a placeholder ruling. Respect rebuttal_round_complete; a schema repair does not authorize another rebuttal round.",
+                }}
+                continue
+            result, resolutions = resolve_fact_citations(result, review)
+            issues = citation_issues(result, evidence_ids, policy_ids)
+            if not issues:
+                return AgentCall(result, usage, citation_retries=citation_retries,
+                                 schema_retries=schema_retries, citation_resolutions=resolutions)
+            if attempt == 1:
+                raise ValueError("Citation correction failed: " + "; ".join(issues))
+            citation_retries = 1
+            payload = {**payload, "citation_correction": {
+                "previous_response": output, "errors": issues,
+                "instruction": "Return the complete corrected JSON object. Repair citation fields only: evidence_ids uses allowed_evidence_ids, policy_ids uses allowed_policy_ids. Move policy clauses to policy_ids; replace FACT references with their underlying evidence_ids from review.facts. Never invent sources. Preserve the original question, role and decision; do not request another rebuttal.",
+            }}
+
     async def advocate(self, review: ReviewInput, role: Role, question: str | None = None) -> AgentCall[AdvocateResult]:
-        payload = {"review": review.model_dump(mode="json"), "follow_up_question": question}
+        payload = {"review": review.model_dump(mode="json"), "follow_up_question": question,
+                   "output_schema": AdvocateResult.model_json_schema()}
         instructions = _ADVOCATE_INSTRUCTIONS.replace("{role}", role)
-        output, usage = await self.client.complete_json(instructions, payload)
-        result = AdvocateResult.model_validate(output)
-        if result.role != role:
+        call = await self._call_with_validation_retry(instructions, payload, review, AdvocateResult)
+        if call.result.role != role:
             raise ValueError("Advocate returned the wrong role")
-        return AgentCall(result, usage)
+        return call
 
     async def judge(
         self, review: ReviewInput, rider_argument: AdvocateResult,
         driver_argument: AdvocateResult, rebuttals: list[AdvocateResult] | None = None,
         previous_assessment: JudgeResult | None = None,
+        *, validation_feedback: dict | None = None,
     ) -> AgentCall[JudgeResult]:
         payload = {
             "review": review.model_dump(mode="json"),
@@ -129,11 +185,26 @@ class ModelAgentBackend:
             "driver_argument": driver_argument.model_dump(mode="json"),
             "rebuttals": [item.model_dump(mode="json") for item in rebuttals or []],
             "previous_assessment": previous_assessment.model_dump(mode="json") if previous_assessment else None,
-            "rebuttal_round_complete": previous_assessment is not None,
+            "rebuttal_round_complete": previous_assessment is not None or validation_feedback is not None,
             "output_schema": JudgeResult.model_json_schema(),
+            "decision_rules": {
+                "required_precedent_id": "POLICY-7.3" if review.dispute_type == "no_show_charge" else "POLICY-7.1",
+                "route_no_refund_tolerance_km": review.policy.tolerance_km,
+                "route_ai_distance_limit_km": review.policy.max_ai_deviation_km,
+            },
         }
-        output, usage = await self.client.complete_json(_JUDGE_INSTRUCTIONS, payload)
-        return AgentCall(JudgeResult.model_validate(output), usage)
+        if validation_feedback is not None:
+            payload["validation_feedback"] = validation_feedback
+        return await self._call_with_validation_retry(_JUDGE_INSTRUCTIONS, payload, review, JudgeResult)
+
+    async def correct_judgment(
+        self, review: ReviewInput, rider_argument: AdvocateResult,
+        driver_argument: AdvocateResult, validation_feedback: dict,
+        rebuttals: list[AdvocateResult] | None = None,
+        previous_assessment: JudgeResult | None = None,
+    ) -> AgentCall[JudgeResult]:
+        return await self.judge(review, rider_argument, driver_argument, rebuttals,
+                                previous_assessment, validation_feedback=validation_feedback)
 
 
 class ExampleAgentBackend:

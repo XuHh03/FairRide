@@ -69,7 +69,7 @@ class ReviewInput(Contract):
 
 
 class Claim(Contract):
-    statement: str = Field(min_length=1)
+    statement: str = Field(min_length=1, max_length=1500, description="Convey the main point and decisive evidence concisely; no deliberation or repetition.")
     evidence_ids: list[str] = Field(default_factory=list)
     policy_ids: list[str] = Field(default_factory=list)
 
@@ -112,6 +112,7 @@ class JudgeResult(Contract):
     def _normalize_null_lists(cls, data):
         """Models sometimes send null for list fields; normalize to []."""
         if isinstance(data, dict):
+            data = data.copy()
             for key in ("rebuttal_roles", "evidence_ids", "policy_ids"):
                 if data.get(key) is None:
                     data[key] = []

@@ -47,12 +47,13 @@ class EvaluationScoringTests(unittest.TestCase):
         self.assertEqual(summary.autonomous_resolution_rate, 1)
         self.assertEqual(summary.ruling_accuracy, 1)
 
-    def test_clear_case_escalation_is_not_a_matching_ruling(self):
+    def test_unsupported_clear_case_escalation_is_validation_failure(self):
         metric = self.escalate("DISP-003")
-        self.assertEqual(metric.category, "unnecessary_escalation")
+        self.assertEqual(metric.category, "operational_failure")
+        self.assertEqual(metric.failure_category, "validation")
         self.assertFalse(metric.ruling_match)
         self.assertIsNone(metric.amount_correct)
-        self.assertEqual(summarize([metric], "example").unnecessary_escalation_rate, 1)
+        self.assertEqual(summarize([metric], "example").unnecessary_escalation_rate, 0)
 
     def test_ambiguous_case_escalation_is_appropriate_but_not_autonomous(self):
         metric = run_single_case("DISP-005", "example")
@@ -129,8 +130,8 @@ class EvaluationScoringTests(unittest.TestCase):
         summary = summarize(metrics, "example")
         self.assertEqual(summary.autonomous_resolution_rate, 0.25)
         self.assertEqual(summary.ruling_accuracy, 1)
-        self.assertEqual(summary.operational_failure_rate, 0.25)
-        self.assertAlmostEqual(summary.unnecessary_escalation_rate, 1 / 3)
+        self.assertEqual(summary.operational_failure_rate, 0.5)
+        self.assertEqual(summary.unnecessary_escalation_rate, 0)
 
     def test_empty_summary_has_na_accuracy(self):
         self.assertIsNone(summarize([], "example").ruling_accuracy)

@@ -71,7 +71,7 @@ class WorkflowTests(unittest.TestCase):
         result = run_review(load_case("DISP-012"), load_policy("ryde_v2_1_route_deviation"), backend)
         self.assertEqual(backend.judge_calls, 2)
         self.assertEqual(result.status, "human_review")
-        self.assertIn("Judge requested a second rebuttal round", result.validation_issues)
+        self.assertIn("Judge requested another rebuttal after its review budget ended", result.validation_issues)
 
     def test_unknown_citation_is_referred_to_human(self):
         class BadCitationBackend(FixedJudgeBackend):

@@ -94,9 +94,18 @@ if mode == "Live model" and not live_ready:
 
 if st.button("Run review", disabled=mode == "Live model" and not live_ready):
     backend = ExampleAgentBackend() if mode == "Example walkthrough" else None
-    with st.spinner("Reviewing evidence and arguments..."):
-        st.session_state.review_result = run_review(case, policy, backend)
+    with st.status("Preparing review…", expanded=True) as review_progress:
+        def show_progress(message: str) -> None:
+            review_progress.update(label=message)
+            review_progress.write(message)
+
+        review_result = run_review(case, policy, backend, on_progress=show_progress)
+        st.session_state.review_result = review_result
         st.session_state.review_mode = mode
+        label = "Review complete" if review_result.status == "completed" else "Human review required"
+        if review_result.failure_category:
+            label = "Review failed; human review required"
+        review_progress.update(label=label, state="error" if review_result.failure_category else "complete")
 
 result = st.session_state.get("review_result")
 if result:
@@ -110,6 +119,9 @@ if result:
             st.metric("Separate goodwill credit", f"S${result.judge_result.proposed_action.goodwill_credit_cents / 100:.2f}")
         if result.judge_result.confidence is not None:
             st.caption(f"Agent-reported confidence: {result.judge_result.confidence:.0%}")
+    elif result.failure_category:
+        st.error("Model response failed validation" if result.failure_category == "validation" else "Review could not be completed")
+        st.caption("No validated decision was issued. This is an operational failure, not a finding that the evidence is insufficient.")
     else:
         st.warning("Human review required")
     st.write(result.judge_result.explanation)
@@ -137,6 +149,16 @@ if result:
         prompt_tokens += usage.get("prompt_tokens", 0)
         completion_tokens += usage.get("completion_tokens", 0)
         with st.expander(f"{entry.actor.replace('_', ' ').title()} · {entry.event.replace('_', ' ')}", expanded=True):
+            if entry.event == "decision_validation":
+                st.write("The Judge's response failed these checks and was sent for one correction attempt:")
+                for issue in output["errors"]:
+                    st.write(f"- {issue}")
+            if output.get("citation_retries"):
+                st.caption("One citation-correction retry was used; token totals include both calls.")
+            if output.get("schema_retries"):
+                st.caption("One response-format correction retry was used; token totals include both calls.")
+            for mapping in output.get("citation_resolutions", []):
+                st.caption(f"Resolved {mapping['fact_id']} in {mapping['location']} to sources: " + ", ".join(mapping["evidence_ids"]))
             if "question" in output:
                 st.write(output["question"])
             if "result" in output:

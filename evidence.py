@@ -85,9 +85,39 @@ def validate_references(
     """Check source existence, not whether a source supports a claim."""
     evidence = build_evidence_index(case)
     clauses = build_policy_index(policy)
+    return citation_issues(result, evidence, clauses)
+
+
+def citation_issues(result: AdvocateResult | JudgeResult, evidence_ids, policy_ids) -> list[str]:
+    """Validate the two citation namespaces against their supplied ID sets."""
     claims = result.claims + result.counterpoints if isinstance(result, AdvocateResult) else [result]
     issues = []
     for claim in claims:
-        issues.extend(f"Unknown evidence ID: {ref}" for ref in claim.evidence_ids if ref not in evidence)
-        issues.extend(f"Unknown policy ID: {ref}" for ref in claim.policy_ids if ref not in clauses)
+        issues.extend(f"Unknown evidence ID: {ref}" for ref in claim.evidence_ids if ref not in evidence_ids)
+        issues.extend(f"Unknown policy ID: {ref}" for ref in claim.policy_ids if ref not in policy_ids)
     return issues
+
+
+def resolve_fact_citations(result: AdvocateResult | JudgeResult, review: ReviewInput):
+    """Expand declared derived facts into their sources without rewriting arguments."""
+    resolved = result.model_copy(deep=True)
+    facts = {fact.id: fact for fact in review.facts}
+    evidence_ids = {record.id for record in review.evidence}
+    items = ([(f"claims.{i}", claim) for i, claim in enumerate(resolved.claims)]
+             + [(f"counterpoints.{i}", claim) for i, claim in enumerate(resolved.counterpoints)]
+             if isinstance(resolved, AdvocateResult) else [("judge", resolved)])
+    resolutions = []
+    for location, item in items:
+        sources = []
+        changed = False
+        for ref in item.evidence_ids:
+            fact = facts.get(ref)
+            if fact and fact.evidence_ids and all(source in evidence_ids for source in fact.evidence_ids):
+                sources.extend(fact.evidence_ids)
+                resolutions.append({"location": location, "fact_id": ref, "evidence_ids": list(fact.evidence_ids)})
+                changed = True
+            else:
+                sources.append(ref)
+        if changed:
+            item.evidence_ids = list(dict.fromkeys(sources))
+    return resolved, resolutions

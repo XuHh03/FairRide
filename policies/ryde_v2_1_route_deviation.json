@@ -17,7 +17,7 @@
     },
     {
       "id": "POLICY-1.3",
-      "text": "Section 1.3: Additional distance <=1 km gets no refund. Above 1 km: justified and informed/agreed gets no refund; justified but unnotified gets a partial refund of excess distance fare. That partial formula is unspecified, so refer until confirmed. Unjustified rerouting gets full refund of excess distance fare, not the entire fare or time-charge differential."
+      "text": "Section 1.3: The no-refund tolerance is 1 km of additional distance. For additional distance above 1 km, apply these separate cases. UNJUSTIFIED detour: refund ALL excess-distance fare; the formula is additional km multiplied by the distance rate. This refunds a fare component, not the entire trip or time-charge difference. JUSTIFIED detour with timely rider notification and agreement: no refund. JUSTIFIED but UNNOTIFIED detour: refund only PART of the excess-distance fare; that partial-component formula is unspecified, so refer until confirmed. The unspecified formula applies only to the justified-but-unnotified case and never to an unjustified detour."
     },
     {
       "id": "POLICY-1.4",

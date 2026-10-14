@@ -268,3 +268,14 @@ def validate_final_ruling(case: dict, policy: dict, decision: JudgeResult) -> li
     if action.refund_basis != basis:
         issues.append(f"Refund basis must be {basis}")
     return issues
+
+
+def validate_judge_decision(case: dict, policy: dict, decision: JudgeResult) -> list[str]:
+    if decision.action == "final_ruling":
+        return validate_final_ruling(case, policy, decision)
+    if decision.action == "request_rebuttal":
+        return ["Judge requested another rebuttal after its review budget ended"]
+    material = material_case_issues(case, policy)
+    if material or escalation_issues(case, policy, decision.confidence):
+        return material
+    return ["Human review is unsupported by the supplied policy checks and evidence. Issue the policy-supported decision, or report confidence below the required threshold with an evidence-based explanation. A distance exactly at the AI limit is permitted; do not invent thresholds or apply the justified-detour formula to an unjustified detour."]
