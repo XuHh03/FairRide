@@ -1,0 +1,193 @@
+{
+  "review_date": "2026-10-15",
+  "model": "qwen3.6:35b",
+  "base_commit": "a7d71fc6eafa20c32d8ac4b19d16677213987da1",
+  "snapshot": "Uncommitted fixes with iterative checker changes; phases are distinct code snapshots, not repeated measurements of identical code.",
+  "offline_tests": {
+    "run": 133,
+    "passed": 132,
+    "live_batch_skipped": 1
+  },
+  "live_batches": [
+    {
+      "phase": "Initial support checker",
+      "strict_passes": 0,
+      "case_count": 4,
+      "cases": [
+        {
+          "case_id": "DISP-003",
+          "strict_pass": false,
+          "status": "human_review",
+          "failure_category": "validation",
+          "ruling": null,
+          "argument_reviews_logged": 3,
+          "argument_rewrites": 2,
+          "reported_tokens": 38960
+        },
+        {
+          "case_id": "DISP-004",
+          "strict_pass": false,
+          "status": "human_review",
+          "failure_category": "validation",
+          "ruling": null,
+          "argument_reviews_logged": 1,
+          "argument_rewrites": 0,
+          "reported_tokens": 19892
+        },
+        {
+          "case_id": "DISP-010",
+          "strict_pass": false,
+          "status": "human_review",
+          "failure_category": "validation",
+          "ruling": null,
+          "argument_reviews_logged": 1,
+          "argument_rewrites": 1,
+          "reported_tokens": 23469
+        },
+        {
+          "case_id": "DISP-011",
+          "strict_pass": false,
+          "status": "human_review",
+          "failure_category": "validation",
+          "ruling": null,
+          "argument_reviews_logged": 2,
+          "argument_rewrites": 1,
+          "reported_tokens": 27403
+        }
+      ]
+    },
+    {
+      "phase": "Explicit verdicts and bounded format repair",
+      "strict_passes": 3,
+      "case_count": 4,
+      "cases": [
+        {
+          "case_id": "DISP-003",
+          "strict_pass": true,
+          "status": "completed",
+          "failure_category": null,
+          "ruling": "reverse_charge",
+          "argument_reviews_logged": 2,
+          "argument_rewrites": 0,
+          "reported_tokens": 33151
+        },
+        {
+          "case_id": "DISP-004",
+          "strict_pass": true,
+          "status": "completed",
+          "failure_category": null,
+          "ruling": "uphold_charge",
+          "argument_reviews_logged": 4,
+          "argument_rewrites": 2,
+          "reported_tokens": 87126
+        },
+        {
+          "case_id": "DISP-010",
+          "strict_pass": true,
+          "status": "completed",
+          "failure_category": null,
+          "ruling": "partial_refund",
+          "argument_reviews_logged": 4,
+          "argument_rewrites": 2,
+          "reported_tokens": 74375
+        },
+        {
+          "case_id": "DISP-011",
+          "strict_pass": false,
+          "status": "human_review",
+          "failure_category": "validation",
+          "ruling": null,
+          "argument_reviews_logged": 3,
+          "argument_rewrites": 1,
+          "reported_tokens": 34667
+        }
+      ]
+    },
+    {
+      "phase": "Targeted follow-up with driver-wait actor rule",
+      "strict_passes": 2,
+      "case_count": 2,
+      "cases": [
+        {
+          "case_id": "DISP-003",
+          "strict_pass": true,
+          "status": "completed",
+          "failure_category": null,
+          "ruling": "reverse_charge",
+          "argument_reviews_logged": 2,
+          "argument_rewrites": 0,
+          "reported_tokens": 33923
+        },
+        {
+          "case_id": "DISP-011",
+          "strict_pass": true,
+          "status": "completed",
+          "failure_category": null,
+          "ruling": "uphold_charge",
+          "argument_reviews_logged": 3,
+          "argument_rewrites": 1,
+          "reported_tokens": 47172
+        }
+      ]
+    }
+  ],
+  "audit_findings": [
+    {
+      "case_id": "DISP-004",
+      "status": "improved_in_sample",
+      "finding": "Checker identified unsupported contact-window claims and wrong arrival wording; rewritten arguments used the scheduled-time wait and actual early arrival.",
+      "source_ids": [
+        "TRIP-001",
+        "CHAT-001",
+        "CHAT-002",
+        "CHAT-003",
+        "CHAT-004",
+        "POLICY-2.1",
+        "POLICY-2.3"
+      ]
+    },
+    {
+      "case_id": "DISP-010",
+      "status": "improved_in_sample",
+      "finding": "Revised run rewrote unsupported route arguments before the Judge; accepted ruling refunded the full excess-distance component.",
+      "source_ids": [
+        "ROUTE-001",
+        "ROUTE-002",
+        "FARE-002",
+        "TRAFFIC-001",
+        "POLICY-1.3"
+      ]
+    },
+    {
+      "case_id": "DISP-011",
+      "status": "improved_in_sample",
+      "finding": "Latest checker flagged rider refund arguments and the corrected rider conceded the historically justified, notified and agreed detour. Earlier revised run failed independently at Judge schema validation; latest follow-up reached uphold_charge.",
+      "source_ids": [
+        "TRAFFIC-001",
+        "CHAT-001",
+        "CHAT-002",
+        "POLICY-1.3"
+      ]
+    },
+    {
+      "case_id": "DISP-003",
+      "actor": "driver_advocate",
+      "location": "claims.0 in final targeted follow-up",
+      "status": "unresolved",
+      "finding": "Passed model support review while calling 08:50 the scheduled pickup time; supplied schedule is 08:45 and arrival is 08:50. Final reverse_charge and refund remained correct.",
+      "source_ids": [
+        "TRIP-001",
+        "POLICY-2.4"
+      ]
+    }
+  ],
+  "issue_5_status": "Improved with bounded support review and visible failures; keep open because a factual timestamp error still escaped model review.",
+  "limits": [
+    "Synthetic fixtures only; no production accuracy claim.",
+    "A supported model verdict is not proof of factual correctness.",
+    "One semantic rewrite per advocate invocation, including rebuttals. Each generation/review call has at most one shared schema/citation repair. Persistent unsupported output blocks the Judge as an operational validation failure.",
+    "Typical clear review now uses five model calls instead of three. If both advocates need semantic rewriting, it uses nine before technical or Judge correction retries.",
+    "Token totals include logged successful calls and their returned repair usage; failed calls may be omitted and totals are not billing measurements.",
+    "Raw outputs remain in local audit files; this summary avoids model discourse."
+  ]
+}

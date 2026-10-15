@@ -1,0 +1,75 @@
+{
+  "review_date": "2026-10-14",
+  "model": "qwen3.6:35b",
+  "base_commit": "a7d71fc6eafa20c32d8ac4b19d16677213987da1",
+  "snapshot": "Uncommitted issue fixes; the follow-up also includes per-case advocate policy context and the reviewed explanation boundary fixes.",
+  "offline_tests": {"run": 123, "passed": 122, "live_batch_skipped": 1},
+  "live_batches": [
+    {
+      "phase": "Initial explanation, length-retry and prompt fixes",
+      "case_ids": ["DISP-002", "DISP-003", "DISP-004", "DISP-005", "DISP-006", "DISP-007", "DISP-008", "DISP-009", "DISP-010", "DISP-011", "DISP-012"],
+      "strict_passes": 11,
+      "policy_only_referrals": 3,
+      "prose_audit": "Failed: contact-window obligations, tolerance deduction and refund arguments survived the clarified prompt. The generated wait and notification wording also required the later review fixes."
+    },
+    {
+      "phase": "Per-case computed policy context and corrected explanation wording",
+      "case_ids": ["DISP-003", "DISP-004", "DISP-010", "DISP-011"],
+      "strict_passes": 4,
+      "policy_only_referrals": 0,
+      "prose_audit": "Failed: three of four inspected cases contain unsupported or incorrect advocate prose; correct structured decisions do not establish argument accuracy."
+    }
+  ],
+  "followup_prose_findings": [
+    {
+      "case_id": "DISP-003",
+      "actor": "driver_advocate",
+      "location": "claims.2",
+      "issue": "Treats the rider's chat assertions as established physical presence rather than allegations.",
+      "source_ids": ["CHAT-001", "CHAT-003"],
+      "status": "unresolved"
+    },
+    {
+      "case_id": "DISP-004",
+      "actor": "driver_advocate",
+      "location": "claims.2",
+      "issue": "Calls the 9 eligible minutes the interval from arrival to cancellation; that physical interval is 12 minutes (08:57 to 09:09).",
+      "source_ids": ["TRIP-001"],
+      "status": "unresolved"
+    },
+    {
+      "case_id": "DISP-004",
+      "actor": "rider_advocate",
+      "location": "claims.1",
+      "issue": "Invents a late-notice argument despite pre-cancellation driver messages and calls; POLICY-2.3 does not add the asserted contact window.",
+      "source_ids": ["CHAT-001", "CHAT-002", "CHAT-003", "CHAT-004", "POLICY-2.3"],
+      "status": "unresolved"
+    },
+    {
+      "case_id": "DISP-010",
+      "issue": "The inspected follow-up arguments use the entire 1.5 km excess and 83-cent refund; the earlier tolerance-deduction defect was absent in this sample.",
+      "source_ids": ["ROUTE-001", "ROUTE-002", "FARE-002", "TRAFFIC-001", "POLICY-1.3"],
+      "status": "improved_in_one_sample"
+    },
+    {
+      "case_id": "DISP-011",
+      "actor": "rider_advocate",
+      "location": "claims.0 and counterpoints.0",
+      "issue": "Demands an 83-cent refund despite historically justified, timely notified and agreed deviation; contrary to POLICY-1.3.",
+      "source_ids": ["TRAFFIC-001", "CHAT-001", "CHAT-002", "POLICY-1.3"],
+      "status": "unresolved"
+    }
+  ],
+  "implementation_status": {
+    "issue_3": "Implemented with offline and live checks; original Judge prose preserved separately.",
+    "issue_4": "Implemented; correction and budget exhaustion reproduced with scripted model responses. No overlength response occurred in these new live samples.",
+    "issue_5": "Prompt/context and UI mitigations implemented; advocate semantic accuracy remains unresolved. Keep issue open."
+  },
+  "limitations": [
+    "Synthetic fixtures only; no production accuracy claim.",
+    "Live checks compare rulings, refunds, separate credits and refund bases, not every sentence.",
+    "Overlength recovery is covered by deterministic tests; live samples did not trigger that branch.",
+    "All four follow-up final explanations were inspected separately from original model prose.",
+    "Raw live responses remain in local audit files; this report contains findings rather than model discourse."
+  ]
+}

@@ -87,6 +87,19 @@ class AdvocateResult(Contract):
     unanswered_questions: list[str]
 
 
+class ArgumentFinding(Contract):
+    section: Literal["claims", "counterpoints"]
+    index: int = Field(ge=0, strict=True)
+    verdict: Literal["supported", "unsupported"]
+    explanation: str = Field(min_length=1, max_length=1500)
+    evidence_ids: list[str] = Field(default_factory=list)
+    policy_ids: list[str] = Field(default_factory=list)
+
+
+class ArgumentReview(Contract):
+    findings: list[ArgumentFinding]
+
+
 class ProposedAction(Contract):
     """A recommendation only; amounts must be calculated by Python."""
 

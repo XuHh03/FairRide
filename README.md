@@ -41,14 +41,18 @@ For repeated measurements and a saved report:
 
 The CLI produces a report; use the unit test for a pass/fail gate. The latest three-run review passed 32 of 33 case checks, with one rejected overlong advocate response. All accepted final amounts matched their expected values, but some generated prose contained factual errors; see [the review report](evaluations/pr2-review-2026-10-14.json) and [progress](progress.md). These synthetic cases do not establish production accuracy.
 
+The subsequent [issues #3–#5 review](evaluations/issues-3-5-review-2026-10-14.json) passed an eleven-case live batch and four targeted follow-up checks after explanation/retry fixes. Advocate prose still failed the follow-up audit in three cases; issue #5 remains open for accuracy work. The UI keeps this unverified analysis separate from the grounded final explanation.
+
+The [15 October argument-review follow-up](evaluations/argument-review-2026-10-15.json) tested a model support check and one rewrite before arguments reach the Judge. Revised checks passed 3/4 cases and a later targeted follow-up passed 2/2; an escaped timestamp error shows why model support verdicts still require source inspection. This experimental check is **off by default** for the demo. Set `FAIRRIDE_CHECK_ARGUMENT_SUPPORT=1` before starting the app to opt in; it normally increases a clear review from three to five model calls.
+
 ## Policy and implementation
 
 - `policies/ryde_v2_1_*.json`: active, source-linked policy and category precedents. Earlier rules are archived.
 - `checks.py`: waiting/contact/location calculations, route and excess-distance fare, safety/value/confidence safeguards, and final validation.
 - `contracts.py`, `evidence.py`: contract v2.0, source lookup and prepared inputs; citation existence is not proof of claim support.
-- `agents.py`, `workflow.py`: live/example backends, concurrent advocates, one rebuttal round, and original-question context on the second Judge call. Schema/citation errors share one response-correction retry per model call; clear invalid Judge decisions get one policy-validation correction. Persistent errors are displayed separately from evidence-based human review.
+- `agents.py`, `workflow.py`: live/example backends, concurrent advocates, one rebuttal round, and original-question context on the second Judge call. Each generation or support review has one shared schema/citation/length repair. Live advocates receive computed policy context and bounded support checks; one semantic rewrite is allowed before rechecking. Clear invalid Judge decisions get one policy-validation correction. Persistent errors are displayed separately from evidence-based human review.
 - `cases/`, `examples/`, `evaluation.py`: raw records, separate hand-written responses and separate expected labels.
-- `app.py`: live progress, case review, activity, cited evidence, refund and separate goodwill-credit recommendations. Known `FACT-*` citations are resolved to their recorded sources and shown in the activity log without extra model calls; unknown IDs remain invalid.
+- `app.py`: live progress, case review, activity, cited evidence, refund and separate goodwill-credit recommendations. Completed reviews display an application-generated explanation from validated facts; original Judge and advocate prose remains inspectable and labelled as model analysis. Known `FACT-*` citations are resolved to their recorded sources and shown in the activity log without extra model calls; unknown IDs remain invalid.
 
 Traffic evidence is supplied input or explicitly synthetic historical-API fixtures; no live traffic adapter exists. Partial excess-distance refunds for justified but unnotified detours are referred until the undefined formula is confirmed. Confidence gates are enforced, but empirical calibration is still unverified. Unsupported categories are referred.
 

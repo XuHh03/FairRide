@@ -139,6 +139,7 @@ if result:
             st.write(f"- {issue}")
 
     st.subheader("Agent activity")
+    st.caption("Citations validate reference IDs, not the factual accuracy of model statements. Inspect the cited source records below.")
     cited = set(result.judge_result.evidence_ids + result.judge_result.policy_ids)
     total_ms = 0
     prompt_tokens = 0
@@ -153,6 +154,19 @@ if result:
         prompt_tokens += usage.get("prompt_tokens", 0)
         completion_tokens += usage.get("completion_tokens", 0)
         with st.expander(f"{entry.actor.replace('_', ' ').title()} · {entry.event.replace('_', ' ')}", expanded=True):
+            if entry.event == "argument_support_review":
+                st.write(f"{output['role'].replace('_', ' ').title()} support check · attempt {output['attempt']}")
+                if not any(finding["verdict"] == "unsupported" for finding in output["findings"]):
+                    st.caption("The model support check found no unsupported statements; this does not guarantee factual accuracy.")
+                for finding in output["findings"]:
+                    message = f"{finding['section']}.{finding['index']} · {finding['verdict']}: {finding['explanation']}"
+                    if finding["verdict"] == "unsupported":
+                        st.warning(message)
+                    else:
+                        st.caption(message)
+                    ids = finding["evidence_ids"] + finding["policy_ids"]
+                    st.caption("Sources: " + ", ".join(ids))
+                    cited.update(ids)
             if entry.event == "decision_validation":
                 st.write("The Judge's response failed these checks and was sent for one correction attempt:")
                 for issue in output["errors"]:
@@ -168,6 +182,14 @@ if result:
             if "result" in output:
                 item = output["result"]
                 if "claims" in item:
+                    st.caption("Model-generated argument; check its interpretation against cited sources." if st.session_state.review_mode == "Live model" else
+                               "Hand-written example argument; not a live model response.")
+                    if output.get("support_status") == "flagged":
+                        st.warning("This argument was flagged by the support check. Inspect its findings below; it was not accepted for the Judge.")
+                    elif output.get("support_status") == "review_failed":
+                        st.warning("The support check failed validation. This argument was not accepted for the Judge.")
+                    elif output.get("support_status") == "passed_model_review":
+                        st.caption("Passed the model support check; source inspection remains available.")
                     for heading in ("claims", "counterpoints"):
                         if item[heading]:
                             st.write(f"**{heading.title()}**")
@@ -179,6 +201,8 @@ if result:
                     if item["unanswered_questions"]:
                         st.write("**Open questions:** " + "; ".join(item["unanswered_questions"]))
                 else:
+                    st.caption("Original Judge analysis; model prose may contain errors." if st.session_state.review_mode == "Live model" else
+                               "Original Judge analysis from the hand-written example.")
                     st.write(item["explanation"])
                     if item.get("question"):
                         st.write("**Question:** " + item["question"])

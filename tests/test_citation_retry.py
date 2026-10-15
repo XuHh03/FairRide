@@ -135,6 +135,8 @@ class CitationRetryTests(unittest.TestCase):
 
         class Client:
             async def complete_json(self, instructions, payload):
+                if "argument" in payload:
+                    return {"findings": []}, {"total_tokens": 5}
                 if "rider_argument" in payload:
                     output = copy.deepcopy(examples["judge_final_ruling"])
                 else:

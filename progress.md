@@ -1,8 +1,17 @@
 # FairRide progress
 
-Updated 14 October 2026. Current work follows the supplied v2.1 reference on the Person A integration branch.
+Updated 15 October 2026. Current work follows the supplied v2.1 reference on the Person A integration branch.
 
 ## Current update
+
+- Demo priority: deterministic validation and the grounded final explanation remain active; experimental model support checks are now opt-in with `FAIRRIDE_CHECK_ARGUMENT_SUPPORT=1` and off by default. Added explicit missing-message, inclusive five-minute arrival and 2 km boundary checks, plus explanation coverage across all eleven demos and separate goodwill/refund amounts. No extra paid tests are needed to verify these deterministic changes.
+- Current offline verification: 139 tests ran (138 passed, one live batch skipped). Policy/explanation and response-retry commits were also verified independently from their staged snapshots before committing.
+
+- Live initial/rebuttal advocate outputs now receive bounded model support reviews before the Judge, with one semantic rewrite and recheck. Persistent unsupported output stops as an operational failure. UI logs preserve originals, findings and corrections. Positive supported verdicts do not trigger correction; review-format/citation repair remains bounded and audit usage is included in evaluation totals.
+- Latest verification: 133 offline tests ran (132 passed, one live batch skipped). Revised checker live checks passed 3/4, followed by a 2/2 targeted follow-up; one earlier Judge-format failure and an escaped DISP-003 timestamp error remain documented. Issue #5 remains open for accuracy, despite improved screening. See `evaluations/argument-review-2026-10-15.json`.
+
+- Issues #3 and #4 are implemented locally: completed reviews show an application-generated rationale while preserving original Judge prose, and overlong statements share the existing single schema/citation retry. Independent review fixes prevent unverified pickup presence and boundary notification from being overstated.
+- Issue #5 has explicit advocate rules, per-case computed policy context and UI labels/source inspection. Its accuracy work remains open: the latest audit still found unsupported advocate prose in DISP-003, DISP-004 and DISP-011. The latest checks ran 123 offline tests (122 passed, one live batch skipped), plus a separate 11/11 live batch and 4/4 targeted follow-up. Correct structured decisions are not proof of prose accuracy. See `evaluations/issues-3-5-review-2026-10-14.json`.
 
 - Active source-linked v2.1 policies replace archived sample policies. No-show fees require five physical minutes no earlier than scheduled pickup, verified presence, and both message and call. Invalid charges cannot survive as `no_action`; goodwill credit is separate and requires evidence of driver no-show.
 - Route refunds use additional kilometres and excess-distance fare. Historical traffic, timely notification and consent are checked separately. Justified unnotified detours are referred until the partial formula is confirmed.

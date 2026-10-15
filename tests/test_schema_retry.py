@@ -113,6 +113,8 @@ class SchemaRetryTests(unittest.TestCase):
                 self.payloads = []
 
             async def complete_json(self, instructions, payload):
+                if "argument" in payload:
+                    return {"findings": []}, {"total_tokens": 5}
                 if "rider_argument" in payload:
                     self.payloads.append(copy.deepcopy(payload))
                     return copy.deepcopy(responses[len(self.payloads) - 1]), {"total_tokens": 5}

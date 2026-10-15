@@ -13,6 +13,8 @@ class DecisionClient:
         self.judge_payloads = []
 
     async def complete_json(self, instructions, payload):
+        if "argument" in payload:
+            return {"findings": []}, {"total_tokens": 5}
         if "rider_argument" in payload:
             self.judge_payloads.append(copy.deepcopy(payload))
             return copy.deepcopy(self.decisions[len(self.judge_payloads) - 1]), {"total_tokens": 5}
