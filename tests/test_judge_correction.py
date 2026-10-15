@@ -13,6 +13,8 @@ class DecisionClient:
         self.judge_payloads = []
 
     async def complete_json(self, instructions, payload):
+        if "argument" in payload:
+            return {"findings": []}, {"total_tokens": 5}
         if "rider_argument" in payload:
             self.judge_payloads.append(copy.deepcopy(payload))
             return copy.deepcopy(self.decisions[len(self.judge_payloads) - 1]), {"total_tokens": 5}
@@ -62,6 +64,25 @@ class JudgeCorrectionTests(unittest.TestCase):
                 self.assertIsNone(result.failure_category)
                 self.assertEqual(result.status, "completed")
                 self.assertEqual(len(client.judge_payloads), 2)
+
+    def test_charge_basis_is_explicit_before_first_review_including_zero_refund(self):
+        for case_id, basis in (("DISP-010", "excess_distance_fare"), ("DISP-011", "excess_distance_fare"),
+                               ("DISP-003", "cancellation_fee"), ("DISP-004", "cancellation_fee")):
+            with self.subTest(case=case_id):
+                result, client, _ = self.run_case(case_id, [self.final(case_id)])
+                self.assertEqual(result.status, "completed")
+                self.assertEqual(client.judge_payloads[0]["decision_rules"].get("required_refund_basis"), basis)
+
+    def test_persistent_wrong_basis_never_issues_a_final_ruling(self):
+        for case_id in ("DISP-010", "DISP-011"):
+            with self.subTest(case=case_id):
+                wrong = self.final(case_id)
+                wrong["proposed_action"]["refund_basis"] = None
+                result, client, _ = self.run_case(case_id, [wrong, wrong])
+                self.assertEqual(len(client.judge_payloads), 2)
+                self.assertEqual(result.failure_category, "validation")
+                self.assertIsNone(result.judge_result.proposed_action)
+                self.assertIn("Refund basis must be excess_distance_fare", result.validation_issues)
 
     def test_persistent_unsupported_referral_is_validation_failure(self):
         wrong = {"action": "human_review", "explanation": "Exactly 2 km is too complex."}

@@ -1,12 +1,16 @@
+import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from streamlit.testing.v1 import AppTest
 
+from agents import AgentCall, ExampleAgentBackend
+from contracts import ArgumentReview, FactAssertion
 from case_data import load_case, policy_for_case
-from evidence import build_evidence_index, build_policy_index
+from evidence import build_evidence_index, build_policy_index, build_review_input
 from workflow import run_review
+from review_summary import build_decision_summary
 
 
 APP_PATH = str(Path(__file__).resolve().parents[1] / "app.py")
@@ -44,13 +48,21 @@ class ReviewUITests(unittest.TestCase):
                     self.assertEqual(app.main.metric[1].label, "Excess-distance fare component")
                 if result.status == "human_review":
                     self.assertFalse(any(metric.label == "Recommended rider refund" for metric in app.main.metric))
+                    self.assertFalse(any(tab.label in ("For the rider", "For the driver") for tab in app.tabs))
+                else:
+                    self.assertEqual([tab.label for tab in app.tabs], ["For the rider", "For the driver"])
+                    self.assertTrue(any("Agent-reported confidence:" in item.value for item in app.caption))
+                    for tab in app.tabs:
+                        content = " ".join(item.value for item in tab.markdown)
+                        self.assertIn(result.final_explanation, content)
+                        self.assertIn(f"SGD {result.judge_result.proposed_action.amount_cents / 100:.2f}", content)
                 for view in ("Evidence", "Agent activity", "Sources & policy"):
                     app.sidebar.radio(key="dashboard_view").set_value(view).run()
                     self.assertFalse(app.exception)
                     self.assertEqual(app.session_state["review_result"].model_dump(), result.model_dump())
                     self.assertEqual([heading.value for heading in app.main.subheader], [view])
                     if view == "Evidence":
-                        self.assertEqual([tab.label for tab in app.tabs], ["Policy checks", "Timeline"])
+                        self.assertEqual([tab.label for tab in app.tabs], ["Policy checks", "Timeline", "Derived facts"])
                         case = load_case(case_id)
                         known_ids = set(build_evidence_index(case)) | set(build_policy_index(policy_for_case(case)))
                         popovers = app.get("popover")
@@ -101,3 +113,137 @@ class ReviewUITests(unittest.TestCase):
             reviewer.assert_not_called()
         self.assertEqual(app.session_state["review_mode"], "Example walkthrough")
         self.assertTrue(any("Source: Example walkthrough" in item.value for item in app.caption))
+
+
+class IntegratedReviewUITests(unittest.TestCase):
+    def test_derived_fact_table_and_expanders_use_current_case_facts(self):
+        app = AppTest.from_file(APP_PATH).run()
+        for case_id in ("DISP-004", "DISP-010", "DISP-011", "DISP-012"):
+            with self.subTest(case=case_id):
+                app.sidebar.selectbox[0].select(case_id).run()
+                app.sidebar.button[0].click().run()
+                app.sidebar.radio(key="dashboard_view").set_value("Evidence").run()
+                self.assertFalse(app.exception)
+                tab = next(tab for tab in app.tabs if tab.label == "Derived facts")
+                case = load_case(case_id)
+                review = build_review_input(case, policy_for_case(case))
+                table = tab.dataframe[0].value
+                self.assertEqual(table["Fact ID"].tolist(), [fact.id for fact in review.facts])
+                self.assertEqual(len(tab.expander), len(review.facts))
+                for fact, detail in zip(review.facts, tab.expander):
+                    self.assertIn(fact.id, detail.label)
+                    text = " ".join(item.value for item in detail.markdown)
+                    self.assertIn(fact.formula, text)
+                    self.assertTrue(set(fact.evidence_ids + fact.policy_ids) <=
+                                    {item.proto.popover.label for item in detail.get("popover")})
+                if case_id == "DISP-010":
+                    rows = table.set_index("Fact ID")
+                    self.assertEqual(rows.loc["FACT-003", "Value"], "1.5 km")
+                    self.assertEqual(rows.loc["FACT-004", "Value"], "SGD 0.83")
+                    self.assertEqual(rows.loc["FACT-006", "Value"], "Not established")
+                if case_id == "DISP-011":
+                    rows = table.set_index("Fact ID")
+                    self.assertEqual(rows.loc["FACT-006", "Value"], "Yes")
+                    self.assertEqual(rows.loc["FACT-007", "Value"], "Yes")
+                self.assertTrue(any("does not validate" in item.value for item in tab.caption))
+
+    def test_advocate_and_judge_fact_assertions_have_readable_labels_and_units(self):
+        case = load_case("DISP-010")
+        policy = policy_for_case(case)
+        review = build_review_input(case, policy)
+        assertions = [FactAssertion(fact_id=fact.id, value=fact.value) for fact in review.facts]
+
+        class Backend(ExampleAgentBackend):
+            async def advocate(self, *args, **kwargs):
+                call = await super().advocate(*args, **kwargs)
+                call.result.claims[0].fact_assertions = assertions
+                return call
+
+            async def judge(self, *args, **kwargs):
+                call = await super().judge(*args, **kwargs)
+                call.result.fact_assertions = assertions
+                return call
+
+        result = run_review(case, policy, Backend())
+        self.assertEqual(result.status, "completed")
+        with patch("workflow.run_review", return_value=result):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.selectbox[0].select("DISP-010").run()
+            app.sidebar.button[0].click().run()
+        app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
+        self.assertFalse(app.exception)
+        for actor in ("Rider Advocate", "Driver Advocate", "Judge"):
+            activity = next(item for item in app.expander if item.label.startswith(actor + " · "))
+            text = " ".join(item.value for item in activity.caption)
+            self.assertIn("Additional distance: 1.5 km (FACT-003)", text)
+            self.assertIn("Excess-distance fare component: SGD 0.83 (FACT-004)", text)
+            self.assertIn("Timely rider notification: Not established (FACT-006)", text)
+
+    def test_older_summary_without_party_messages_still_displays_decision(self):
+        case = load_case("DISP-002")
+        policy = policy_for_case(case)
+        result = run_review(case, policy, ExampleAgentBackend())
+        summary = build_decision_summary(case, policy, result)
+        summary.pop("party_messages")
+        with patch("workflow.run_review", return_value=result), patch("review_summary.build_decision_summary", return_value=summary):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.button[0].click().run()
+        self.assertFalse(app.exception)
+        self.assertTrue(any(item.value == summary["reason"] for item in app.markdown))
+        self.assertFalse(app.tabs)
+
+    def test_completed_review_labels_application_and_model_analysis_with_sources(self):
+        case = load_case("DISP-010")
+        result = run_review(case, policy_for_case(case), ExampleAgentBackend())
+        with patch.dict(os.environ, {"FAIRRIDE_API_KEY": "test", "FAIRRIDE_MODEL": "test"}), patch("workflow.run_review", return_value=result):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.selectbox[0].select("DISP-010").run()
+            app.sidebar.radio[0].set_value("Live model").run()
+            app.sidebar.button[0].click().run()
+        self.assertFalse(app.exception)
+        captions = " ".join(item.value for item in app.caption)
+        self.assertIn("Application-generated explanation", captions)
+        self.assertTrue(any("SGD 0.83" in item.value for item in app.markdown))
+        app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
+        self.assertFalse(app.exception)
+        captions = " ".join(item.value for item in app.caption)
+        self.assertIn("Model-generated argument", captions)
+        self.assertIn("Original Judge analysis", captions)
+        self.assertIn("Citation IDs and declared fact values are checked", captions)
+        self.assertTrue(app.get("popover"))
+        self.assertTrue(app.json)
+
+    def test_failed_review_is_not_displayed_as_a_completed_decision(self):
+        class BrokenBackend(ExampleAgentBackend):
+            async def advocate(self, *args, **kwargs):
+                raise ValueError("Invalid model output")
+        case = load_case("DISP-002")
+        failed = run_review(case, policy_for_case(case), BrokenBackend())
+        with patch("workflow.run_review", return_value=failed):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.button[0].click().run()
+        self.assertFalse(app.exception)
+        self.assertTrue(any(item.value == "Model response failed validation" for item in app.error))
+        self.assertFalse(app.success)
+        self.assertFalse(any("Application-generated explanation" in item.value for item in app.caption))
+
+    def test_failed_support_check_displays_flagged_argument_and_cited_findings(self):
+        class Backend(ExampleAgentBackend):
+            async def review_argument(self, review, argument, question=None):
+                return AgentCall(ArgumentReview(findings=[{
+                    "section": "claims", "index": 0, "verdict": "unsupported", "explanation": "This statement contradicts the supplied policy.",
+                    "evidence_ids": ["TRIP-001"], "policy_ids": ["POLICY-1.3"]}]))
+        case = load_case("DISP-011")
+        failed = run_review(case, policy_for_case(case), Backend())
+        with patch("workflow.run_review", return_value=failed):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.selectbox[0].select("DISP-011").run()
+            app.sidebar.button[0].click().run()
+        app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
+        self.assertFalse(app.exception)
+        warnings = " ".join(item.value for item in app.warning)
+        self.assertIn("was flagged", warnings)
+        self.assertIn("claims.0 · unsupported", warnings)
+        self.assertIn("contradicts the supplied policy", warnings)
+        self.assertFalse(app.success)
+        self.assertTrue(any("POLICY-1.3" in item.value for item in app.caption))

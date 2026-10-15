@@ -12,6 +12,8 @@ Read `POLICY_V2_1_SPEC.md` for interpretations and unresolved details, and `PERS
 
 A reviewer selects a case, sees evidence and cited agent activity, and receives either a validated recommendation or a human-review summary. Riders and drivers receive a clear explanation. Refunds, credits and account restrictions are never executed.
 
+The “File a dispute” sidebar mode accepts a short complaint attached to a local demo trip. The category follows that trip's supplied metadata. For live eligible reviews, each advocate selects local evidence sources through bounded structured requests before arguing; both have equal access and must retrieve the complete available source set. Example mode scripts those reads. Filing is in memory, without authentication, persistence or real platform APIs.
+
 No-show eligibility requires five pickup minutes no earlier than scheduled time, verified arrival, a message and a call before cancellation. Route rules use additional kilometres, historical traffic, timely notification/agreement and excess-distance fare. Safety, routes above 2 km, disputes above SGD 50, or unmet confidence requirements must be referred. The source's partial-refund formula for a justified but unnotified detour is unresolved; the user chose referral until confirmed.
 
 Fare/surge and property-damage material is retained as reference, but those workflows are not implemented. Unsupported categories are referred.
@@ -27,6 +29,11 @@ flowchart TD
     GATE -->|required referral| HUMAN[Human review summary]
     GATE -->|eligible| RA[Rider Advocate]
     GATE -->|eligible| DA[Driver Advocate]
+    RA -->|filed dispute: bounded source requests| TOOLS[Trip-scoped local evidence tools]
+    DA -->|filed dispute: bounded source requests| TOOLS
+    CASE --> TOOLS
+    TOOLS -->|requested records| RA
+    TOOLS -->|requested records| DA
     RA --> J[Judge]
     DA --> J
     J -->|one question| RB[Selected advocates]

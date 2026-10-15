@@ -41,6 +41,27 @@ class PolicyV21Tests(unittest.TestCase):
         case = load_case("DISP-007")
         self.assertFalse(no_show_facts(case, policy_for_case(case))["fee_eligible"])
 
+    def test_missing_message_also_voids_fee_with_calls_present(self):
+        case = copy.deepcopy(load_case("DISP-004"))
+        case["chat_logs"] = [r for r in case["chat_logs"] if r["type"] != "message"]
+        facts = no_show_facts(case, policy_for_case(case))
+        self.assertEqual(facts["message_count"], 0)
+        self.assertEqual(facts["call_count"], 2)
+        self.assertFalse(facts["fee_eligible"])
+
+    def test_driver_arrival_five_minute_boundary_is_inclusive(self):
+        case = copy.deepcopy(load_case("DISP-003"))
+        self.assertFalse(no_show_facts(case, policy_for_case(case))["driver_no_show"])
+        case["trip_data"]["driver_arrival_time"] = "2026-09-20T08:50:01+08:00"
+        self.assertTrue(no_show_facts(case, policy_for_case(case))["driver_no_show"])
+
+    def test_exact_two_km_is_allowed_but_any_excess_requires_referral(self):
+        case = copy.deepcopy(load_case("DISP-006"))
+        self.assertEqual(escalation_issues(case, policy_for_case(case), 0.99), [])
+        actual = next(r for r in case["route_data"] if r["type"] == "actual")
+        actual["distance_km"] += 0.001
+        self.assertTrue(any("above 2 km" in issue for issue in escalation_issues(case, policy_for_case(case), 0.99)))
+
     def test_goodwill_credit_is_separate_from_refund(self):
         case = copy.deepcopy(load_case("DISP-004"))
         case["trip_data"]["driver_arrival_time"] = None

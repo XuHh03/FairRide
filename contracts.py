@@ -19,6 +19,13 @@ class EvidenceRecord(Contract):
     data: dict
 
 
+class EvidenceRequest(Contract):
+    trip_id: str = Field(min_length=1)
+    sources: list[Literal["trip_data", "gps_telemetry", "chat_logs", "app_events",
+                          "route_data", "fare_items", "traffic_data"]] = Field(min_length=1, max_length=7)
+    purpose: str = Field(min_length=1, max_length=500)
+
+
 class PolicyClause(Contract):
     id: str = Field(min_length=1)
     text: str = Field(min_length=1)
@@ -95,6 +102,19 @@ class AdvocateResult(Contract):
     unanswered_questions: list[str]
 
 
+class ArgumentFinding(Contract):
+    section: Literal["claims", "counterpoints"]
+    index: int = Field(ge=0, strict=True)
+    verdict: Literal["supported", "unsupported"]
+    explanation: str = Field(min_length=1, max_length=1500)
+    evidence_ids: list[str] = Field(default_factory=list)
+    policy_ids: list[str] = Field(default_factory=list)
+
+
+class ArgumentReview(Contract):
+    findings: list[ArgumentFinding]
+
+
 class ProposedAction(Contract):
     """A recommendation only; amounts must be calculated by Python."""
 
@@ -137,6 +157,8 @@ class JudgeResult(Contract):
         if self.action == "final_ruling":
             if self.ruling is None or self.proposed_action is None:
                 raise ValueError("Final ruling requires a ruling and proposed action")
+            if self.confidence is None:
+                raise ValueError("Final ruling requires confidence between 0 and 1")
             if self.ruling in ("uphold_charge", "no_action") and self.proposed_action.amount_cents:
                 raise ValueError("Upheld charge or no action has zero refund cents")
         elif self.ruling is not None or self.proposed_action is not None:
@@ -155,6 +177,7 @@ class WorkflowResult(Contract):
     status: Literal["completed", "human_review"]
     activity_log: list[ActivityEntry]
     judge_result: JudgeResult
+    final_explanation: str | None = None
     validation_issues: list[str]
     failure_category: Literal["setup", "model", "validation"] | None = None
     mandatory_escalation: bool = False

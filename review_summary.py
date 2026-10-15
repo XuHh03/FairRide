@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from checks import material_case_issues, no_show_facts, route_deviation_facts
-from contracts import WorkflowResult
+from checks import grounded_final_explanation, material_case_issues, no_show_facts, route_deviation_facts
+from contracts import DerivedFact, WorkflowResult
 from evidence import build_review_input
 
 
@@ -13,6 +13,42 @@ RULING_LABELS = {
     "partial_refund": "Refund the excess-distance component",
     "no_action": "No action recommended",
 }
+
+
+FACT_LABELS = {
+    "waited_minutes": "Recorded waiting interval",
+    "fee_eligible": "Cancellation fee eligibility",
+    "message_count": "Driver messages before cancellation",
+    "call_count": "Driver call attempts before cancellation",
+    "goodwill_credit_cents": "Separate goodwill credit component",
+    "wait_start_time": "Waiting interval starts",
+    "wait_end_time": "Waiting interval ends",
+    "timely_presence": "Timely driver pickup presence",
+    "arrival_verified": "Pickup arrival corroborated by GPS",
+    "driver_no_show": "Driver no-show established",
+    "planned_distance_km": "Planned route distance",
+    "actual_distance_km": "Actual route distance",
+    "deviation_km": "Additional distance",
+    "excess_distance_cents": "Excess-distance fare component",
+    "justification": "Historical traffic justification",
+    "rider_informed": "Timely rider notification",
+    "rider_agreed": "Rider agreement",
+}
+
+
+def fact_label(fact: DerivedFact) -> str:
+    return FACT_LABELS.get(fact.name, fact.name.replace("_", " ").capitalize() or fact.id)
+
+
+def format_fact_value(value, unit: str) -> str:
+    """Format a derived value for display without changing its meaning or raw value."""
+    if isinstance(value, bool):
+        return "Yes" if value else "Not established"
+    if unit == "SGD cents":
+        return f"SGD {value / 100:.2f}"
+    if isinstance(value, (int, float)):
+        return f"{value:g} {unit}" if unit in ("km", "minutes") else f"{value:g}"
+    return value.capitalize() if unit == "state" else str(value)
 
 
 def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> dict:
@@ -42,7 +78,7 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
         measured = no_show_facts(case, policy)
         row("Five physical minutes at pickup after scheduled time",
             f"{measured['waited_minutes']:g} min: {measured['wait_start_time']} to {measured['wait_end_time']}",
-            "met" if measured["waited_minutes"] >= 5 else "not met",
+            "unresolved" if not measured["arrival_verified"] else "met" if measured["waited_minutes"] >= 5 else "not met",
             ["waited_minutes", "wait_start_time", "wait_end_time"], ["POLICY-2.1"])
         row("Pickup presence corroborated", "GPS corroboration present" if measured["arrival_verified"] else "No corroborated arrival",
             "met" if measured["arrival_verified"] else "unresolved", ["arrival_verified"], ["POLICY-2.1"])
@@ -55,8 +91,9 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
             complete = "chat_logs" in case and "app_events" in case
             row(label, f"{measured[name]} recorded", "met" if measured[name] else "not met" if complete else "unresolved",
                 [name], ["POLICY-2.3"])
-        calculations.append({"label": "Counted pickup wait", "value": measured["waited_minutes"], "unit": "minutes",
-                             "formula": f"{measured['wait_start_time']} → {measured['wait_end_time']} = {measured['waited_minutes']:g} min. {facts['waited_minutes'].formula}.",
+        calculations.append({"label": "Counted pickup wait" if measured["arrival_verified"] else "Recorded wait interval", "value": measured["waited_minutes"], "unit": "minutes",
+                             "formula": f"{measured['wait_start_time']} → {measured['wait_end_time']} = {measured['waited_minutes']:g} min. {facts['waited_minutes'].formula}." +
+                                        (" Pickup presence is not corroborated; this interval does not verify physical waiting." if not measured["arrival_verified"] else ""),
                              "evidence_ids": facts["waited_minutes"].evidence_ids, "policy_ids": ["POLICY-2.1"]})
         for field, label in (("scheduled_time", "Scheduled pickup"), ("driver_arrival_time", "Recorded driver arrival"),
                              ("cancellation_time", "Cancellation")):
@@ -99,18 +136,20 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
     if not action:
         reason = ("No validated decision was issued because the review failed." if result.failure_category else
                   "A reviewer must resolve the policy referral or evidence issues listed below; no refund amount is recommended.")
-    elif review.dispute_type == "no_show_charge":
-        if measured["fee_eligible"]:
-            reason = "The recorded wait, pickup presence, arrival deadline and both contact obligations satisfy the no-show fee conditions."
-        else:
-            unmet = [item["condition"] for item in checklist if item["status"] != "met"]
-            reason = "The cancellation fee cannot be retained. Conditions not established: " + "; ".join(unmet) + "."
-    elif not measured["deviation_significant"]:
-        reason = "Additional distance is within the 1 km no-refund tolerance."
-    elif measured["justification"] == "confirmed" and measured["rider_informed"] and measured["rider_agreed"]:
-        reason = "Historical traffic supports the detour and the rider was informed and agreed by the deviation; the fare is retained."
     else:
-        reason = "The detour is not justified by the historical traffic records. Refund the full excess-distance component shown below; the tolerance is not deducted from billable extra distance."
+        reason = grounded_final_explanation(case, policy, result.judge_result)
+    party_messages = None
+    if action:
+        component = "cancellation fee" if review.dispute_type == "no_show_charge" else "excess-distance fare"
+        party_messages = {}
+        for role, owner in (("rider", "your"), ("driver", "the rider's")):
+            if action.amount_cents:
+                recommendation = f"Recommended refund: SGD {action.amount_cents / 100:.2f} of {owner} {component}."
+            else:
+                recommendation = f"Retain {owner} {component}; recommended rider refund: SGD 0.00."
+            if action.goodwill_credit_cents:
+                recommendation += f" Separate recommended goodwill credit to {owner} account: SGD {action.goodwill_credit_cents / 100:.2f}."
+            party_messages[role] = {"action": recommendation, "explanation": reason}
     return {
         "case_id": case_id, "policy_version": policy["version"], "status": result.status,
         "outcome": RULING_LABELS.get(result.judge_result.ruling, "Human review required") if action else
@@ -119,6 +158,7 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
         "goodwill_credit_cents": action.goodwill_credit_cents if action else None,
         "mandatory_escalation": result.mandatory_escalation, "failure_category": result.failure_category,
         "reason": reason,
+        "party_messages": party_messages,
         "review_issues": list(dict.fromkeys(result.validation_issues + material_case_issues(case, policy))),
         "checklist": checklist, "calculations": calculations, "timeline": timeline,
     }

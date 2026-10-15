@@ -132,7 +132,7 @@ def _extract_token_usage(activity_log: list) -> tuple[int, int, int]:
     for entry in activity_log:
         usage = entry.output.get("usage", {})
         tokens = usage.get("total_tokens", 0) or 0
-        if entry.actor in ("rider_advocate", "driver_advocate"):
+        if entry.actor in ("rider_advocate", "driver_advocate") or entry.event == "argument_support_review":
             adv_tokens += tokens
         elif entry.actor == "judge":
             judge_tokens += tokens

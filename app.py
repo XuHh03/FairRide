@@ -7,10 +7,10 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from agents import ExampleAgentBackend
-from case_data import load_case, policy_for_case
+from case_data import file_dispute, list_demo_trips, load_case, policy_for_case
 from checks import no_show_facts, route_deviation_facts
-from evidence import build_evidence_index, build_policy_index
-from review_summary import build_decision_summary, build_review_report
+from evidence import build_evidence_index, build_policy_index, build_review_input
+from review_summary import build_decision_summary, build_review_report, fact_label, format_fact_value
 from workflow import run_review
 
 
@@ -34,8 +34,18 @@ case_labels = {
 with st.sidebar:
     st.title("FairRide")
     st.caption("Dispute review workspace")
-    selected_case_id = st.selectbox("Select a case", list(case_labels))
-    st.caption(case_labels[selected_case_id].split(" — ", 1)[1])
+    filing_mode = st.checkbox("File a dispute", key="filing_mode")
+    complaint = ""
+    if filing_mode:
+        trips = {trip["trip_id"]: trip for trip in list_demo_trips()}
+        trip_id = st.selectbox("Select a trip", list(trips))
+        selected_case_id = trips[trip_id]["case_id"]
+        st.caption("Local demo trips. Each trip has records for its supplied no-show or route-dispute category.")
+        complaint = st.text_area("What happened?", max_chars=2000, key=f"complaint_{trip_id}",
+                                 placeholder="The driver took a longer route and I was overcharged.")
+    else:
+        selected_case_id = st.selectbox("Select a case", list(case_labels))
+        st.caption(case_labels[selected_case_id].split(" — ", 1)[1])
     mode = st.radio(
         "Review mode", ["Example walkthrough", "Live model"],
         help="Example walkthrough uses hand-written fixtures. Live model uses the configured endpoint and credentials.",
@@ -43,19 +53,25 @@ with st.sidebar:
     live_ready = bool((os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")) and os.getenv("FAIRRIDE_MODEL"))
     if mode == "Live model" and not live_ready:
         st.warning("Set FAIRRIDE_API_KEY (or OPENAI_API_KEY) and FAIRRIDE_MODEL to run a live review.")
-    run_requested = st.button("Run review", type="primary", width="stretch", disabled=mode == "Live model" and not live_ready)
+    if filing_mode:
+        st.caption("Live model selects evidence sources before arguing. Example walkthrough uses scripted requests and hand-written arguments.")
+    run_requested = st.button("File dispute and run review" if filing_mode else "Run review", type="primary", width="stretch",
+                              disabled=(mode == "Live model" and not live_ready) or (filing_mode and not complaint.strip()))
 
-if st.session_state.get("selected_case") != selected_case_id:
+input_signature = (selected_case_id, filing_mode, complaint.strip())
+if st.session_state.get("review_input_signature") != input_signature:
     st.session_state.pop("review_result", None)
     st.session_state["selected_case"] = selected_case_id
+    st.session_state["review_input_signature"] = input_signature
 
-case = load_case(selected_case_id)
+case = file_dispute(trip_id, complaint) if filing_mode and complaint.strip() else load_case(selected_case_id)
 policy = policy_for_case(case)
 ticket = case["dispute_ticket"]
 dtype = ticket["dispute_type"]
 sources = build_evidence_index(case)
 clauses = build_policy_index(policy)
 facts = no_show_facts(case, policy) if dtype == "no_show_charge" else route_deviation_facts(case, policy)
+derived_facts = {fact.id: fact for fact in build_review_input(case, policy).facts}
 
 st.title("No-show charge" if dtype == "no_show_charge" else "Route deviation")
 st.caption(f"{selected_case_id} · Supplied project policy v{policy['version']}")
@@ -67,7 +83,7 @@ if run_requested:
             review_progress.update(label=message)
             review_progress.write(message)
 
-        review_result = run_review(case, policy, backend, on_progress=show_progress)
+        review_result = run_review(case, policy, backend, on_progress=show_progress, gather_evidence=filing_mode)
         st.session_state.review_result = review_result
         st.session_state.review_mode = mode
         st.session_state.dashboard_view = "Overview"
@@ -127,9 +143,22 @@ def show_decision() -> None:
         credit.metric("Separate goodwill credit", f"S${summary['goodwill_credit_cents'] / 100:.2f}")
         if result.judge_result.confidence is not None:
             st.caption(f"Agent-reported confidence: {result.judge_result.confidence:.0%}")
+            st.caption("Self-reported by the Judge; not a calibrated probability of correctness.")
     else:
         st.warning("Human review required")
-    st.write(summary["reason"])
+    if result.status == "completed" and not result.failure_category:
+        st.caption("Application-generated explanation from validated case facts and policy checks. Original Judge analysis is available in Agent activity.")
+    party_messages = summary.get("party_messages")
+    if party_messages:
+        rider_tab, driver_tab = st.tabs(["For the rider", "For the driver"])
+        for tab, role in ((rider_tab, "rider"), (driver_tab, "driver")):
+            with tab:
+                message = party_messages[role]
+                st.markdown(f"**Recommended action:** {message['action']}")
+                st.markdown("**Why this decision:**")
+                st.write(message["explanation"])
+    else:
+        st.write(summary["reason"])
     if result.mandatory_escalation:
         st.caption("Human review is required by the governing policy.")
     for flag in result.account_review_flags:
@@ -138,6 +167,11 @@ def show_decision() -> None:
         with st.expander(f"Review issues ({len(summary['review_issues'])})", expanded=True):
             for issue in summary["review_issues"]:
                 st.write(f"- {issue}")
+
+
+def show_fact_assertion(assertion: dict) -> None:
+    fact = derived_facts[assertion["fact_id"]]
+    st.caption(f"Checked fact · {fact_label(fact)}: {format_fact_value(assertion['value'], fact.unit)} ({fact.id})")
 
 
 def show_calculations() -> None:
@@ -215,7 +249,7 @@ elif view == "Evidence":
         st.info("Run a review to prepare the policy checklist and evidence timeline. Raw records are available under Sources & policy.")
     else:
         st.caption("Prepared from recorded evidence and Python policy checks.")
-        checks, timeline = st.tabs(["Policy checks", "Timeline"])
+        checks, timeline, derived = st.tabs(["Policy checks", "Timeline", "Derived facts"])
         with checks:
             for check in summary["checklist"]:
                 with st.container(border=True):
@@ -226,6 +260,18 @@ elif view == "Evidence":
             for event in summary["timeline"]:
                 st.write(f"{event['timestamp']} · {event['event']}")
                 show_citations(event["evidence_ids"])
+        with derived:
+            st.caption("Application-derived facts from the selected case's records and policy. Matching a fact value does not validate an agent's entire claim.")
+            st.dataframe(
+                [{"Fact ID": fact.id, "Meaning": fact_label(fact), "Value": format_fact_value(fact.value, fact.unit)}
+                 for fact in derived_facts.values()], hide_index=True, width="stretch",
+            )
+            st.caption("Expand a fact to inspect its raw value, calculation and supporting sources. Fare components are not automatic refund recommendations.")
+            for fact in derived_facts.values():
+                with st.expander(f"{fact.id} · {fact_label(fact)}"):
+                    st.write(f"Raw value: {fact.value} ({fact.unit})")
+                    st.write(fact.formula)
+                    show_citations(fact.evidence_ids + fact.policy_ids)
 
 elif view == "Agent activity":
     st.subheader("Agent activity")
@@ -243,6 +289,28 @@ elif view == "Agent activity":
             prompt_tokens += usage.get("prompt_tokens", 0)
             completion_tokens += usage.get("completion_tokens", 0)
             with st.expander(f"{entry.actor.replace('_', ' ').title()} · {entry.event.replace('_', ' ')}"):
+                if entry.event == "evidence_request":
+                    st.caption("Scripted evidence retrieval" if st.session_state.review_mode == "Example walkthrough" else
+                               "Model-selected evidence retrieval")
+                    st.caption(f"Trip: {output['trip_id']} · Round {output['round']}/3")
+                    st.write("Requested sources: " + ", ".join(source.replace("_", " ") for source in output["sources"]))
+                    st.write(output["purpose"])
+                    show_citations(output["record_ids"])
+                    if output.get("error"):
+                        st.error(output["error"])
+                if entry.event == "argument_support_review":
+                    st.write(f"{output['role'].replace('_', ' ').title()} support check · attempt {output['attempt']}")
+                    if not any(finding["verdict"] == "unsupported" for finding in output["findings"]):
+                        st.caption("The model support check found no unsupported statements; this does not guarantee factual accuracy.")
+                    for finding in output["findings"]:
+                        message = f"{finding['section']}.{finding['index']} · {finding['verdict']}: {finding['explanation']}"
+                        if finding["verdict"] == "unsupported":
+                            st.warning(message)
+                        else:
+                            st.caption(message)
+                        ids = finding["evidence_ids"] + finding["policy_ids"]
+                        st.caption("Sources: " + ", ".join(ids))
+                        show_citations(ids)
                 if entry.event == "decision_validation":
                     st.write("The Judge's response failed these checks and was sent for one correction attempt:")
                     for issue in output["errors"]:
@@ -261,6 +329,14 @@ elif view == "Agent activity":
                 if "result" in output:
                     item = output["result"]
                     if "claims" in item:
+                        st.caption("Model-generated argument; check its interpretation against cited sources." if st.session_state.review_mode == "Live model" else
+                                   "Hand-written example argument; not a live model response.")
+                        if output.get("support_status") == "flagged":
+                            st.warning("This argument was flagged by the support check. Inspect its findings below; it was not accepted for the Judge.")
+                        elif output.get("support_status") == "review_failed":
+                            st.warning("The support check failed validation. This argument was not accepted for the Judge.")
+                        elif output.get("support_status") == "passed_model_review":
+                            st.caption("Passed the model support check; source inspection remains available.")
                         for heading in ("claims", "counterpoints"):
                             if item[heading]:
                                 st.markdown(f"**{heading.title()}**")
@@ -268,16 +344,18 @@ elif view == "Agent activity":
                                 st.write(claim["statement"])
                                 show_citations(claim["evidence_ids"] + claim["policy_ids"])
                                 for assertion in claim.get("fact_assertions", []):
-                                    st.caption(f"Checked fact {assertion['fact_id']}: {assertion['value']}")
+                                    show_fact_assertion(assertion)
                         if item["unanswered_questions"]:
                             st.write("**Open questions:** " + "; ".join(item["unanswered_questions"]))
                     else:
+                        st.caption("Original Judge analysis; model prose may contain errors." if st.session_state.review_mode == "Live model" else
+                                   "Original Judge analysis from the hand-written example.")
                         st.write(item["explanation"])
                         if item.get("question"):
                             st.write("**Question:** " + item["question"])
                         show_citations(item["evidence_ids"] + item["policy_ids"])
                         for assertion in item.get("fact_assertions", []):
-                            st.caption(f"Checked fact {assertion['fact_id']}: {assertion['value']}")
+                            show_fact_assertion(assertion)
                 if "duration_ms" in output:
                     st.caption(f"Duration: {output['duration_ms']} ms · Tokens: {usage.get('total_tokens', 'n/a')}")
         st.caption(f"Wall time: {wall_ms if wall_ms is not None else 'n/a'} ms · Model stage time (sum): {total_ms} ms · Prompt tokens: {prompt_tokens} · Completion tokens: {completion_tokens}")

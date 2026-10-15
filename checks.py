@@ -253,6 +253,46 @@ def policy_outcome(case: dict, policy: dict) -> tuple[str, int, int, str]:
     return "partial_refund", facts["excess_distance_cents"], 0, "excess_distance_fare"
 
 
+def grounded_final_explanation(case: dict, policy: dict, decision: JudgeResult) -> str:
+    """Application rationale for an already validated final decision; not model prose."""
+    action = decision.proposed_action
+    if case["dispute_ticket"]["dispute_type"] == "no_show_charge":
+        facts = no_show_facts(case, policy)
+        contact = "Both message and call contacts were recorded before cancellation." if facts["contact_obligations_met"] else (
+            f"Contacts before cancellation: {facts['message_count']} message(s), {facts['call_count']} call(s); both are required by POLICY-2.3.")
+        reason = (f"The pickup records establish {facts['waited_minutes']:g} eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. " if facts["arrival_verified"] else
+                  f"The recorded interval is {facts['waited_minutes']:g} minutes, but unverified pickup presence means it does not establish eligible waiting. ") + contact + " "
+        if facts["fee_eligible"]:
+            reason += "The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made."
+        else:
+            unmet = []
+            if not facts["arrival_verified"]:
+                unmet.append("pickup presence was not verified")
+            if facts["driver_no_show"]:
+                unmet.append("the driver did not arrive within five minutes after scheduled pickup")
+            if facts["waited_minutes"] < 5:
+                unmet.append("fewer than five eligible minutes were waited")
+            if not facts["contact_obligations_met"]:
+                unmet.append("a required contact is missing")
+            reason += "The cancellation fee is reversed because " + "; ".join(unmet) + ". "
+            reason += ("Like precedent POLICY-7.3, missing contact invalidates the fee." if not facts["contact_obligations_met"] else
+                       "Unlike precedent POLICY-7.3, contacts were made; the other unmet eligibility requirements invalidate the fee.")
+    else:
+        facts = route_deviation_facts(case, policy)
+        reason = f"The actual route is {facts['actual_distance_km']:g} km versus {facts['planned_distance_km']:g} km planned: {facts['deviation_km']:g} km excess. "
+        if not facts["deviation_significant"]:
+            reason += "The deviation is within the 1 km tolerance under POLICY-1.3, so the charge is upheld. Unlike precedent POLICY-7.1, the tolerance is not exceeded."
+        elif facts["justification"] == "confirmed":
+            reason += "Matched historical traffic supports the detour, the rider was notified before or at deviation and the rider agreed. POLICY-1.3 requires no refund. Unlike precedent POLICY-7.1, the detour was notified and agreed."
+        else:
+            rate = next(item["rate_per_km"] for item in case["fare_items"] if item["component"] == "distance_charge")
+            reason += f"Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD {rate:.2f}/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply."
+    reason += f" Recommended rider refund: SGD {action.amount_cents / 100:.2f}."
+    if action.goodwill_credit_cents:
+        reason += f" Separate goodwill credit under POLICY-2.4: SGD {action.goodwill_credit_cents / 100:.2f}."
+    return reason
+
+
 def validate_final_ruling(case: dict, policy: dict, decision: JudgeResult) -> list[str]:
     if decision.action != "final_ruling":
         return []

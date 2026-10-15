@@ -5,9 +5,10 @@ from collections.abc import Callable
 from time import perf_counter
 
 from agents import AgentBackend, AgentCall, ModelAgentBackend
-from checks import material_case_issues, validate_judge_decision, policy_outcome, escalation_issues, account_review_flags
-from contracts import ActivityEntry, AdvocateResult, JudgeResult, Role, WorkflowResult
-from evidence import build_review_input, validate_references
+from checks import material_case_issues, validate_judge_decision, policy_outcome, escalation_issues, account_review_flags, grounded_final_explanation
+from contracts import ActivityEntry, AdvocateResult, ArgumentReview, JudgeResult, Role, WorkflowResult
+from evidence import build_review_input, validate_references, citation_issues
+from retrieval import gather_advocate_evidence
 
 
 def _human_review(
@@ -22,7 +23,7 @@ def _human_review(
 
 async def run_review_async(
     case: dict, policy: dict, backend: AgentBackend | None = None,
-    *, on_progress: Callable[[str], None] | None = None,
+    *, on_progress: Callable[[str], None] | None = None, gather_evidence: bool = False,
 ) -> WorkflowResult:
     """Use a supplied backend for examples/tests or the configured live model."""
     started = perf_counter()
@@ -59,28 +60,80 @@ async def run_review_async(
         )
 
     async def call_advocate(role: Role, question: str | None = None) -> AdvocateResult:
+        advocate_review = review
+        if gather_evidence and question is None:
+            planner = getattr(agent, "plan_evidence", None)
+            if not callable(planner):
+                raise ValueError("This backend does not support advocate evidence retrieval")
+            advocate_review = await gather_advocate_evidence(
+                review, role, planner,
+                lambda output: activity.append(ActivityEntry(actor=role, event="evidence_request", output=output)),
+                progress,
+            )
         started = perf_counter()
-        call: AgentCall[AdvocateResult] = await agent.advocate(review, role, question)
-        result = AdvocateResult.model_validate(call.result)
-        if result.role != role:
-            raise ValueError(f"{role} returned the wrong role")
-        refs = validate_references(result, case, policy)
-        if refs:
-            raise ValueError("; ".join(refs))
-        activity.append(ActivityEntry(
-            actor=role, event="rebuttal" if question else "initial_argument",
-            output={
-                "result": result.model_dump(mode="json"),
-                "duration_ms": round((perf_counter() - started) * 1000),
-                "citation_retries": call.citation_retries,
-                "schema_retries": call.schema_retries,
-                "citation_resolutions": call.citation_resolutions,
-                "usage": {key: value for key, value in call.usage.items()
+        call: AgentCall[AdvocateResult] = await agent.advocate(advocate_review, role, question)
+        name = "Rider Advocate" if role == "rider_advocate" else "Driver Advocate"
+        reviewer = getattr(agent, "review_argument", None)
+        if not getattr(agent, "enable_argument_review", True):
+            reviewer = None
+        for attempt in range(2):
+            result = AdvocateResult.model_validate(call.result)
+            if result.role != role:
+                raise ValueError(f"{role} returned the wrong role")
+            refs = validate_references(result, case, policy)
+            if refs:
+                raise ValueError("; ".join(refs))
+            argument_entry = ActivityEntry(
+                actor=role, event="argument_correction" if attempt else "rebuttal" if question else "initial_argument",
+                output={
+                    "result": result.model_dump(mode="json"),
+                    "duration_ms": round((perf_counter() - started) * 1000),
+                    "citation_retries": call.citation_retries,
+                    "schema_retries": call.schema_retries,
+                    "citation_resolutions": call.citation_resolutions,
+                    "usage": {key: value for key, value in call.usage.items()
+                              if key in ("prompt_tokens", "completion_tokens", "total_tokens")
+                              and isinstance(value, int)},
+                },
+            )
+            activity.append(argument_entry)
+            if not callable(reviewer):
+                break
+            progress(f"{name}: checking argument support")
+            audit_started = perf_counter()
+            argument_entry.output["support_status"] = "review_failed"
+            audit_call = await reviewer(review, result, question)
+            audit = ArgumentReview.model_validate(audit_call.result)
+            activity.append(ActivityEntry(actor="system", event="argument_support_review", output={
+                "role": role, "attempt": attempt + 1, "findings": [f.model_dump(mode="json") for f in audit.findings],
+                "duration_ms": round((perf_counter() - audit_started) * 1000),
+                "schema_retries": audit_call.schema_retries, "citation_retries": audit_call.citation_retries,
+                "usage": {key: value for key, value in audit_call.usage.items()
                           if key in ("prompt_tokens", "completion_tokens", "total_tokens")
                           and isinstance(value, int)},
-            },
-        ))
-        name = "Rider Advocate" if role == "rider_advocate" else "Driver Advocate"
+            }))
+            for finding in audit.findings:
+                if finding.index >= len(getattr(result, finding.section)):
+                    raise ValueError(f"Support review references nonexistent {finding.section}.{finding.index}")
+                if not finding.evidence_ids and not finding.policy_ids:
+                    raise ValueError("Support review finding needs a source or policy citation")
+                refs = citation_issues(finding, [r.id for r in review.evidence], [c.id for c in review.policy.clauses])
+                if refs:
+                    raise ValueError("Support review: " + "; ".join(refs))
+            unsupported = [f for f in audit.findings if f.verdict == "unsupported"]
+            argument_entry.output["support_status"] = "flagged" if unsupported else "passed_model_review"
+            if not unsupported:
+                break
+            corrector = getattr(agent, "correct_advocate", None)
+            if attempt == 1 or not callable(corrector):
+                raise ValueError(f"{name} support review failed: " + "; ".join(
+                    f"{f.section}.{f.index}: {f.explanation}" for f in unsupported))
+            progress(f"{name}: correcting unsupported arguments")
+            started = perf_counter()
+            call = await corrector(review, role, {
+                "previous_response": result.model_dump(mode="json"),
+                "findings": [f.model_dump(mode="json") for f in unsupported],
+            }, question)
         progress(f"{name} finished its rebuttal" if question else f"{name} finished its evidence analysis")
         return result
 
@@ -120,7 +173,8 @@ async def run_review_async(
 
     try:
         # These calls depend on the same immutable review, not on one another.
-        progress("Rider and Driver Advocates are analyzing evidence")
+        progress("Rider and Driver Advocates are gathering evidence" if gather_evidence else
+                 "Rider and Driver Advocates are analyzing evidence")
         rider, driver = await asyncio.gather(
             call_advocate("rider_advocate"), call_advocate("driver_advocate")
         )
@@ -187,6 +241,7 @@ async def run_review_async(
         return WorkflowResult(
             case_id=case_id, status=status, activity_log=activity,
             judge_result=decision, validation_issues=issues,
+            final_explanation=grounded_final_explanation(case, policy, decision) if status == "completed" else None,
             failure_category=failure_category, mandatory_escalation=mandatory_escalation, account_review_flags=account_review_flags(case),
         )
     except Exception as exc:
@@ -209,6 +264,6 @@ async def run_review_async(
 
 def run_review(
     case: dict, policy: dict, backend: AgentBackend | None = None,
-    *, on_progress: Callable[[str], None] | None = None,
+    *, on_progress: Callable[[str], None] | None = None, gather_evidence: bool = False,
 ) -> WorkflowResult:
-    return asyncio.run(run_review_async(case, policy, backend, on_progress=on_progress))
+    return asyncio.run(run_review_async(case, policy, backend, on_progress=on_progress, gather_evidence=gather_evidence))

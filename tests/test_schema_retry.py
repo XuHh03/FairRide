@@ -48,6 +48,55 @@ class SchemaRetryTests(unittest.TestCase):
         self.assertEqual(client.payloads[1]["schema_correction"]["previous_response"], invalid)
         self.assertFalse(client.payloads[1]["rebuttal_round_complete"])
 
+    def test_missing_final_confidence_gets_one_repair_without_inventing_score(self):
+        valid = copy.deepcopy(self.examples["judge_final_ruling"])
+        invalid = copy.deepcopy(valid)
+        invalid.pop("confidence")
+        client = self.client([invalid, valid])
+        call = self.judge(client)
+        self.assertEqual(call.schema_retries, 1)
+        self.assertEqual(call.result.confidence, valid["confidence"])
+        self.assertIn("confidence", " ".join(client.payloads[1]["schema_correction"]["errors"]))
+        client = self.client([invalid, invalid])
+        with self.assertRaisesRegex(ValueError, "Schema correction failed.*confidence"):
+            self.judge(client)
+        self.assertEqual(len(client.payloads), 2)
+
+    def test_overlong_advocate_is_rewritten_without_truncation(self):
+        valid = copy.deepcopy(self.examples["rider_advocate"])
+        invalid = copy.deepcopy(valid)
+        invalid["claims"][0]["statement"] = "x" * 1501
+        client = self.client([invalid, valid])
+        call = asyncio.run(ModelAgentBackend(client).advocate(self.review, "rider_advocate"))
+        self.assertEqual(call.result.model_dump(), AdvocateResult.model_validate(valid).model_dump())
+        self.assertEqual(call.schema_retries, 1)
+        self.assertEqual(call.usage["total_tokens"], 10)
+        correction = client.payloads[1]["schema_correction"]
+        self.assertEqual(correction["previous_response"], invalid)
+        self.assertIn("main points", correction["instruction"])
+
+    def test_persistent_overlong_advocate_fails_after_two_calls(self):
+        invalid = copy.deepcopy(self.examples["rider_advocate"])
+        invalid["claims"][0]["statement"] = "x" * 1501
+        client = self.client([invalid, invalid])
+        with self.assertRaisesRegex(ValueError, "Schema correction failed: claims.0.statement"):
+            asyncio.run(ModelAgentBackend(client).advocate(self.review, "rider_advocate"))
+        self.assertEqual(len(client.payloads), 2)
+
+    def test_length_and_citation_corrections_share_budget_in_both_orders(self):
+        valid = copy.deepcopy(self.examples["rider_advocate"])
+        overlong = copy.deepcopy(valid)
+        overlong["claims"][0]["statement"] = "x" * 1501
+        bad_citation = copy.deepcopy(valid)
+        bad_citation["claims"][0]["evidence_ids"] = ["UNKNOWN-001"]
+        for responses, error in (([overlong, bad_citation], "Citation correction failed"),
+                                 ([bad_citation, overlong], "Schema correction failed")):
+            with self.subTest(error=error):
+                client = self.client(responses)
+                with self.assertRaisesRegex(ValueError, error):
+                    asyncio.run(ModelAgentBackend(client).advocate(self.review, "rider_advocate"))
+                self.assertEqual(len(client.payloads), 2)
+
     def test_persistent_missing_field_fails_after_two_calls(self):
         invalid = copy.deepcopy(self.request)
         del invalid["explanation"]
@@ -78,6 +127,8 @@ class SchemaRetryTests(unittest.TestCase):
                 self.payloads = []
 
             async def complete_json(self, instructions, payload):
+                if "argument" in payload:
+                    return {"findings": []}, {"total_tokens": 5}
                 if "rider_argument" in payload:
                     self.payloads.append(copy.deepcopy(payload))
                     return copy.deepcopy(responses[len(self.payloads) - 1]), {"total_tokens": 5}
