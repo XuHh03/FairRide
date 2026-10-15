@@ -48,6 +48,20 @@ class SchemaRetryTests(unittest.TestCase):
         self.assertEqual(client.payloads[1]["schema_correction"]["previous_response"], invalid)
         self.assertFalse(client.payloads[1]["rebuttal_round_complete"])
 
+    def test_missing_final_confidence_gets_one_repair_without_inventing_score(self):
+        valid = copy.deepcopy(self.examples["judge_final_ruling"])
+        invalid = copy.deepcopy(valid)
+        invalid.pop("confidence")
+        client = self.client([invalid, valid])
+        call = self.judge(client)
+        self.assertEqual(call.schema_retries, 1)
+        self.assertEqual(call.result.confidence, valid["confidence"])
+        self.assertIn("confidence", " ".join(client.payloads[1]["schema_correction"]["errors"]))
+        client = self.client([invalid, invalid])
+        with self.assertRaisesRegex(ValueError, "Schema correction failed.*confidence"):
+            self.judge(client)
+        self.assertEqual(len(client.payloads), 2)
+
     def test_overlong_advocate_is_rewritten_without_truncation(self):
         valid = copy.deepcopy(self.examples["rider_advocate"])
         invalid = copy.deepcopy(valid)

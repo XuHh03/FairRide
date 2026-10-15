@@ -84,6 +84,29 @@ class SharedContractTests(unittest.TestCase):
                     result = model.model_validate(output)
                     self.assertEqual(validate_references(result, case, policy_for_case(case)), [])
 
+    def test_every_final_ruling_requires_numeric_confidence(self):
+        from agents import ExampleAgentBackend
+
+        output = copy.deepcopy(ExampleAgentBackend().examples["DISP-004"]["judge_final_ruling"])
+        for value in (None, -0.01, 1.01):
+            with self.subTest(confidence=value), self.assertRaises(ValidationError):
+                JudgeResult.model_validate({**output, "confidence": value})
+        output.pop("confidence")
+        with self.assertRaises(ValidationError):
+            JudgeResult.model_validate(output)
+        for value in (0, 0.8, 1):
+            with self.subTest(confidence=value):
+                self.assertEqual(JudgeResult.model_validate({**output, "confidence": value}).confidence, value)
+
+    def test_referral_and_rebuttal_can_omit_confidence(self):
+        for output in (
+            {"action": "human_review", "explanation": "Policy requires referral."},
+            {"action": "request_rebuttal", "explanation": "Clarify pickup presence.",
+             "question": "Is presence verified?", "rebuttal_roles": ["rider_advocate"]},
+        ):
+            with self.subTest(action=output["action"]):
+                self.assertIsNone(JudgeResult.model_validate(output).confidence)
+
     def test_wait_clock_follows_configured_policy(self):
         policy = copy.deepcopy(self.policy)
         policy["wait_start_event"] = "scheduled_time"

@@ -26,6 +26,33 @@ class DecisionSummaryTests(unittest.TestCase):
         self.assertIn("09:09:00+08:00", wait["observation"])
         self.assertEqual(summary["calculations"][0]["value"], 9)
 
+    def test_party_messages_share_grounded_reason_and_actual_recommendation(self):
+        for case_id, amount, component in (
+            ("DISP-003", "5.00", "cancellation fee"),
+            ("DISP-004", "0.00", "cancellation fee"),
+            ("DISP-010", "0.83", "excess-distance fare"),
+            ("DISP-011", "0.00", "fare"),
+        ):
+            with self.subTest(case=case_id):
+                case, policy, result, summary = self.review(case_id)
+                messages = summary.get("party_messages")
+                self.assertIsNotNone(messages)
+                self.assertEqual(set(messages), {"rider", "driver"})
+                for message in messages.values():
+                    self.assertEqual(message["explanation"], result.final_explanation)
+                    self.assertIn(f"SGD {amount}", message["action"])
+                    self.assertIn(component, message["action"])
+                    self.assertNotIn("has been refunded", message["action"])
+                self.assertIn("your", messages["rider"]["action"])
+                self.assertIn("rider", messages["driver"]["action"])
+                self.assertEqual(build_review_report(case, policy, result, "Example walkthrough")["summary"]["party_messages"], messages)
+
+    def test_party_messages_do_not_present_referral_or_failure_as_a_final_ruling(self):
+        case, policy, result, summary = self.review("DISP-012")
+        self.assertIsNone(summary.get("party_messages"))
+        result.failure_category = "model"
+        self.assertIsNone(build_decision_summary(case, policy, result).get("party_messages"))
+
     def test_inclusive_arrival_boundary_is_not_reported_as_late(self):
         case = load_case("DISP-003")
         for record in case["gps_telemetry"][2:]:

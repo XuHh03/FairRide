@@ -3,8 +3,9 @@ import unittest
 
 from agents import AgentCall, ExampleAgentBackend
 from case_data import load_case, policy_for_case
-from contracts import AdvocateResult, JudgeResult
+from contracts import AdvocateResult, JudgeResult, WorkflowResult
 from checks import grounded_final_explanation, validate_final_ruling
+from review_summary import build_decision_summary
 from workflow import run_review
 
 
@@ -38,6 +39,13 @@ class FinalExplanationTests(unittest.TestCase):
         explanation = grounded_final_explanation(case, policy, decision)
         self.assertIn("Recommended rider refund: SGD 5.00", explanation)
         self.assertIn("Separate goodwill credit under POLICY-2.4: SGD 5.00", explanation)
+        result = WorkflowResult(case_id="DISP-004", status="completed", activity_log=[],
+                                judge_result=decision, final_explanation=explanation, validation_issues=[])
+        messages = build_decision_summary(case, policy, result)["party_messages"]
+        for role, owner in (("rider", "your"), ("driver", "the rider's")):
+            self.assertIn(f"SGD 5.00 of {owner} cancellation fee", messages[role]["action"])
+            self.assertIn(f"Separate recommended goodwill credit to {owner} account: SGD 5.00", messages[role]["action"])
+            self.assertEqual(messages[role]["explanation"], result.final_explanation)
 
     def review(self, case_id, explanation="Incorrect model arithmetic: refund SGD 99.00."):
         class Backend(ExampleAgentBackend):

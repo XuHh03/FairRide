@@ -10,6 +10,7 @@ from contracts import ArgumentReview
 from case_data import load_case, policy_for_case
 from evidence import build_evidence_index, build_policy_index
 from workflow import run_review
+from review_summary import build_decision_summary
 
 
 APP_PATH = str(Path(__file__).resolve().parents[1] / "app.py")
@@ -47,6 +48,14 @@ class ReviewUITests(unittest.TestCase):
                     self.assertEqual(app.main.metric[1].label, "Excess-distance fare component")
                 if result.status == "human_review":
                     self.assertFalse(any(metric.label == "Recommended rider refund" for metric in app.main.metric))
+                    self.assertFalse(any(tab.label in ("For the rider", "For the driver") for tab in app.tabs))
+                else:
+                    self.assertEqual([tab.label for tab in app.tabs], ["For the rider", "For the driver"])
+                    self.assertTrue(any("Agent-reported confidence:" in item.value for item in app.caption))
+                    for tab in app.tabs:
+                        content = " ".join(item.value for item in tab.markdown)
+                        self.assertIn(result.final_explanation, content)
+                        self.assertIn(f"SGD {result.judge_result.proposed_action.amount_cents / 100:.2f}", content)
                 for view in ("Evidence", "Agent activity", "Sources & policy"):
                     app.sidebar.radio(key="dashboard_view").set_value(view).run()
                     self.assertFalse(app.exception)
@@ -107,6 +116,19 @@ class ReviewUITests(unittest.TestCase):
 
 
 class IntegratedReviewUITests(unittest.TestCase):
+    def test_older_summary_without_party_messages_still_displays_decision(self):
+        case = load_case("DISP-002")
+        policy = policy_for_case(case)
+        result = run_review(case, policy, ExampleAgentBackend())
+        summary = build_decision_summary(case, policy, result)
+        summary.pop("party_messages")
+        with patch("workflow.run_review", return_value=result), patch("review_summary.build_decision_summary", return_value=summary):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.button[0].click().run()
+        self.assertFalse(app.exception)
+        self.assertTrue(any(item.value == summary["reason"] for item in app.markdown))
+        self.assertFalse(app.tabs)
+
     def test_completed_review_labels_application_and_model_analysis_with_sources(self):
         case = load_case("DISP-010")
         result = run_review(case, policy_for_case(case), ExampleAgentBackend())

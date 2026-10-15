@@ -127,11 +127,22 @@ def show_decision() -> None:
         credit.metric("Separate goodwill credit", f"S${summary['goodwill_credit_cents'] / 100:.2f}")
         if result.judge_result.confidence is not None:
             st.caption(f"Agent-reported confidence: {result.judge_result.confidence:.0%}")
+            st.caption("Self-reported by the Judge; not a calibrated probability of correctness.")
     else:
         st.warning("Human review required")
     if result.status == "completed" and not result.failure_category:
         st.caption("Application-generated explanation from validated case facts and policy checks. Original Judge analysis is available in Agent activity.")
-    st.write(summary["reason"])
+    party_messages = summary.get("party_messages")
+    if party_messages:
+        rider_tab, driver_tab = st.tabs(["For the rider", "For the driver"])
+        for tab, role in ((rider_tab, "rider"), (driver_tab, "driver")):
+            with tab:
+                message = party_messages[role]
+                st.markdown(f"**Recommended action:** {message['action']}")
+                st.markdown("**Why this decision:**")
+                st.write(message["explanation"])
+    else:
+        st.write(summary["reason"])
     if result.mandatory_escalation:
         st.caption("Human review is required by the governing policy.")
     for flag in result.account_review_flags:

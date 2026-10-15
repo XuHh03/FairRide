@@ -102,6 +102,18 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
                   "A reviewer must resolve the policy referral or evidence issues listed below; no refund amount is recommended.")
     else:
         reason = grounded_final_explanation(case, policy, result.judge_result)
+    party_messages = None
+    if action:
+        component = "cancellation fee" if review.dispute_type == "no_show_charge" else "excess-distance fare"
+        party_messages = {}
+        for role, owner in (("rider", "your"), ("driver", "the rider's")):
+            if action.amount_cents:
+                recommendation = f"Recommended refund: SGD {action.amount_cents / 100:.2f} of {owner} {component}."
+            else:
+                recommendation = f"Retain {owner} {component}; recommended rider refund: SGD 0.00."
+            if action.goodwill_credit_cents:
+                recommendation += f" Separate recommended goodwill credit to {owner} account: SGD {action.goodwill_credit_cents / 100:.2f}."
+            party_messages[role] = {"action": recommendation, "explanation": reason}
     return {
         "case_id": case_id, "policy_version": policy["version"], "status": result.status,
         "outcome": RULING_LABELS.get(result.judge_result.ruling, "Human review required") if action else
@@ -110,6 +122,7 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
         "goodwill_credit_cents": action.goodwill_credit_cents if action else None,
         "mandatory_escalation": result.mandatory_escalation, "failure_category": result.failure_category,
         "reason": reason,
+        "party_messages": party_messages,
         "review_issues": list(dict.fromkeys(result.validation_issues + material_case_issues(case, policy))),
         "checklist": checklist, "calculations": calculations, "timeline": timeline,
     }

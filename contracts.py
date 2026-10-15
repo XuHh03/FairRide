@@ -150,6 +150,8 @@ class JudgeResult(Contract):
         if self.action == "final_ruling":
             if self.ruling is None or self.proposed_action is None:
                 raise ValueError("Final ruling requires a ruling and proposed action")
+            if self.confidence is None:
+                raise ValueError("Final ruling requires confidence between 0 and 1")
             if self.ruling in ("uphold_charge", "no_action") and self.proposed_action.amount_cents:
                 raise ValueError("Upheld charge or no action has zero refund cents")
         elif self.ruling is not None or self.proposed_action is not None:
