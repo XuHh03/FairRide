@@ -16,6 +16,10 @@ Example walkthroughs require no API key. For live calls, set required `FAIRRIDE_
 
 The app shows evidence preparation, advocate analysis, Judge review, optional rebuttal, decision correction and final validation as they run. Use one app server; restart it after backend changes if imported code remains stale.
 
+The dashboard sidebar contains case selection, review mode, the run button, navigation and report download. Overview focuses on the decision, key metrics, a compact policy checklist and explicit wait/distance/fare calculations. Select Evidence for detailed checks and the chronological timeline, Agent activity for collapsed commentary, or Sources & policy to browse records. Citation buttons open source records in place. Free-text explanations are not semantically certified. Download the JSON review report to retain the summary, calculated facts, cited evidence, policy and workflow activity without raw profiles.
+
+Route overviews also plot additional distance against the supplied policy's no-refund tolerance and AI distance limit. These distance boundaries alone do not determine fault or the refund. No-show overviews retain the concise wait metrics and timeline.
+
 ## Testing
 
 Run offline checks and the hand-written example batch:
@@ -46,6 +50,7 @@ The CLI produces a report; use the unit test for a pass/fail gate. The latest th
 - `policies/ryde_v2_1_*.json`: active, source-linked policy and category precedents. Earlier rules are archived.
 - `checks.py`: waiting/contact/location calculations, route and excess-distance fare, safety/value/confidence safeguards, and final validation.
 - `contracts.py`, `evidence.py`: contract v2.0, source lookup and prepared inputs; citation existence is not proof of claim support.
+- `review_summary.py`: deterministic decision reasons, checklist, timeline, calculations and review-report export. Optional `fact_assertions` on advocate claims and Judge outputs bind declared values to supplied Python facts; incorrect values share the existing single response-correction budget. Existing outputs without assertions remain compatible. This checks declared values, not every statement in model prose.
 - `agents.py`, `workflow.py`: live/example backends, concurrent advocates, one rebuttal round, and original-question context on the second Judge call. Schema/citation errors share one response-correction retry per model call; clear invalid Judge decisions get one policy-validation correction. Persistent errors are displayed separately from evidence-based human review.
 - `cases/`, `examples/`, `evaluation.py`: raw records, separate hand-written responses and separate expected labels.
 - `app.py`: live progress, case review, activity, cited evidence, refund and separate goodwill-credit recommendations. Known `FACT-*` citations are resolved to their recorded sources and shown in the activity log without extra model calls; unknown IDs remain invalid.
