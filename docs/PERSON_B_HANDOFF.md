@@ -17,6 +17,29 @@ Updated 15 October 2026. The user selected the supplied Ryde Dispute Resolution 
 - Eleven cases, example outputs, evaluation labels and citations are migrated. Example responses are hand-written, not model results.
 - The policy includes category-relevant precedent clauses. Profiles/history remain excluded from agent input; a derived confidence requirement reflects fraud flags. Verified rolling no-show records may flag the account for manual review, not establish fault.
 
+## PR #6 integration — 15 October 2026
+
+Integrated dashboard merge `88e00dc` with the three Person A commits ending at `bc86b74`. Both histories are preserved. The integration adds no model calls to the default demo flow.
+
+| Overlap or issue | Resolution |
+|---|---|
+| `app.py` layout conflict | Keep PR #6's sidebar and four dashboard views; carry over the original/corrected argument labels and support-review findings into Agent activity. |
+| Two independent final-reason generators | `checks.grounded_final_explanation` generates both the workflow explanation and dashboard/report reason. Original Judge prose remains separate in activity and the exported workflow. |
+| Fact validation applied to support-review output | Advocate and Judge responses receive fact-assertion instructions/validation. `ArgumentReview` has a separate findings schema and validates finding citations without requiring nonexistent `fact_assertions`. |
+| Competing response-repair paths | Length, schema, fact-value and citation errors share the same two-attempt generation loop. A known wrong fact cannot be hidden by removing its assertion during that repair. |
+| Both branches added `tests/test_review_ui.py` | Preserve both test classes, adapt the earlier tests to sidebar navigation, and retain failure/status/source inspection checks. |
+| Uncorroborated wait shown as a met physical-presence condition | Mark physical waiting unresolved when arrival is unverified; label its calculation as a recorded interval rather than proven physical waiting. |
+| Appended facts and provenance | Keep the original fact IDs, PR #6's added timestamps/arrival facts and its narrower source mappings. |
+| Experimental checker overhead and imperfect accuracy | Keep `FAIRRIDE_CHECK_ARGUMENT_SUPPORT=0` by default; opt-in behavior and findings remain available. |
+
+Remaining issues:
+
+- **Issue #5 stays open:** optional fact assertions validate only declared values. Models may omit assertions or write incorrect prose alongside correct values. The extra model checker previously missed a DISP-003 timestamp error and is not proof of accuracy.
+- The integrated prompts and output schema have not been tested against the live provider. Run the explicitly opted-in live evaluation and audit the prose before making a new model-quality claim; offline checks do not measure provider reliability.
+- The justified-but-unnotified partial-refund formula is still unspecified in the supplied policy. Keep that scenario in human review until the formula is confirmed.
+
+Integration verification: 162 tests ran, 161 passed and one live batch was skipped. This includes all eleven demo cases across dashboard views, navigation without agent calls, exports, source citations, failure visibility and four new integration regressions. No paid model calls were made for this integration. The first two issue fixes (grounded explanations and overlength correction) are retained; the accuracy limitation is not marked resolved.
+
 ## Public interfaces
 
 | Function | Input → output |

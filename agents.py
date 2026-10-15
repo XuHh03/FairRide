@@ -15,7 +15,7 @@ from urllib import error, request
 from pydantic import ValidationError
 
 from contracts import AdvocateResult, ArgumentReview, JudgeResult, ReviewInput, Role
-from evidence import citation_issues, resolve_fact_citations
+from evidence import citation_issues, fact_assertion_issues, resolve_fact_citations
 
 
 T = TypeVar("T", AdvocateResult, ArgumentReview, JudgeResult)
@@ -127,18 +127,26 @@ Routes: the 1 km tolerance is a trigger, not a deductible. Above tolerance an un
 Give findings only, no hidden deliberation and no rewritten argument. Do not flag a statement solely because it is unfavorable to its assigned side. JSON only."""
 
 
+_FACT_INSTRUCTIONS = """
+For every supplied Python fact used in a claim or explanation, include fact_assertions entries with fact_id and its exact value from review.facts. Claims/counterpoints carry their own entries; the Judge carries entries at the top level. FACT-* IDs belong only in fact_assertions, never in raw evidence_ids. Preserve value types (booleans are not numbers). These assertions do not replace decisive evidence/policy citations. Do not recalculate waits, subtract the route tolerance from billable extra distance, or invent additional contact deadlines. Arrival exactly five minutes after schedule meets the inclusive arrival deadline; contact is required before cancellation, not specifically within the free-wait window. Keep prose consistent with assertions; omit speculative calculations and superseded alternatives.
+"""
+
+
 class ModelAgentBackend:
     def __init__(self, client: ChatClient | None = None):
         self.client = client or ChatClient(ModelConfig.from_env())
         self.enable_argument_review = os.getenv("FAIRRIDE_CHECK_ARGUMENT_SUPPORT") == "1"
 
     async def _call_with_validation_retry(self, instructions: str, payload: dict, review: ReviewInput, result_type: type[T]) -> AgentCall[T]:
+        if result_type is not ArgumentReview:
+            instructions += _FACT_INSTRUCTIONS
         evidence_ids = [record.id for record in review.evidence]
         policy_ids = [clause.id for clause in review.policy.clauses]
         payload = {**payload, "allowed_evidence_ids": evidence_ids, "allowed_policy_ids": policy_ids}
         usage = {}
         citation_retries = 0
         schema_retries = 0
+        correction_fact_ids: set[str] = set()
         for attempt in range(2):
             output, call_usage = await self.client.complete_json(instructions, payload)
             for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
@@ -163,6 +171,20 @@ class ModelAgentBackend:
                 issues = [issue for finding in result.findings for issue in citation_issues(finding, evidence_ids, policy_ids)]
             else:
                 result, resolutions = resolve_fact_citations(result, review)
+                fact_errors = fact_assertion_issues(result, review)
+                items = result.claims + result.counterpoints if isinstance(result, AdvocateResult) else [result]
+                asserted_ids = {assertion.fact_id for item in items for assertion in item.fact_assertions}
+                fact_errors += [f"Fact assertion correction must retain {fact_id}" for fact_id in sorted(correction_fact_ids - asserted_ids)]
+                if fact_errors:
+                    if attempt == 1:
+                        raise ValueError("Fact assertion correction failed: " + "; ".join(fact_errors))
+                    correction_fact_ids = asserted_ids & {fact.id for fact in review.facts}
+                    schema_retries = 1
+                    payload = {**payload, "schema_correction": {
+                        "previous_response": output, "errors": fact_errors,
+                        "instruction": "Return the complete corrected response. Use exact supplied review.facts values and revise the related prose consistently. Do not invent facts or remove assertions to hide contradictions. Preserve the role and rebuttal budget.",
+                    }}
+                    continue
                 issues = citation_issues(result, evidence_ids, policy_ids)
             if not issues:
                 return AgentCall(result, usage, citation_retries=citation_retries,

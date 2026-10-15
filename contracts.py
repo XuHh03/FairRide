@@ -68,10 +68,18 @@ class ReviewInput(Contract):
     required_confidence: float = Field(default=0, ge=0, le=1)
 
 
+class FactAssertion(Contract):
+    """A checkable reference to a supplied Python fact, separate from raw citations."""
+
+    fact_id: str
+    value: int | float | bool | str
+
+
 class Claim(Contract):
     statement: str = Field(min_length=1, max_length=1500, description="Convey the main point and decisive evidence concisely; no deliberation or repetition.")
     evidence_ids: list[str] = Field(default_factory=list)
     policy_ids: list[str] = Field(default_factory=list)
+    fact_assertions: list[FactAssertion] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def require_source(self):
@@ -119,6 +127,7 @@ class JudgeResult(Contract):
     evidence_ids: list[str] = Field(default_factory=list)
     policy_ids: list[str] = Field(default_factory=list)
     confidence: float | None = Field(default=None, ge=0, le=1)
+    fact_assertions: list[FactAssertion] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod

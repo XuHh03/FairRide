@@ -66,6 +66,9 @@ def no_show_facts(case: dict, policy: dict) -> dict:
     arrival_verified = arrival is not None and any(arrival <= at <= cancelled for at in pickup_times)
     return {
         "waited_minutes": waited,
+        "wait_start_time": wait_start.isoformat(),
+        "wait_end_time": departure.isoformat(),
+        "timely_presence": timely_presence,
         "scheduled_elapsed_minutes": (cancelled - scheduled).total_seconds() / 60,
         "minutes_before_scheduled_pickup": (scheduled - arrival).total_seconds() / 60 if arrival else 0,
         "arrival_verified": arrival_verified,
