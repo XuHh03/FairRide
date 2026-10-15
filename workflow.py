@@ -8,6 +8,7 @@ from agents import AgentBackend, AgentCall, ModelAgentBackend
 from checks import material_case_issues, validate_judge_decision, policy_outcome, escalation_issues, account_review_flags, grounded_final_explanation
 from contracts import ActivityEntry, AdvocateResult, ArgumentReview, JudgeResult, Role, WorkflowResult
 from evidence import build_review_input, validate_references, citation_issues
+from retrieval import gather_advocate_evidence
 
 
 def _human_review(
@@ -22,7 +23,7 @@ def _human_review(
 
 async def run_review_async(
     case: dict, policy: dict, backend: AgentBackend | None = None,
-    *, on_progress: Callable[[str], None] | None = None,
+    *, on_progress: Callable[[str], None] | None = None, gather_evidence: bool = False,
 ) -> WorkflowResult:
     """Use a supplied backend for examples/tests or the configured live model."""
     started = perf_counter()
@@ -59,8 +60,18 @@ async def run_review_async(
         )
 
     async def call_advocate(role: Role, question: str | None = None) -> AdvocateResult:
+        advocate_review = review
+        if gather_evidence and question is None:
+            planner = getattr(agent, "plan_evidence", None)
+            if not callable(planner):
+                raise ValueError("This backend does not support advocate evidence retrieval")
+            advocate_review = await gather_advocate_evidence(
+                review, role, planner,
+                lambda output: activity.append(ActivityEntry(actor=role, event="evidence_request", output=output)),
+                progress,
+            )
         started = perf_counter()
-        call: AgentCall[AdvocateResult] = await agent.advocate(review, role, question)
+        call: AgentCall[AdvocateResult] = await agent.advocate(advocate_review, role, question)
         name = "Rider Advocate" if role == "rider_advocate" else "Driver Advocate"
         reviewer = getattr(agent, "review_argument", None)
         if not getattr(agent, "enable_argument_review", True):
@@ -162,7 +173,8 @@ async def run_review_async(
 
     try:
         # These calls depend on the same immutable review, not on one another.
-        progress("Rider and Driver Advocates are analyzing evidence")
+        progress("Rider and Driver Advocates are gathering evidence" if gather_evidence else
+                 "Rider and Driver Advocates are analyzing evidence")
         rider, driver = await asyncio.gather(
             call_advocate("rider_advocate"), call_advocate("driver_advocate")
         )
@@ -252,6 +264,6 @@ async def run_review_async(
 
 def run_review(
     case: dict, policy: dict, backend: AgentBackend | None = None,
-    *, on_progress: Callable[[str], None] | None = None,
+    *, on_progress: Callable[[str], None] | None = None, gather_evidence: bool = False,
 ) -> WorkflowResult:
-    return asyncio.run(run_review_async(case, policy, backend, on_progress=on_progress))
+    return asyncio.run(run_review_async(case, policy, backend, on_progress=on_progress, gather_evidence=gather_evidence))

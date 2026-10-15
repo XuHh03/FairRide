@@ -19,6 +19,13 @@ class EvidenceRecord(Contract):
     data: dict
 
 
+class EvidenceRequest(Contract):
+    trip_id: str = Field(min_length=1)
+    sources: list[Literal["trip_data", "gps_telemetry", "chat_logs", "app_events",
+                          "route_data", "fare_items", "traffic_data"]] = Field(min_length=1, max_length=7)
+    purpose: str = Field(min_length=1, max_length=500)
+
+
 class PolicyClause(Contract):
     id: str = Field(min_length=1)
     text: str = Field(min_length=1)

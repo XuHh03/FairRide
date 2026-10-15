@@ -7,7 +7,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from agents import ExampleAgentBackend
-from case_data import load_case, policy_for_case
+from case_data import file_dispute, list_demo_trips, load_case, policy_for_case
 from checks import no_show_facts, route_deviation_facts
 from evidence import build_evidence_index, build_policy_index, build_review_input
 from review_summary import build_decision_summary, build_review_report, fact_label, format_fact_value
@@ -34,8 +34,18 @@ case_labels = {
 with st.sidebar:
     st.title("FairRide")
     st.caption("Dispute review workspace")
-    selected_case_id = st.selectbox("Select a case", list(case_labels))
-    st.caption(case_labels[selected_case_id].split(" — ", 1)[1])
+    filing_mode = st.checkbox("File a dispute", key="filing_mode")
+    complaint = ""
+    if filing_mode:
+        trips = {trip["trip_id"]: trip for trip in list_demo_trips()}
+        trip_id = st.selectbox("Select a trip", list(trips))
+        selected_case_id = trips[trip_id]["case_id"]
+        st.caption("Local demo trips. Each trip has records for its supplied no-show or route-dispute category.")
+        complaint = st.text_area("What happened?", max_chars=2000, key=f"complaint_{trip_id}",
+                                 placeholder="The driver took a longer route and I was overcharged.")
+    else:
+        selected_case_id = st.selectbox("Select a case", list(case_labels))
+        st.caption(case_labels[selected_case_id].split(" — ", 1)[1])
     mode = st.radio(
         "Review mode", ["Example walkthrough", "Live model"],
         help="Example walkthrough uses hand-written fixtures. Live model uses the configured endpoint and credentials.",
@@ -43,13 +53,18 @@ with st.sidebar:
     live_ready = bool((os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")) and os.getenv("FAIRRIDE_MODEL"))
     if mode == "Live model" and not live_ready:
         st.warning("Set FAIRRIDE_API_KEY (or OPENAI_API_KEY) and FAIRRIDE_MODEL to run a live review.")
-    run_requested = st.button("Run review", type="primary", width="stretch", disabled=mode == "Live model" and not live_ready)
+    if filing_mode:
+        st.caption("Live model selects evidence sources before arguing. Example walkthrough uses scripted requests and hand-written arguments.")
+    run_requested = st.button("File dispute and run review" if filing_mode else "Run review", type="primary", width="stretch",
+                              disabled=(mode == "Live model" and not live_ready) or (filing_mode and not complaint.strip()))
 
-if st.session_state.get("selected_case") != selected_case_id:
+input_signature = (selected_case_id, filing_mode, complaint.strip())
+if st.session_state.get("review_input_signature") != input_signature:
     st.session_state.pop("review_result", None)
     st.session_state["selected_case"] = selected_case_id
+    st.session_state["review_input_signature"] = input_signature
 
-case = load_case(selected_case_id)
+case = file_dispute(trip_id, complaint) if filing_mode and complaint.strip() else load_case(selected_case_id)
 policy = policy_for_case(case)
 ticket = case["dispute_ticket"]
 dtype = ticket["dispute_type"]
@@ -68,7 +83,7 @@ if run_requested:
             review_progress.update(label=message)
             review_progress.write(message)
 
-        review_result = run_review(case, policy, backend, on_progress=show_progress)
+        review_result = run_review(case, policy, backend, on_progress=show_progress, gather_evidence=filing_mode)
         st.session_state.review_result = review_result
         st.session_state.review_mode = mode
         st.session_state.dashboard_view = "Overview"
@@ -274,6 +289,15 @@ elif view == "Agent activity":
             prompt_tokens += usage.get("prompt_tokens", 0)
             completion_tokens += usage.get("completion_tokens", 0)
             with st.expander(f"{entry.actor.replace('_', ' ').title()} · {entry.event.replace('_', ' ')}"):
+                if entry.event == "evidence_request":
+                    st.caption("Scripted evidence retrieval" if st.session_state.review_mode == "Example walkthrough" else
+                               "Model-selected evidence retrieval")
+                    st.caption(f"Trip: {output['trip_id']} · Round {output['round']}/3")
+                    st.write("Requested sources: " + ", ".join(source.replace("_", " ") for source in output["sources"]))
+                    st.write(output["purpose"])
+                    show_citations(output["record_ids"])
+                    if output.get("error"):
+                        st.error(output["error"])
                 if entry.event == "argument_support_review":
                     st.write(f"{output['role'].replace('_', ' ').title()} support check · attempt {output['attempt']}")
                     if not any(finding["verdict"] == "unsupported" for finding in output["findings"]):
