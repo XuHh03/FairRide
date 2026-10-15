@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 from agents import ExampleAgentBackend
 from case_data import load_case, policy_for_case
 from checks import no_show_facts, route_deviation_facts
-from evidence import build_evidence_index, build_policy_index
-from review_summary import build_decision_summary, build_review_report
+from evidence import build_evidence_index, build_policy_index, build_review_input
+from review_summary import build_decision_summary, build_review_report, fact_label, format_fact_value
 from workflow import run_review
 
 
@@ -56,6 +56,7 @@ dtype = ticket["dispute_type"]
 sources = build_evidence_index(case)
 clauses = build_policy_index(policy)
 facts = no_show_facts(case, policy) if dtype == "no_show_charge" else route_deviation_facts(case, policy)
+derived_facts = {fact.id: fact for fact in build_review_input(case, policy).facts}
 
 st.title("No-show charge" if dtype == "no_show_charge" else "Route deviation")
 st.caption(f"{selected_case_id} · Supplied project policy v{policy['version']}")
@@ -153,6 +154,11 @@ def show_decision() -> None:
                 st.write(f"- {issue}")
 
 
+def show_fact_assertion(assertion: dict) -> None:
+    fact = derived_facts[assertion["fact_id"]]
+    st.caption(f"Checked fact · {fact_label(fact)}: {format_fact_value(assertion['value'], fact.unit)} ({fact.id})")
+
+
 def show_calculations() -> None:
     st.subheader("Verified calculations")
     for calculation in summary["calculations"]:
@@ -228,7 +234,7 @@ elif view == "Evidence":
         st.info("Run a review to prepare the policy checklist and evidence timeline. Raw records are available under Sources & policy.")
     else:
         st.caption("Prepared from recorded evidence and Python policy checks.")
-        checks, timeline = st.tabs(["Policy checks", "Timeline"])
+        checks, timeline, derived = st.tabs(["Policy checks", "Timeline", "Derived facts"])
         with checks:
             for check in summary["checklist"]:
                 with st.container(border=True):
@@ -239,6 +245,18 @@ elif view == "Evidence":
             for event in summary["timeline"]:
                 st.write(f"{event['timestamp']} · {event['event']}")
                 show_citations(event["evidence_ids"])
+        with derived:
+            st.caption("Application-derived facts from the selected case's records and policy. Matching a fact value does not validate an agent's entire claim.")
+            st.dataframe(
+                [{"Fact ID": fact.id, "Meaning": fact_label(fact), "Value": format_fact_value(fact.value, fact.unit)}
+                 for fact in derived_facts.values()], hide_index=True, width="stretch",
+            )
+            st.caption("Expand a fact to inspect its raw value, calculation and supporting sources. Fare components are not automatic refund recommendations.")
+            for fact in derived_facts.values():
+                with st.expander(f"{fact.id} · {fact_label(fact)}"):
+                    st.write(f"Raw value: {fact.value} ({fact.unit})")
+                    st.write(fact.formula)
+                    show_citations(fact.evidence_ids + fact.policy_ids)
 
 elif view == "Agent activity":
     st.subheader("Agent activity")
@@ -302,7 +320,7 @@ elif view == "Agent activity":
                                 st.write(claim["statement"])
                                 show_citations(claim["evidence_ids"] + claim["policy_ids"])
                                 for assertion in claim.get("fact_assertions", []):
-                                    st.caption(f"Checked fact {assertion['fact_id']}: {assertion['value']}")
+                                    show_fact_assertion(assertion)
                         if item["unanswered_questions"]:
                             st.write("**Open questions:** " + "; ".join(item["unanswered_questions"]))
                     else:
@@ -313,7 +331,7 @@ elif view == "Agent activity":
                             st.write("**Question:** " + item["question"])
                         show_citations(item["evidence_ids"] + item["policy_ids"])
                         for assertion in item.get("fact_assertions", []):
-                            st.caption(f"Checked fact {assertion['fact_id']}: {assertion['value']}")
+                            show_fact_assertion(assertion)
                 if "duration_ms" in output:
                     st.caption(f"Duration: {output['duration_ms']} ms · Tokens: {usage.get('total_tokens', 'n/a')}")
         st.caption(f"Wall time: {wall_ms if wall_ms is not None else 'n/a'} ms · Model stage time (sum): {total_ms} ms · Prompt tokens: {prompt_tokens} · Completion tokens: {completion_tokens}")

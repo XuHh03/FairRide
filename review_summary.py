@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 from checks import grounded_final_explanation, material_case_issues, no_show_facts, route_deviation_facts
-from contracts import WorkflowResult
+from contracts import DerivedFact, WorkflowResult
 from evidence import build_review_input
 
 
@@ -13,6 +13,42 @@ RULING_LABELS = {
     "partial_refund": "Refund the excess-distance component",
     "no_action": "No action recommended",
 }
+
+
+FACT_LABELS = {
+    "waited_minutes": "Recorded waiting interval",
+    "fee_eligible": "Cancellation fee eligibility",
+    "message_count": "Driver messages before cancellation",
+    "call_count": "Driver call attempts before cancellation",
+    "goodwill_credit_cents": "Separate goodwill credit component",
+    "wait_start_time": "Waiting interval starts",
+    "wait_end_time": "Waiting interval ends",
+    "timely_presence": "Timely driver pickup presence",
+    "arrival_verified": "Pickup arrival corroborated by GPS",
+    "driver_no_show": "Driver no-show established",
+    "planned_distance_km": "Planned route distance",
+    "actual_distance_km": "Actual route distance",
+    "deviation_km": "Additional distance",
+    "excess_distance_cents": "Excess-distance fare component",
+    "justification": "Historical traffic justification",
+    "rider_informed": "Timely rider notification",
+    "rider_agreed": "Rider agreement",
+}
+
+
+def fact_label(fact: DerivedFact) -> str:
+    return FACT_LABELS.get(fact.name, fact.name.replace("_", " ").capitalize() or fact.id)
+
+
+def format_fact_value(value, unit: str) -> str:
+    """Format a derived value for display without changing its meaning or raw value."""
+    if isinstance(value, bool):
+        return "Yes" if value else "Not established"
+    if unit == "SGD cents":
+        return f"SGD {value / 100:.2f}"
+    if isinstance(value, (int, float)):
+        return f"{value:g} {unit}" if unit in ("km", "minutes") else f"{value:g}"
+    return value.capitalize() if unit == "state" else str(value)
 
 
 def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> dict:

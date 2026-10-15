@@ -6,9 +6,9 @@ from unittest.mock import patch
 from streamlit.testing.v1 import AppTest
 
 from agents import AgentCall, ExampleAgentBackend
-from contracts import ArgumentReview
+from contracts import ArgumentReview, FactAssertion
 from case_data import load_case, policy_for_case
-from evidence import build_evidence_index, build_policy_index
+from evidence import build_evidence_index, build_policy_index, build_review_input
 from workflow import run_review
 from review_summary import build_decision_summary
 
@@ -62,7 +62,7 @@ class ReviewUITests(unittest.TestCase):
                     self.assertEqual(app.session_state["review_result"].model_dump(), result.model_dump())
                     self.assertEqual([heading.value for heading in app.main.subheader], [view])
                     if view == "Evidence":
-                        self.assertEqual([tab.label for tab in app.tabs], ["Policy checks", "Timeline"])
+                        self.assertEqual([tab.label for tab in app.tabs], ["Policy checks", "Timeline", "Derived facts"])
                         case = load_case(case_id)
                         known_ids = set(build_evidence_index(case)) | set(build_policy_index(policy_for_case(case)))
                         popovers = app.get("popover")
@@ -116,6 +116,69 @@ class ReviewUITests(unittest.TestCase):
 
 
 class IntegratedReviewUITests(unittest.TestCase):
+    def test_derived_fact_table_and_expanders_use_current_case_facts(self):
+        app = AppTest.from_file(APP_PATH).run()
+        for case_id in ("DISP-004", "DISP-010", "DISP-011", "DISP-012"):
+            with self.subTest(case=case_id):
+                app.sidebar.selectbox[0].select(case_id).run()
+                app.sidebar.button[0].click().run()
+                app.sidebar.radio(key="dashboard_view").set_value("Evidence").run()
+                self.assertFalse(app.exception)
+                tab = next(tab for tab in app.tabs if tab.label == "Derived facts")
+                case = load_case(case_id)
+                review = build_review_input(case, policy_for_case(case))
+                table = tab.dataframe[0].value
+                self.assertEqual(table["Fact ID"].tolist(), [fact.id for fact in review.facts])
+                self.assertEqual(len(tab.expander), len(review.facts))
+                for fact, detail in zip(review.facts, tab.expander):
+                    self.assertIn(fact.id, detail.label)
+                    text = " ".join(item.value for item in detail.markdown)
+                    self.assertIn(fact.formula, text)
+                    self.assertTrue(set(fact.evidence_ids + fact.policy_ids) <=
+                                    {item.proto.popover.label for item in detail.get("popover")})
+                if case_id == "DISP-010":
+                    rows = table.set_index("Fact ID")
+                    self.assertEqual(rows.loc["FACT-003", "Value"], "1.5 km")
+                    self.assertEqual(rows.loc["FACT-004", "Value"], "SGD 0.83")
+                    self.assertEqual(rows.loc["FACT-006", "Value"], "Not established")
+                if case_id == "DISP-011":
+                    rows = table.set_index("Fact ID")
+                    self.assertEqual(rows.loc["FACT-006", "Value"], "Yes")
+                    self.assertEqual(rows.loc["FACT-007", "Value"], "Yes")
+                self.assertTrue(any("does not validate" in item.value for item in tab.caption))
+
+    def test_advocate_and_judge_fact_assertions_have_readable_labels_and_units(self):
+        case = load_case("DISP-010")
+        policy = policy_for_case(case)
+        review = build_review_input(case, policy)
+        assertions = [FactAssertion(fact_id=fact.id, value=fact.value) for fact in review.facts]
+
+        class Backend(ExampleAgentBackend):
+            async def advocate(self, *args, **kwargs):
+                call = await super().advocate(*args, **kwargs)
+                call.result.claims[0].fact_assertions = assertions
+                return call
+
+            async def judge(self, *args, **kwargs):
+                call = await super().judge(*args, **kwargs)
+                call.result.fact_assertions = assertions
+                return call
+
+        result = run_review(case, policy, Backend())
+        self.assertEqual(result.status, "completed")
+        with patch("workflow.run_review", return_value=result):
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.selectbox[0].select("DISP-010").run()
+            app.sidebar.button[0].click().run()
+        app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
+        self.assertFalse(app.exception)
+        for actor in ("Rider Advocate", "Driver Advocate", "Judge"):
+            activity = next(item for item in app.expander if item.label.startswith(actor + " · "))
+            text = " ".join(item.value for item in activity.caption)
+            self.assertIn("Additional distance: 1.5 km (FACT-003)", text)
+            self.assertIn("Excess-distance fare component: SGD 0.83 (FACT-004)", text)
+            self.assertIn("Timely rider notification: Not established (FACT-006)", text)
+
     def test_older_summary_without_party_messages_still_displays_decision(self):
         case = load_case("DISP-002")
         policy = policy_for_case(case)
