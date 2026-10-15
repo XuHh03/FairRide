@@ -4,6 +4,8 @@ Updated 15 October 2026. Current work follows the supplied v2.1 reference on the
 
 ## Current update
 
+- Integrated live evaluation of `a59815e` is complete: checker off 10/11, checker on 4/4 targeted cases. The baseline DISP-011 Judge timed out; no invalid ruling was issued. The checker rewrote two arguments but retained pickup-presence ambiguity and made an incorrect statement in a reviewer explanation. Issue #5 remains open. Across three successful pairs, observed wall time rose 3.32× and reported tokens 2.69×; keep the checker off by default. See `evaluations/integration-live-2026-10-15.json`. Fresh offline verification remains 161 passing tests and one skipped live batch; example rehearsal gives seven correct rulings and four appropriate referrals.
+
 - Integrated merged PR #6 (`88e00dc`) with the three Person A commits. Dashboard and exports share the canonical final explanation; fact-value and length repairs share one correction budget; support-review schemas remain separate. Preserved both UI suites and fixed the unverified-wait checklist. Verified 161 passing tests and one skipped live batch. See `docs/PERSON_B_HANDOFF.md` for the resolution table and remaining issues: prose accuracy, combined live-provider validation and the undefined partial-refund formula.
 
 - Demo priority: deterministic validation and the grounded final explanation remain active; experimental model support checks are now opt-in with `FAIRRIDE_CHECK_ARGUMENT_SUPPORT=1` and off by default. Added explicit missing-message, inclusive five-minute arrival and 2 km boundary checks, plus explanation coverage across all eleven demos and separate goodwill/refund amounts. No extra paid tests are needed to verify these deterministic changes.

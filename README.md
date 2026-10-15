@@ -49,6 +49,8 @@ The subsequent [issues #3–#5 review](evaluations/issues-3-5-review-2026-10-14.
 
 The [15 October argument-review follow-up](evaluations/argument-review-2026-10-15.json) tested a model support check and one rewrite before arguments reach the Judge. Revised checks passed 3/4 cases and a later targeted follow-up passed 2/2; an escaped timestamp error shows why model support verdicts still require source inspection. This experimental check is **off by default** for the demo. Set `FAIRRIDE_CHECK_ARGUMENT_SUPPORT=1` before starting the app to opt in; it normally increases a clear review from three to five model calls.
 
+The subsequent [integrated live comparison](evaluations/integration-live-2026-10-15.json) passed 10/11 checker-off and 4/4 targeted checker-on decision checks. One baseline Judge request timed out. The checker repaired two arguments, but reviewer prose still contained errors; issue #5 remains open. For three successful pairs it used 3.32× the wall time and 2.69× the reported tokens. These single-run observations do not establish reliability or production accuracy.
+
 ## Policy and implementation
 
 - `policies/ryde_v2_1_*.json`: active, source-linked policy and category precedents. Earlier rules are archived.

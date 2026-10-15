@@ -35,7 +35,7 @@ Integrated dashboard merge `88e00dc` with the three Person A commits ending at `
 Remaining issues:
 
 - **Issue #5 stays open:** optional fact assertions validate only declared values. Models may omit assertions or write incorrect prose alongside correct values. The extra model checker previously missed a DISP-003 timestamp error and is not proof of accuracy.
-- The integrated prompts and output schema have not been tested against the live provider. Run the explicitly opted-in live evaluation and audit the prose before making a new model-quality claim; offline checks do not measure provider reliability.
+- The integrated live comparison passed 10/11 checker-off and 4/4 targeted checker-on checks. DISP-011 timed out in the baseline Judge call; that operational failure remains recorded. Combined-schema provider reliability needs repeat evaluation. The checker repaired two arguments, but its own prose misstated a timely-presence fact; source inspection remains necessary. See `evaluations/integration-live-2026-10-15.json` and the integrated comparison in `EVALUATION.md`.
 - The justified-but-unnotified partial-refund formula is still unspecified in the supplied policy. Keep that scenario in human review until the formula is confirmed.
 
 Integration verification: 162 tests ran, 161 passed and one live batch was skipped. This includes all eleven demo cases across dashboard views, navigation without agent calls, exports, source citations, failure visibility and four new integration regressions. No paid model calls were made for this integration. The first two issue fixes (grounded explanations and overlength correction) are retained; the accuracy limitation is not marked resolved.

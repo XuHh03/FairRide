@@ -118,3 +118,18 @@ The initial checker passed 0/4 strict cases due to reviewer false positives and 
 Merged the evidence dashboard and declared fact validation with the grounded-explanation, length-repair and opt-in support-check work. Dashboard reasons and exported reasons now use the same generator as `WorkflowResult.final_explanation`; invalid wait-presence evidence cannot be labelled a met physical-wait condition. Both UI suites are retained and exercise the dashboard's four views.
 
 Four integration regressions verify workflow/dashboard/export agreement, unverified physical waiting, separation of support-review and fact-assertion schemas, and the shared length/fact/citation correction budget. All 162 tests ran: 161 passed, one live batch skipped. No live calls were made for this merge; model quality under the combined prompts/schema remains unmeasured. Resolutions and outstanding issues are in `PERSON_B_HANDOFF.md` under PR #6 integration.
+
+## Integrated live comparison — 15 October 2026
+
+After the integration, the explicitly authorized `qwen3.6:35b` evaluation tested commit `a59815e` with the checker off for all eleven cases and on for DISP-003, DISP-004, DISP-010 and DISP-011. Each case/configuration ran once. Results are saved in `evaluations/integration-live-2026-10-15.json`; raw activity remains in the local audit file.
+
+| Configuration | Strict decision checks | Operational failures | Notes |
+|---|---|---|---|
+| Checker off | 10/11 | 1 | DISP-011's Judge timed out; no decision or refund was issued. Three cases were policy-only referrals without model calls. |
+| Checker on | 4/4 targeted cases | 0 | Rewrote the Driver Advocate in DISP-003 and Rider Advocate in DISP-004 before the Judge. |
+
+All issued final decisions had the expected ruling, refund, separate credit and basis. That does not establish argument accuracy: checker-off prose contained material factual or policy errors in DISP-002, DISP-003, DISP-006, DISP-011 and DISP-012. No unambiguous material errors were found in the final checker-on arguments for DISP-004, DISP-010 and DISP-011; DISP-003's arrival wording still leaves pickup verification ambiguous. The support reviewer itself incorrectly described a false timely-presence fact as true. No false rejection reasons were observed in this sample, but these few cases cannot establish a false-rejection rate. Keep issue #5 open.
+
+For the three pairs that both completed, observed mean wall time was 10.8 seconds off versus 35.9 seconds on (3.32×), with 60,254 versus 162,246 reported tokens (2.69×). DISP-011 is excluded from this overhead comparison because the baseline timed out. Its successful checker-on run does not prove that the checker prevented a timeout or improved decision accuracy. Tokens can omit failed calls and are not billing measurements. Keep the checker off by default.
+
+Fresh offline verification passed 161 tests with one live batch skipped. The separate example rehearsal produced seven correct rulings and four appropriate referrals with no failures. The UI tests cover all eleven cases and dashboard views, including navigation without agent calls. The live evaluation failed its overall pass gate (14/15) because of the retained timeout; the integration PR should remain draft for review and reliability follow-up.

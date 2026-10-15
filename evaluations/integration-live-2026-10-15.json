@@ -1,0 +1,580 @@
+{
+  "metadata": {
+    "review_date": "2026-10-15",
+    "model": "qwen3.6:35b",
+    "tested_commit": "a59815e8433018b9c7047b1032554e56cd8988a4",
+    "runs_per_case_per_configuration": 1,
+    "cases_requested": 15,
+    "cases_completed": 15,
+    "strict_passes": 14
+  },
+  "offline_verification": {
+    "tests_run": 162,
+    "passed": 161,
+    "live_batch_skipped": 1
+  },
+  "example_rehearsal": {
+    "case_count": 11,
+    "correct_final_rulings": 7,
+    "appropriate_referrals": 4,
+    "operational_failures": 0
+  },
+  "summaries": {
+    "checker_off": {
+      "case_count": 11,
+      "strict_passes": 10,
+      "operational_failures": 1,
+      "policy_only_referrals": 3,
+      "final_rulings": 6,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 1,
+      "reported_tokens": 164105
+    },
+    "checker_on": {
+      "case_count": 4,
+      "strict_passes": 4,
+      "operational_failures": 0,
+      "policy_only_referrals": 0,
+      "final_rulings": 4,
+      "support_rewrites": 2,
+      "judge_policy_corrections": 2,
+      "reported_tokens": 195729
+    }
+  },
+  "cases": [
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-002",
+      "strict_pass": true,
+      "expected_ruling": "uphold_charge",
+      "actual_ruling": "uphold_charge",
+      "refund_cents": 0,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "cancellation_fee",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 21510,
+      "reported_tokens": 33924,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 1,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-003",
+      "strict_pass": true,
+      "expected_ruling": "reverse_charge",
+      "actual_ruling": "reverse_charge",
+      "refund_cents": 500,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "cancellation_fee",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 10398,
+      "reported_tokens": 19839,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-004",
+      "strict_pass": true,
+      "expected_ruling": "uphold_charge",
+      "actual_ruling": "uphold_charge",
+      "refund_cents": 0,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "cancellation_fee",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 12447,
+      "reported_tokens": 22845,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-005",
+      "strict_pass": true,
+      "expected_ruling": "human_review",
+      "actual_ruling": "human_review",
+      "refund_cents": null,
+      "goodwill_credit_cents": null,
+      "refund_basis": null,
+      "failure_category": null,
+      "mandatory_escalation": true,
+      "wall_duration_ms": null,
+      "reported_tokens": 0,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": [
+        "Section 6.2: route deviation above 2 km requires human review"
+      ]
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-006",
+      "strict_pass": true,
+      "expected_ruling": "partial_refund",
+      "actual_ruling": "partial_refund",
+      "refund_cents": 110,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "excess_distance_fare",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 29059,
+      "reported_tokens": 20950,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-007",
+      "strict_pass": true,
+      "expected_ruling": "reverse_charge",
+      "actual_ruling": "reverse_charge",
+      "refund_cents": 500,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "cancellation_fee",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 22990,
+      "reported_tokens": 19603,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-008",
+      "strict_pass": true,
+      "expected_ruling": "human_review",
+      "actual_ruling": "human_review",
+      "refund_cents": null,
+      "goodwill_credit_cents": null,
+      "refund_basis": null,
+      "failure_category": null,
+      "mandatory_escalation": true,
+      "wall_duration_ms": null,
+      "reported_tokens": 0,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": [
+        "Section 6.2: route deviation above 2 km requires human review"
+      ]
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-009",
+      "strict_pass": true,
+      "expected_ruling": "human_review",
+      "actual_ruling": "human_review",
+      "refund_cents": null,
+      "goodwill_credit_cents": null,
+      "refund_basis": null,
+      "failure_category": null,
+      "mandatory_escalation": true,
+      "wall_duration_ms": null,
+      "reported_tokens": 0,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": [
+        "Section 6.2: route deviation above 2 km requires human review"
+      ]
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-010",
+      "strict_pass": true,
+      "expected_ruling": "partial_refund",
+      "actual_ruling": "partial_refund",
+      "refund_cents": 83,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "excess_distance_fare",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 9640,
+      "reported_tokens": 17570,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-011",
+      "strict_pass": false,
+      "expected_ruling": "uphold_charge",
+      "actual_ruling": "human_review",
+      "refund_cents": null,
+      "goodwill_credit_cents": null,
+      "refund_basis": null,
+      "failure_category": "model",
+      "mandatory_escalation": false,
+      "wall_duration_ms": 51672,
+      "reported_tokens": 11171,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": [
+        "Agent review failed: Model request failed (TimeoutError)"
+      ]
+    },
+    {
+      "configuration": "checker_off",
+      "case_id": "DISP-012",
+      "strict_pass": true,
+      "expected_ruling": "human_review",
+      "actual_ruling": "human_review",
+      "refund_cents": null,
+      "goodwill_credit_cents": null,
+      "refund_basis": null,
+      "failure_category": null,
+      "mandatory_escalation": true,
+      "wall_duration_ms": 14784,
+      "reported_tokens": 18203,
+      "support_reviews": 0,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": [
+        "Section 6: confidence must be at least 80%",
+        "Historical traffic evidence is missing or conflicting"
+      ]
+    },
+    {
+      "configuration": "checker_on",
+      "case_id": "DISP-003",
+      "strict_pass": true,
+      "expected_ruling": "reverse_charge",
+      "actual_ruling": "reverse_charge",
+      "refund_cents": 500,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "cancellation_fee",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 32684,
+      "reported_tokens": 58843,
+      "support_reviews": 3,
+      "support_rewrites": 1,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 2,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_on",
+      "case_id": "DISP-004",
+      "strict_pass": true,
+      "expected_ruling": "uphold_charge",
+      "actual_ruling": "uphold_charge",
+      "refund_cents": 0,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "cancellation_fee",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 45430,
+      "reported_tokens": 69689,
+      "support_reviews": 3,
+      "support_rewrites": 1,
+      "judge_policy_corrections": 1,
+      "schema_repairs_logged": 1,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_on",
+      "case_id": "DISP-010",
+      "strict_pass": true,
+      "expected_ruling": "partial_refund",
+      "actual_ruling": "partial_refund",
+      "refund_cents": 83,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "excess_distance_fare",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 29632,
+      "reported_tokens": 33714,
+      "support_reviews": 2,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 0,
+      "schema_repairs_logged": 1,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    },
+    {
+      "configuration": "checker_on",
+      "case_id": "DISP-011",
+      "strict_pass": true,
+      "expected_ruling": "uphold_charge",
+      "actual_ruling": "uphold_charge",
+      "refund_cents": 0,
+      "goodwill_credit_cents": 0,
+      "refund_basis": "excess_distance_fare",
+      "failure_category": null,
+      "mandatory_escalation": false,
+      "wall_duration_ms": 17735,
+      "reported_tokens": 33483,
+      "support_reviews": 2,
+      "support_rewrites": 0,
+      "judge_policy_corrections": 1,
+      "schema_repairs_logged": 0,
+      "citation_repairs_logged": 0,
+      "review_issues": []
+    }
+  ],
+  "paired_case_comparison": [
+    {
+      "case_id": "DISP-003",
+      "checker_off_strict_pass": true,
+      "checker_on_strict_pass": true,
+      "checker_off_wall_ms": 10398,
+      "checker_on_wall_ms": 32684,
+      "checker_off_reported_tokens": 19839,
+      "checker_on_reported_tokens": 58843,
+      "both_completed_without_failure": true
+    },
+    {
+      "case_id": "DISP-004",
+      "checker_off_strict_pass": true,
+      "checker_on_strict_pass": true,
+      "checker_off_wall_ms": 12447,
+      "checker_on_wall_ms": 45430,
+      "checker_off_reported_tokens": 22845,
+      "checker_on_reported_tokens": 69689,
+      "both_completed_without_failure": true
+    },
+    {
+      "case_id": "DISP-010",
+      "checker_off_strict_pass": true,
+      "checker_on_strict_pass": true,
+      "checker_off_wall_ms": 9640,
+      "checker_on_wall_ms": 29632,
+      "checker_off_reported_tokens": 17570,
+      "checker_on_reported_tokens": 33714,
+      "both_completed_without_failure": true
+    },
+    {
+      "case_id": "DISP-011",
+      "checker_off_strict_pass": false,
+      "checker_on_strict_pass": true,
+      "checker_off_wall_ms": 51672,
+      "checker_on_wall_ms": 17735,
+      "checker_off_reported_tokens": 11171,
+      "checker_on_reported_tokens": 33483,
+      "both_completed_without_failure": false
+    }
+  ],
+  "limitations": [
+    "One run per case/configuration; no statistical accuracy or reliability estimate.",
+    "The on/off calls are sequential samples and can differ due to model/provider variability.",
+    "Exact fact assertions do not establish that free-text policy interpretations are correct.",
+    "Token totals cover logged responses and returned repair usage; failed calls may be missing, so totals are not billing measurements.",
+    "Raw model output is kept in the local audit file; this public report contains structured results and paraphrased audit findings."
+  ],
+  "successful_pair_summary": {
+    "case_ids": [
+      "DISP-003",
+      "DISP-004",
+      "DISP-010"
+    ],
+    "checker_off_mean_wall_ms": 10828.3,
+    "checker_on_mean_wall_ms": 35915.3,
+    "wall_time_ratio": 3.32,
+    "checker_off_reported_tokens": 60254,
+    "checker_on_reported_tokens": 162246,
+    "reported_token_ratio": 2.69,
+    "excluded_case": "DISP-011 baseline Judge timed out; comparison must not attribute the different outcome to the checker."
+  },
+  "audit": {
+    "baseline_cases_with_material_prose_errors": [
+      "DISP-002",
+      "DISP-003",
+      "DISP-006",
+      "DISP-011",
+      "DISP-012"
+    ],
+    "baseline_cases_without_material_errors_found": [
+      "DISP-004",
+      "DISP-007",
+      "DISP-010"
+    ],
+    "checker_on_cases_without_unambiguous_material_accepted_argument_errors_found": [
+      "DISP-004",
+      "DISP-010",
+      "DISP-011"
+    ],
+    "checker_on_case_with_residual_ambiguity": "DISP-003",
+    "false_rejection_reasons_observed": 0,
+    "all_issued_grounded_final_explanations_match_source_checks": true,
+    "findings": [
+      {
+        "configuration": "checker_off",
+        "case_id": "DISP-002",
+        "actor": "driver_advocate",
+        "locations": [
+          "claims.0",
+          "claims.2"
+        ],
+        "finding": "Calls 08:43 the scheduled time and six minutes the arrival-to-cancellation interval; schedule is 08:45 and physical interval is eight minutes.",
+        "source_ids": [
+          "TRIP-001",
+          "POLICY-2.1"
+        ]
+      },
+      {
+        "configuration": "checker_off",
+        "case_id": "DISP-002",
+        "actor": "rider_advocate",
+        "locations": [
+          "claims.0",
+          "claims.1"
+        ],
+        "finding": "Invents a discrepancy in the correct six-minute eligible wait, speculates about a contact deadline absent from policy, and overlooks a post-schedule message.",
+        "source_ids": [
+          "TRIP-001",
+          "CHAT-002",
+          "CHAT-003",
+          "POLICY-2.1",
+          "POLICY-2.3"
+        ]
+      },
+      {
+        "configuration": "checker_off",
+        "case_id": "DISP-003",
+        "actor": "driver_advocate",
+        "locations": [
+          "claims.0",
+          "claims.1",
+          "counterpoints.0"
+        ],
+        "finding": "Equates recorded arrival with verified timely pickup presence, says four minutes satisfies five, and assigns the required call to the rider.",
+        "source_ids": [
+          "TRIP-001",
+          "GPS-003",
+          "POLICY-2.1",
+          "POLICY-2.3",
+          "POLICY-2.4"
+        ]
+      },
+      {
+        "configuration": "checker_off",
+        "case_id": "DISP-006",
+        "actor": "driver_advocate",
+        "locations": [
+          "claims.1",
+          "counterpoints.0",
+          "counterpoints.1"
+        ],
+        "finding": "Treats driver reassurance as rider acknowledgment and invents driver-judgment exceptions to historical-traffic and refund rules.",
+        "source_ids": [
+          "CHAT-001",
+          "CHAT-002",
+          "CHAT-003",
+          "CHAT-004",
+          "TRAFFIC-001",
+          "POLICY-1.3",
+          "POLICY-1.4"
+        ]
+      },
+      {
+        "configuration": "checker_off",
+        "case_id": "DISP-011",
+        "actor": "rider_advocate",
+        "locations": [
+          "claims.0"
+        ],
+        "finding": "Demands an unjustified-detour refund despite matched congestion, timely notice and agreement. The run later failed at the Judge due to a timeout.",
+        "source_ids": [
+          "TRAFFIC-001",
+          "CHAT-001",
+          "CHAT-002",
+          "POLICY-1.3"
+        ]
+      },
+      {
+        "configuration": "checker_off",
+        "case_id": "DISP-012",
+        "actor": "both_advocates",
+        "locations": [
+          "claims.0"
+        ],
+        "finding": "Rider declares the detour unjustified and driver declares it justified despite conflicting traffic records; neither categorical conclusion is established.",
+        "source_ids": [
+          "TRAFFIC-001",
+          "TRAFFIC-002",
+          "POLICY-1.4"
+        ]
+      },
+      {
+        "configuration": "checker_on",
+        "case_id": "DISP-003",
+        "actor": "support_reviewer",
+        "finding": "Describes false FACT-008 as timely and endorses pickup presence from an arrival timestamp despite nonmatching GPS coordinates. Findings are model prose, not deterministic verification.",
+        "source_ids": [
+          "TRIP-001",
+          "GPS-003",
+          "FACT-008",
+          "POLICY-2.4"
+        ]
+      },
+      {
+        "configuration": "checker_on",
+        "case_id": "DISP-003",
+        "actor": "driver_advocate",
+        "locations": [
+          "corrected claims.0"
+        ],
+        "finding": "Corrected arrival-boundary wording is defensible as a timing statement but remains ambiguous about verified pickup presence; this is not classified as a definite material error.",
+        "source_ids": [
+          "TRIP-001",
+          "GPS-003",
+          "POLICY-2.4"
+        ]
+      },
+      {
+        "configuration": "checker_on",
+        "case_id": "DISP-004",
+        "actor": "support_reviewer",
+        "finding": "Flags the invented contact window but misses an initial allegation of transit delays treated as fact. The final rewrite removes the allegation, so it is not an accepted final argument error.",
+        "source_ids": [
+          "TICKET-001",
+          "CHAT-001",
+          "POLICY-2.3"
+        ]
+      }
+    ]
+  },
+  "conclusion": "Keep the checker off by default and issue #5 open. It repaired two arguments in this sample, but its own prose can be wrong and measured overhead is substantial. The single baseline timeout also prevents a clean all-pass reliability claim."
+}
