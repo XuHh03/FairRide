@@ -5,7 +5,7 @@ from collections.abc import Callable
 from time import perf_counter
 
 from agents import AgentBackend, AgentCall, ModelAgentBackend
-from checks import material_case_issues, validate_judge_decision, policy_outcome, escalation_issues, account_review_flags
+from checks import material_case_issues, validate_judge_decision, policy_outcome, escalation_issues, account_review_flags, grounded_final_explanation
 from contracts import ActivityEntry, AdvocateResult, JudgeResult, Role, WorkflowResult
 from evidence import build_review_input, validate_references
 
@@ -187,6 +187,7 @@ async def run_review_async(
         return WorkflowResult(
             case_id=case_id, status=status, activity_log=activity,
             judge_result=decision, validation_issues=issues,
+            final_explanation=grounded_final_explanation(case, policy, decision) if status == "completed" else None,
             failure_category=failure_category, mandatory_escalation=mandatory_escalation, account_review_flags=account_review_flags(case),
         )
     except Exception as exc:

@@ -124,7 +124,11 @@ if result:
         st.caption("No validated decision was issued. This is an operational failure, not a finding that the evidence is insufficient.")
     else:
         st.warning("Human review required")
-    st.write(result.judge_result.explanation)
+    if result.final_explanation:
+        st.caption("Application-generated explanation from validated case facts and policy checks. Original Judge analysis is available below.")
+        st.write(result.final_explanation)
+    else:
+        st.write(result.judge_result.explanation)
     for flag in result.account_review_flags:
         st.warning(flag)
     if result.mandatory_escalation:

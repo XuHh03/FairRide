@@ -146,6 +146,7 @@ class WorkflowResult(Contract):
     status: Literal["completed", "human_review"]
     activity_log: list[ActivityEntry]
     judge_result: JudgeResult
+    final_explanation: str | None = None
     validation_issues: list[str]
     failure_category: Literal["setup", "model", "validation"] | None = None
     mandatory_escalation: bool = False
