@@ -139,16 +139,13 @@ class ModelAgentBackend:
                 result = result_type.model_validate(output)
             except ValidationError as exc:
                 errors = exc.errors(include_url=False, include_context=False, include_input=False)
-                # Keep the runaway-length guard strict; never silently truncate arguments.
-                if any(item["type"] in ("string_too_long", "too_long") for item in errors):
-                    raise
                 issues = [f"{'.'.join(str(part) for part in item['loc']) or 'response'}: {item['msg']}" for item in errors]
                 if attempt == 1:
                     raise ValueError("Schema correction failed: " + "; ".join(issues)) from None
                 schema_retries = 1
                 payload = {**payload, "schema_correction": {
                     "previous_response": output, "errors": issues,
-                    "instruction": "Return a complete JSON object matching output_schema. Fix the listed missing or invalid fields. Preserve the intended action, role, question, evidence and policy meaning. Judge responses always need a concise evidence-based explanation. Do not fabricate missing facts or issue a placeholder ruling. Respect rebuttal_round_complete; a schema repair does not authorize another rebuttal round.",
+                    "instruction": "Return a complete JSON object matching output_schema. Fix the listed missing or invalid fields. Rewrite overlong statements to convey the main points and decisive evidence within the schema limit; omit repetition and deliberation, do not truncate mid-sentence. Preserve the intended action, role, question, evidence and policy meaning. Judge responses always need a concise evidence-based explanation. Do not fabricate missing facts or issue a placeholder ruling. Respect rebuttal_round_complete; a schema repair does not authorize another rebuttal round.",
                 }}
                 continue
             result, resolutions = resolve_fact_citations(result, review)
