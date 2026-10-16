@@ -345,7 +345,7 @@ elif view == "Agent activity":
                 if output.get("citation_retries"):
                     st.caption("One citation-correction retry was used; token totals include both calls.")
                 if output.get("schema_retries"):
-                    st.caption("One response-format or fact-value correction retry was used; token totals include both calls.")
+                    st.caption("One response-format, fact-value or known prose-consistency correction retry was used; token totals include both calls.")
                 for mapping in output.get("citation_resolutions", []):
                     st.caption(f"Resolved {mapping['fact_id']} in {mapping['location']} to sources: " + ", ".join(mapping["evidence_ids"]))
                 if "question" in output:

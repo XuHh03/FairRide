@@ -79,6 +79,65 @@ class EvidenceRetrievalTests(unittest.TestCase):
         self.assertEqual(len(calls), 3)
         self.assertEqual(len(events), 3)
 
+    def test_final_request_completes_remaining_sources_for_either_role(self):
+        for role in ("rider_advocate", "driver_advocate"):
+            calls, events = [], []
+            async def planner(payload):
+                calls.append(copy.deepcopy(payload))
+                sources = ["chat_logs"] if len(calls) < 3 else payload["remaining_sources"]
+                return AgentCall(EvidenceRequest(trip_id=payload["trip_id"], sources=sources, purpose="Read evidence."))
+            gathered = asyncio.run(gather_advocate_evidence(self.review, role, planner, events.append, lambda message: None))
+            with self.subTest(role=role):
+                self.assertEqual(len(calls), 3)
+                self.assertEqual(calls[-1]["rounds_remaining"], 1)
+                self.assertNotIn("chat_logs", calls[-1]["remaining_sources"])
+                self.assertEqual(set(events[-1]["sources"]), set(calls[-1]["remaining_sources"]))
+                self.assertEqual(gathered, self.review)
+
+    def test_incomplete_final_request_is_logged_and_rejected_before_read(self):
+        calls, events = [], []
+        async def planner(payload):
+            calls.append(copy.deepcopy(payload))
+            sources = ["chat_logs"] if len(calls) < 3 else ["trip_data"]
+            return AgentCall(EvidenceRequest(trip_id=payload["trip_id"], sources=sources, purpose="Read evidence."),
+                             usage={"total_tokens": 7})
+        with self.assertRaisesRegex(ValueError, "remaining sources"):
+            asyncio.run(gather_advocate_evidence(self.review, "rider_advocate", planner, events.append, lambda message: None))
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(events[-1]["record_ids"], [])
+        self.assertIn("error", events[-1])
+        self.assertEqual(events[-1]["usage"]["total_tokens"], 7)
+
+    def test_live_final_request_schema_requires_exact_remaining_sources(self):
+        class Client:
+            async def complete_json(self, instructions, payload):
+                self.instructions, self.payload = instructions, payload
+                return {"trip_id": payload["trip_id"], "sources": payload["remaining_sources"], "purpose": "Complete evidence."}, {}
+        for remaining in (["trip_data", "app_events"], ["chat_logs"]):
+            client = Client()
+            asyncio.run(ModelAgentBackend(client).plan_evidence({"trip_id": "TRIP-ONE", "rounds_remaining": 1,
+                                                                 "remaining_sources": remaining}))
+            schema = client.payload["output_schema"]["properties"]["sources"]
+            with self.subTest(remaining=remaining):
+                self.assertEqual(set(schema["items"]["enum"]), set(remaining))
+                self.assertEqual(schema["minItems"], len(remaining))
+                self.assertEqual(schema["maxItems"], len(remaining))
+                self.assertTrue(schema["uniqueItems"])
+                self.assertIn("final", client.instructions.lower())
+
+    def test_final_request_rejects_duplicate_sources_as_schema_requires(self):
+        events = []
+        # Leave a single source for the final round, then duplicate it.
+        async def single_remaining(payload):
+            if payload["rounds_remaining"] > 1:
+                sources = [s for s in self.tools.available_sources if s != "app_events"]
+            else:
+                sources = ["app_events", "app_events"]
+            return AgentCall(EvidenceRequest(trip_id=payload["trip_id"], sources=sources, purpose="Read evidence."))
+        with self.assertRaisesRegex(ValueError, "remaining sources"):
+            asyncio.run(gather_advocate_evidence(self.review, "driver_advocate", single_remaining, events.append, lambda message: None))
+        self.assertIn("error", events[-1])
+
     def test_cross_trip_request_is_logged_and_rejected(self):
         events = []
 

@@ -5,7 +5,7 @@ import unittest
 
 from agents import ExampleAgentBackend, ModelAgentBackend
 from case_data import load_case, policy_for_case
-from contracts import JudgeResult
+from contracts import AdvocateResult, JudgeResult
 from evidence import build_evidence_index, build_policy_index, build_review_input, fact_assertion_issues
 from review_summary import build_decision_summary, build_review_report
 from workflow import run_review
@@ -157,6 +157,66 @@ class DecisionSummaryTests(unittest.TestCase):
 
 
 class FactAssertionTests(unittest.TestCase):
+    def test_repair_payload_lists_canonical_assertions_for_advocates_and_judge(self):
+        case = load_case("DISP-004")
+        review = build_review_input(case, policy_for_case(case))
+        examples = ExampleAgentBackend().examples["DISP-004"]
+        for role in ("rider_advocate", "driver_advocate", "judge"):
+            original = copy.deepcopy(examples["judge_final_ruling" if role == "judge" else role])
+            class Client:
+                def __init__(self):
+                    self.payloads = []
+                async def complete_json(self, instructions, payload):
+                    self.payloads.append(copy.deepcopy(payload))
+                    output = copy.deepcopy(original)
+                    assertions = ([{"fact_id": "FACT-001", "value": 8}, {"fact_id": "FACT-002", "value": True},
+                                   {"fact_id": "FACT-UNKNOWN", "value": 99}] if len(self.payloads) == 1
+                                  else payload["schema_correction"]["required_fact_assertions"])
+                    target = output if role == "judge" else output["claims"][0]
+                    target["fact_assertions"] = assertions
+                    return output, {"total_tokens": 5}
+            client = Client()
+            backend = ModelAgentBackend(client)
+            if role == "judge":
+                rider = AdvocateResult.model_validate(examples["rider_advocate"])
+                driver = AdvocateResult.model_validate(examples["driver_advocate"])
+                call = asyncio.run(backend.judge(review, rider, driver))
+            else:
+                call = asyncio.run(backend.advocate(review, role))
+            with self.subTest(role=role):
+                required = client.payloads[1]["schema_correction"]["required_fact_assertions"]
+                self.assertEqual(required, [{"fact_id": "FACT-001", "value": 9}, {"fact_id": "FACT-002", "value": True}])
+                self.assertIs(type(required[1]["value"]), bool)
+                self.assertEqual(len(client.payloads), 2)
+                self.assertEqual(call.usage["total_tokens"], 10)
+
+    def test_repair_keeps_computed_credit_and_unresolved_entitlement_distinct(self):
+        case = load_case("DISP-004")
+        case["chat_logs"] = []
+        case["app_events"] = []
+        for point in case["gps_telemetry"]:
+            point["lat"] += 0.01
+        review = build_review_input(case, policy_for_case(case))
+        original = {"role": "rider_advocate", "claims": [{"statement": "The separate goodwill entitlement is unresolved.",
+            "evidence_ids": ["TRIP-001"], "policy_ids": ["POLICY-2.4"]}], "counterpoints": [], "unanswered_questions": []}
+        class Client:
+            def __init__(self):
+                self.payloads = []
+            async def complete_json(self, instructions, payload):
+                self.payloads.append(copy.deepcopy(payload))
+                output = copy.deepcopy(original)
+                output["claims"][0]["fact_assertions"] = ([{"fact_id": "FACT-005", "value": 500},
+                    {"fact_id": "FACT-011", "value": False}] if len(self.payloads) == 1
+                    else payload["schema_correction"]["required_fact_assertions"])
+                return output, {}
+        client = Client()
+        call = asyncio.run(ModelAgentBackend(client).advocate(review, "rider_advocate"))
+        self.assertEqual(call.result.claims[0].fact_assertions[0].value, 0)
+        self.assertFalse(call.result.claims[0].fact_assertions[1].value)
+        repair = client.payloads[1]["schema_correction"]
+        self.assertIn("unresolved", client.payloads[1]["policy_application"])
+        self.assertIn("entitlement", repair["instruction"])
+
     def test_recorded_numeric_defects_are_rejected_even_with_real_citations(self):
         for case_id, name, wrong in (
             ("DISP-004", "waited_minutes", 8),
