@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 from pathlib import Path
 
 
@@ -19,15 +20,20 @@ def list_demo_trips() -> list[dict]:
     return trips
 
 
-def file_dispute(trip_id: str, complaint: str) -> dict:
-    """Attach a complaint to a known demo trip in memory; never alter fixtures."""
+def file_dispute(trip_id: str, complaint: str, *, imported_case: dict | None = None) -> dict:
+    """Attach a complaint to a demo or validated imported trip in memory."""
     complaint = complaint.strip()
     if not complaint or len(complaint) > 2000:
         raise ValueError("Describe the dispute in 1 to 2000 characters")
-    matches = [trip for trip in list_demo_trips() if trip["trip_id"] == trip_id]
-    if len(matches) != 1:
-        raise ValueError("Select a known demo trip")
-    case = load_case(matches[0]["case_id"])
+    if imported_case is not None:
+        if imported_case["dispute_ticket"]["trip_id"] != trip_id:
+            raise ValueError("Select the imported case's trip")
+        case = deepcopy(imported_case)
+    else:
+        matches = [trip for trip in list_demo_trips() if trip["trip_id"] == trip_id]
+        if len(matches) != 1:
+            raise ValueError("Select a known demo trip")
+        case = load_case(matches[0]["case_id"])
     case["dispute_ticket"]["description"] = complaint
     return case
 

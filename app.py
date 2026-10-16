@@ -2,12 +2,14 @@
 
 import json
 import os
+from hashlib import sha256
 
 import streamlit as st
 from dotenv import load_dotenv
 
 from agents import ExampleAgentBackend
 from case_data import file_dispute, list_demo_trips, load_case, policy_for_case
+from case_import import parse_case_upload
 from checks import no_show_facts, route_deviation_facts
 from evidence import build_evidence_index, build_policy_index, build_review_input
 from review_summary import build_decision_summary, build_review_report, fact_label, format_fact_value
@@ -34,37 +36,62 @@ case_labels = {
 with st.sidebar:
     st.title("FairRide")
     st.caption("Dispute review workspace")
-    filing_mode = st.checkbox("File a dispute", key="filing_mode")
+    uploaded_file = st.file_uploader("Import case JSON", type=["json"], max_upload_size=2,
+                                     help="One raw no-show or route case. Keep answer keys and evaluation reports separate.")
+    imported_case = None
+    upload_hash = None
+    if uploaded_file is not None:
+        content = uploaded_file.getvalue()
+        try:
+            imported_case = parse_case_upload(content)
+        except ValueError as exc:
+            st.session_state.pop("review_result", None)
+            st.error(f"Import rejected: {exc}")
+            st.stop()
+        upload_hash = sha256(content).hexdigest()
+        st.caption("Imported case is held in this session only. Remove the file to return to demo cases.")
+    filing_mode = True if imported_case is not None else st.checkbox("File a dispute", key="filing_mode")
     complaint = ""
     if filing_mode:
-        trips = {trip["trip_id"]: trip for trip in list_demo_trips()}
-        trip_id = st.selectbox("Select a trip", list(trips))
-        selected_case_id = trips[trip_id]["case_id"]
-        st.caption("Local demo trips. Each trip has records for its supplied no-show or route-dispute category.")
-        complaint = st.text_area("What happened?", max_chars=2000, key=f"complaint_{trip_id}",
+        if imported_case is not None:
+            imported_ticket = imported_case["dispute_ticket"]
+            trip_id = st.selectbox("Select a trip", [imported_ticket["trip_id"]], disabled=True)
+            selected_case_id = imported_ticket["dispute_id"]
+        else:
+            trips = {trip["trip_id"]: trip for trip in list_demo_trips()}
+            trip_id = st.selectbox("Select a trip", list(trips))
+            selected_case_id = trips[trip_id]["case_id"]
+            st.caption("Local demo trips. Each trip has records for its supplied no-show or route-dispute category.")
+        complaint = st.text_area("What happened?", value=imported_ticket["description"] if imported_case is not None else "",
+                                 max_chars=2000, key=f"complaint_{trip_id}_{upload_hash}" if upload_hash else f"complaint_{trip_id}",
                                  placeholder="The driver took a longer route and I was overcharged.")
     else:
         selected_case_id = st.selectbox("Select a case", list(case_labels))
         st.caption(case_labels[selected_case_id].split(" — ", 1)[1])
     mode = st.radio(
-        "Review mode", ["Example walkthrough", "Live model"],
+        "Review mode", ["Live model"] if imported_case is not None else ["Example walkthrough", "Live model"],
         help="Example walkthrough uses hand-written fixtures. Live model uses the configured endpoint and credentials.",
     )
     live_ready = bool((os.getenv("FAIRRIDE_API_KEY") or os.getenv("OPENAI_API_KEY")) and os.getenv("FAIRRIDE_MODEL"))
     if mode == "Live model" and not live_ready:
         st.warning("Set FAIRRIDE_API_KEY (or OPENAI_API_KEY) and FAIRRIDE_MODEL to run a live review.")
-    if filing_mode:
+    if imported_case is not None:
+        st.caption("Imported cases use live evidence retrieval. Nothing is sent to the model until you click review.")
+    elif filing_mode:
         st.caption("Live model selects evidence sources before arguing. Example walkthrough uses scripted requests and hand-written arguments.")
     run_requested = st.button("File dispute and run review" if filing_mode else "Run review", type="primary", width="stretch",
                               disabled=(mode == "Live model" and not live_ready) or (filing_mode and not complaint.strip()))
 
-input_signature = (selected_case_id, filing_mode, complaint.strip())
+input_signature = (selected_case_id, filing_mode, complaint.strip(), upload_hash)
 if st.session_state.get("review_input_signature") != input_signature:
     st.session_state.pop("review_result", None)
     st.session_state["selected_case"] = selected_case_id
     st.session_state["review_input_signature"] = input_signature
 
-case = file_dispute(trip_id, complaint) if filing_mode and complaint.strip() else load_case(selected_case_id)
+if imported_case is not None:
+    case = file_dispute(trip_id, complaint, imported_case=imported_case) if complaint.strip() else imported_case
+else:
+    case = file_dispute(trip_id, complaint) if filing_mode and complaint.strip() else load_case(selected_case_id)
 policy = policy_for_case(case)
 ticket = case["dispute_ticket"]
 dtype = ticket["dispute_type"]
