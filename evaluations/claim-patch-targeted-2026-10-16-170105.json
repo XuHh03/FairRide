@@ -1,0 +1,2349 @@
+{
+  "evaluation_version": "heldout-1.1",
+  "generated_at": "2026-10-16T09:01:29.361693+00:00",
+  "model": "qwen3.6:35b",
+  "gather_evidence": true,
+  "argument_support_checker": false,
+  "oracle_notice": "Matches against draft keys are provisional. Independently review keys and explanations; prose is not semantically certified.",
+  "cases": [
+    {
+      "case_id": "FHU-2026-102",
+      "run": 1,
+      "input_file": "/tmp/fairride-claim-patch-targeted-20261016T170105/cases/FHU-2026-102.json",
+      "verdict": "PASS",
+      "review": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-16T09:01:43.682850+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "FHU-2026-102",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Refund the cancellation fee",
+          "refund_cents": 500,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The pickup records establish 8 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 0 message(s), 2 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00.",
+          "party_messages": {
+            "rider": {
+              "action": "Recommended refund: SGD 5.00 of your cancellation fee.",
+              "explanation": "The pickup records establish 8 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 0 message(s), 2 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00."
+            },
+            "driver": {
+              "action": "Recommended refund: SGD 5.00 of the rider's cancellation fee.",
+              "explanation": "The pickup records establish 8 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 0 message(s), 2 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Five physical minutes at pickup after scheduled time",
+              "observation": "8 min: 2026-03-30T00:12:00+08:00 to 2026-03-30T00:20:00+08:00",
+              "status": "met",
+              "fact_ids": [
+                "FACT-001",
+                "FACT-006",
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-GPS-01",
+                "FHU-2026-102-GPS-02",
+                "FHU-2026-102-GPS-03",
+                "FHU-2026-102-EVENT-01"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Pickup presence corroborated",
+              "observation": "GPS corroboration present",
+              "status": "met",
+              "fact_ids": [
+                "FACT-009"
+              ],
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-GPS-01",
+                "FHU-2026-102-GPS-02",
+                "FHU-2026-102-GPS-03",
+                "FHU-2026-102-EVENT-01"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Arrival by scheduled pickup + 5 minutes (inclusive)",
+              "observation": "Timely pickup presence recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-008",
+                "FACT-010"
+              ],
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-GPS-01",
+                "FHU-2026-102-GPS-02",
+                "FHU-2026-102-GPS-03",
+                "FHU-2026-102-EVENT-01"
+              ],
+              "policy_ids": [
+                "POLICY-2.4"
+              ]
+            },
+            {
+              "condition": "At least one driver message before cancellation",
+              "observation": "0 recorded",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-CHAT-01",
+                "FHU-2026-102-CHAT-02",
+                "FHU-2026-102-CHAT-03",
+                "FHU-2026-102-EVENT-01",
+                "FHU-2026-102-EVENT-02",
+                "FHU-2026-102-EVENT-04",
+                "FHU-2026-102-EVENT-05",
+                "FHU-2026-102-EVENT-03",
+                "FHU-2026-102-EVENT-06",
+                "FHU-2026-102-EVENT-07"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            },
+            {
+              "condition": "At least one driver call attempt before cancellation",
+              "observation": "2 recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-004"
+              ],
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-CHAT-01",
+                "FHU-2026-102-CHAT-02",
+                "FHU-2026-102-CHAT-03",
+                "FHU-2026-102-EVENT-01",
+                "FHU-2026-102-EVENT-02",
+                "FHU-2026-102-EVENT-04",
+                "FHU-2026-102-EVENT-05",
+                "FHU-2026-102-EVENT-03",
+                "FHU-2026-102-EVENT-06",
+                "FHU-2026-102-EVENT-07"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Counted pickup wait",
+              "value": 8.0,
+              "unit": "minutes",
+              "formula": "2026-03-30T00:12:00+08:00 → 2026-03-30T00:20:00+08:00 = 8 min. Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero.",
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-GPS-01",
+                "FHU-2026-102-GPS-02",
+                "FHU-2026-102-GPS-03",
+                "FHU-2026-102-EVENT-01"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-03-30T00:12:00+08:00",
+              "event": "Scheduled pickup",
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:12:00+08:00",
+              "event": "Recorded driver arrival",
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:12:00+08:00",
+              "event": "Counted wait starts",
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-GPS-01",
+                "FHU-2026-102-GPS-02",
+                "FHU-2026-102-GPS-03",
+                "FHU-2026-102-EVENT-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:12:30+08:00",
+              "event": "Rider · message",
+              "evidence_ids": [
+                "FHU-2026-102-CHAT-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:13:30+08:00",
+              "event": "Driver · call",
+              "evidence_ids": [
+                "FHU-2026-102-CHAT-02"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:13:30+08:00",
+              "event": "Driver called rider",
+              "evidence_ids": [
+                "FHU-2026-102-EVENT-04"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:16:00+08:00",
+              "event": "Driver · call",
+              "evidence_ids": [
+                "FHU-2026-102-CHAT-03"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:16:00+08:00",
+              "event": "Driver called rider",
+              "evidence_ids": [
+                "FHU-2026-102-EVENT-05"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:20:00+08:00",
+              "event": "Cancellation",
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-30T00:20:00+08:00",
+              "event": "Counted wait ends (cancellation or GPS departure)",
+              "evidence_ids": [
+                "FHU-2026-102-TRIP-01",
+                "FHU-2026-102-GPS-01",
+                "FHU-2026-102-GPS-02",
+                "FHU-2026-102-GPS-03",
+                "FHU-2026-102-EVENT-01"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 8.0,
+            "name": "waited_minutes",
+            "unit": "minutes",
+            "formula": "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": false,
+            "name": "fee_eligible",
+            "unit": "boolean",
+            "formula": "pickup presence AND five-minute wait AND message AND call AND timely arrival",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-01",
+              "FHU-2026-102-EVENT-02",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-03",
+              "FHU-2026-102-EVENT-06",
+              "FHU-2026-102-EVENT-07"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.3",
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 0,
+            "name": "message_count",
+            "unit": "count",
+            "formula": "driver messages before cancellation",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-01",
+              "FHU-2026-102-EVENT-02",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-03",
+              "FHU-2026-102-EVENT-06",
+              "FHU-2026-102-EVENT-07"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 2,
+            "name": "call_count",
+            "unit": "count",
+            "formula": "unique driver call attempts before cancellation",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-01",
+              "FHU-2026-102-EVENT-02",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-03",
+              "FHU-2026-102-EVENT-06",
+              "FHU-2026-102-EVENT-07"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": 0,
+            "name": "goodwill_credit_cents",
+            "unit": "SGD cents",
+            "formula": "500 if driver no-show and no contact; separate from refund",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-01",
+              "FHU-2026-102-EVENT-02",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-03",
+              "FHU-2026-102-EVENT-06",
+              "FHU-2026-102-EVENT-07"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": "2026-03-30T00:12:00+08:00",
+            "name": "wait_start_time",
+            "unit": "ISO timestamp",
+            "formula": "max(scheduled pickup, available recorded or GPS-corroborated arrival)",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": "2026-03-30T00:20:00+08:00",
+            "name": "wait_end_time",
+            "unit": "ISO timestamp",
+            "formula": "earlier of cancellation and first subsequent GPS departure",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-008",
+            "value": true,
+            "name": "timely_presence",
+            "unit": "boolean",
+            "formula": "pickup GPS presence from the earlier of scheduled pickup and reported arrival, no earlier than recorded booking; when arrival is missing use booking or schedule if booking is missing; through scheduled pickup plus five minutes inclusive and before or at cancellation; false does not prove absence",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-009",
+            "value": true,
+            "name": "arrival_verified",
+            "unit": "boolean",
+            "formula": "arrival corroborated by pickup GPS within the current pickup window, no earlier than recorded booking and before or at cancellation",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-010",
+            "value": false,
+            "name": "driver_no_show",
+            "unit": "boolean",
+            "formula": "verified driver no-show under the five-minute arrival condition",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-011",
+            "value": true,
+            "name": "goodwill_eligibility_resolved",
+            "unit": "boolean",
+            "formula": "False when reported timely arrival conflicts with relevant pickup-window GPS and the elapsed no-contact case leaves separate goodwill unresolved; computed credit is not a final entitlement in that case",
+            "evidence_ids": [
+              "FHU-2026-102-TRIP-01",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-01",
+              "FHU-2026-102-EVENT-02",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-03",
+              "FHU-2026-102-EVENT-06",
+              "FHU-2026-102-EVENT-07"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "FHU-2026-102-TICKET-01",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "FHU-2026-102",
+              "trip_id": "FUT-2026-93102",
+              "filed_by": "rider",
+              "dispute_type": "no_show_charge",
+              "description": "I wrote to the driver on FUT-2026-93102, but only got missed calls back. Please review the no-show charge.",
+              "filed_at": "2026-03-30T03:12:00+08:00",
+              "status": "open"
+            }
+          },
+          {
+            "id": "FHU-2026-102-TRIP-01",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "FUT-2026-93102",
+              "rider_id": "FUR-82102",
+              "driver_id": "FUD-72102",
+              "pickup_location": {
+                "name": "Kaki Bukit packaging workshop, gate B",
+                "lat": 1.336,
+                "lng": 103.907
+              },
+              "dropoff_location": {
+                "name": "Ubi community workshop",
+                "lat": 1.329,
+                "lng": 103.899
+              },
+              "scheduled_time": "2026-03-30T00:12:00+08:00",
+              "driver_arrival_time": "2026-03-30T00:12:00+08:00",
+              "driver_wait_start": "2026-03-30T00:12:00+08:00",
+              "cancellation_time": "2026-03-30T00:20:00+08:00",
+              "cancellation_fee": 5.0,
+              "cancellation_reason": "rider_no_show"
+            }
+          },
+          {
+            "id": "FHU-2026-102-GPS-01",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-03-30T00:12:00+08:00",
+              "lat": 1.336,
+              "lng": 103.907,
+              "speed_kmh": 0,
+              "status": "arrived"
+            }
+          },
+          {
+            "id": "FHU-2026-102-GPS-02",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-03-30T00:16:00+08:00",
+              "lat": 1.336,
+              "lng": 103.907,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "FHU-2026-102-GPS-03",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-03-30T00:20:00+08:00",
+              "lat": 1.336,
+              "lng": 103.907,
+              "speed_kmh": 0,
+              "status": "cancelled"
+            }
+          },
+          {
+            "id": "FHU-2026-102-CHAT-01",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-03-30T00:12:30+08:00",
+              "sender": "rider",
+              "type": "message",
+              "content": "I am still in the lift. Can you wait a moment?"
+            }
+          },
+          {
+            "id": "FHU-2026-102-CHAT-02",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-03-30T00:13:30+08:00",
+              "sender": "driver",
+              "type": "call",
+              "content": "In-app calling-system export: outgoing attempt to rider, unanswered; rang 16 seconds, connected duration 0."
+            }
+          },
+          {
+            "id": "FHU-2026-102-CHAT-03",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-03-30T00:16:00+08:00",
+              "sender": "driver",
+              "type": "call",
+              "content": "In-app calling-system export: outgoing attempt to rider, unanswered; rang 16 seconds, connected duration 0."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-01",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-29T23:52:00+08:00",
+              "event_type": "booking_confirmed",
+              "details": "FUT-2026-93102: rider FUR-82102, driver FUD-72102, scheduled pickup 2026-03-30T00:12:00+08:00."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-02",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-30T00:12:00+08:00",
+              "event_type": "driver_arrived",
+              "details": "First pickup arrival since assignment, at 2026-03-30T00:12:00+08:00. GNSS reconstruction and arrival-service trace agree; no earlier pickup entry for this booking."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-04",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-30T00:13:30+08:00",
+              "event_type": "driver_called_rider",
+              "details": "Calling-system event for FHU-2026-102-CHAT-02; same outgoing attempt, not another call."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-05",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-30T00:16:00+08:00",
+              "event_type": "driver_called_rider",
+              "details": "Calling-system event for FHU-2026-102-CHAT-03; same outgoing attempt, not another call."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-03",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-30T00:20:00+08:00",
+              "event_type": "pickup_presence_export",
+              "details": "Full one-second trace: continuous stationary presence at the booked pickup pad from 2026-03-30T00:12:00+08:00 through 2026-03-30T00:20:00+08:00; no boarding or trip-start event recorded before cancellation."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-06",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-30T00:20:00+08:00",
+              "event_type": "cancellation_fee_applied",
+              "details": "Driver cancelled FUT-2026-93102 with rider_no_show reason. SGD 5.00 debited to rider and transferred to driver. No refund or separate credit has posted."
+            }
+          },
+          {
+            "id": "FHU-2026-102-EVENT-07",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-30T00:20:40+08:00",
+              "event_type": "communication_export_completed",
+              "details": "Complete chat and in-app call export for FUT-2026-93102, booking through 2026-03-30T00:20:30+08:00; all messages and call attempts, including any after cancellation, appear in chat_logs. No omitted or deleted records."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_no_show",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "no_show_charge",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-2.1",
+              "text": "Section 2.1: Five-minute free wait from scheduled pickup time. Early arrival earns no pre-schedule credit. Implementation interpretation: a late driver must also spend five physical minutes at pickup after arrival."
+            },
+            {
+              "id": "POLICY-2.2",
+              "text": "Section 2.2: A valid driver-cancelled rider no-show incurs SGD 5.00, transferred to the driver as compensation."
+            },
+            {
+              "id": "POLICY-2.3",
+              "text": "Section 2.3: Before cancellation, driver must send at least one in-app chat message AND attempt at least one in-app phone call. Failure of either obligation voids the fee."
+            },
+            {
+              "id": "POLICY-2.4",
+              "text": "Section 2.4: Driver must arrive by scheduled pickup plus 5 minutes. Rider may cancel at no charge when driver fails this arrival condition. Driver no-show plus no contact qualifies for a separate SGD 5 goodwill credit."
+            },
+            {
+              "id": "POLICY-2.5",
+              "text": "Section 2.5: At least 3 no-show cancellations within a rolling 30 days flag the rider for human account review; do not suspend accounts or infer fee validity from history."
+            },
+            {
+              "id": "POLICY-7.3",
+              "text": "Precedent 7.3, DISP-2026-0211: Driver waited 6 minutes but made no message or call. SGD 5 cancellation fee reversed. Relevant when contact obligations are missing; it is not the answer label for the current case."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": "scheduled_time",
+          "free_wait_time_min": 5,
+          "no_show_threshold_min": 5,
+          "cancellation_fee_after_wait": 5.0,
+          "tolerance_km": null,
+          "max_ai_deviation_km": null,
+          "refund_basis": "cancellation_fee"
+        },
+        "workflow": {
+          "case_id": "FHU-2026-102",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93102",
+                "sources": [
+                  "chat_logs",
+                  "app_events"
+                ],
+                "purpose": "To verify if the driver sent at least one in-app chat message and attempted at least one in-app phone call before cancelling, as required by Policy 2.3 to validate the no-show charge.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1415,
+                  "total_tokens": 1507,
+                  "completion_tokens": 92
+                },
+                "record_ids": [
+                  "FHU-2026-102-CHAT-01",
+                  "FHU-2026-102-CHAT-02",
+                  "FHU-2026-102-CHAT-03",
+                  "FHU-2026-102-EVENT-01",
+                  "FHU-2026-102-EVENT-02",
+                  "FHU-2026-102-EVENT-04",
+                  "FHU-2026-102-EVENT-05",
+                  "FHU-2026-102-EVENT-03",
+                  "FHU-2026-102-EVENT-06",
+                  "FHU-2026-102-EVENT-07"
+                ],
+                "duration_ms": 933
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93102",
+                "sources": [
+                  "app_events",
+                  "chat_logs",
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "To verify the driver's arrival time against the scheduled pickup plus the 5-minute grace period, to confirm whether the driver sent any in-app chat messages as required by Policy 2.3, and to establish the timeline of missed calls versus the no-show charge event.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1416,
+                  "total_tokens": 1536,
+                  "completion_tokens": 120
+                },
+                "record_ids": [
+                  "FHU-2026-102-TRIP-01",
+                  "FHU-2026-102-GPS-01",
+                  "FHU-2026-102-GPS-02",
+                  "FHU-2026-102-GPS-03",
+                  "FHU-2026-102-CHAT-01",
+                  "FHU-2026-102-CHAT-02",
+                  "FHU-2026-102-CHAT-03",
+                  "FHU-2026-102-EVENT-01",
+                  "FHU-2026-102-EVENT-02",
+                  "FHU-2026-102-EVENT-04",
+                  "FHU-2026-102-EVENT-05",
+                  "FHU-2026-102-EVENT-03",
+                  "FHU-2026-102-EVENT-06",
+                  "FHU-2026-102-EVENT-07"
+                ],
+                "duration_ms": 1118
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93102",
+                "sources": [
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "To verify the precise arrival timestamp and duration of stationary presence at the pickup location via GPS coordinates, and to retrieve any additional trip metadata or cancellation reasons not fully detailed in app events, ensuring accurate application of the 5-minute wait policy.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2631,
+                  "total_tokens": 2732,
+                  "completion_tokens": 101
+                },
+                "record_ids": [
+                  "FHU-2026-102-TRIP-01",
+                  "FHU-2026-102-GPS-01",
+                  "FHU-2026-102-GPS-02",
+                  "FHU-2026-102-GPS-03"
+                ],
+                "duration_ms": 1318
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver failed to send any in-app chat message before cancellation, violating the mandatory dual-contact requirement of POLICY-2.3, which voids the no-show fee.",
+                      "evidence_ids": [
+                        "FHU-2026-102-CHAT-01",
+                        "FHU-2026-102-EVENT-07"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 0
+                        },
+                        {
+                          "fact_id": "FACT-002",
+                          "value": false
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "Because the contact obligation was not met, the SGD 5.00 cancellation fee is invalid and must be refunded to the rider under POLICY-2.2.",
+                      "evidence_ids": [
+                        "FHU-2026-102-TRIP-01",
+                        "FHU-2026-102-EVENT-06"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.2",
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 3567,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 7147,
+                  "completion_tokens": 383,
+                  "total_tokens": 7530
+                }
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver's contact obligation under POLICY-2.3 is not satisfied because the driver failed to send at least one in-app chat message before cancellation. While two call attempts were made, the complete absence of driver-initiated messages voids the fee regardless of call attempts.",
+                      "evidence_ids": [
+                        "FHU-2026-102-CHAT-02",
+                        "FHU-2026-102-CHAT-03",
+                        "FHU-2026-102-EVENT-04",
+                        "FHU-2026-102-EVENT-05",
+                        "FHU-2026-102-EVENT-07"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 0
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 2
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver arrived exactly at the scheduled time and maintained verified presence at the pickup location for 8 minutes prior to the rider's cancellation, satisfying the arrival and wait conditions under POLICY-2.1 and POLICY-2.4.",
+                      "evidence_ids": [
+                        "FHU-2026-102-TRIP-01",
+                        "FHU-2026-102-GPS-01",
+                        "FHU-2026-102-GPS-02",
+                        "FHU-2026-102-GPS-03",
+                        "FHU-2026-102-EVENT-02",
+                        "FHU-2026-102-EVENT-03"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1",
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-006",
+                          "value": "2026-03-30T00:12:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 8.0
+                        },
+                        {
+                          "fact_id": "FACT-008",
+                          "value": true
+                        },
+                        {
+                          "fact_id": "FACT-009",
+                          "value": true
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [
+                    {
+                      "statement": "The rider's claim that they 'only got missed calls' misrepresents the evidence; the system logs show two distinct outgoing call attempts from the driver, but correctly notes the lack of a text message, which is the decisive policy failure.",
+                      "evidence_ids": [
+                        "FHU-2026-102-TICKET-01",
+                        "FHU-2026-102-CHAT-02",
+                        "FHU-2026-102-CHAT-03",
+                        "FHU-2026-102-EVENT-04",
+                        "FHU-2026-102-EVENT-05"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 2
+                        }
+                      ]
+                    }
+                  ],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 7038,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 7147,
+                  "completion_tokens": 893,
+                  "total_tokens": 8040
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "reverse_charge",
+                  "proposed_action": {
+                    "amount_cents": 500,
+                    "currency": "SGD",
+                    "refund_basis": "cancellation_fee",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The driver failed to meet the mandatory contact obligations under POLICY-2.3, which requires at least one in-app chat message AND at least one in-app phone call attempt before cancellation. Evidence confirms zero driver messages (FACT-003: 0) and two call attempts (FACT-004: 2). As established in precedent DISP-2026-0211 (POLICY-7.3), the absence of either communication component voids the no-show fee, regardless of whether the five-minute wait was physically satisfied or the rider was present. Consequently, the SGD 5.00 cancellation fee is invalid. Under POLICY-2.4, a separate SGD 5.00 goodwill credit is reserved for cases where the driver is a no-show (failed to arrive) AND failed contact; here, the driver arrived on time, so no goodwill credit is applicable.",
+                  "evidence_ids": [
+                    "FHU-2026-102-CHAT-01",
+                    "FHU-2026-102-CHAT-02",
+                    "FHU-2026-102-CHAT-03",
+                    "FHU-2026-102-EVENT-04",
+                    "FHU-2026-102-EVENT-05",
+                    "FHU-2026-102-EVENT-07",
+                    "FHU-2026-102-EVENT-06",
+                    "FHU-2026-102-GPS-01",
+                    "FHU-2026-102-EVENT-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.3",
+                    "POLICY-7.3",
+                    "POLICY-2.2",
+                    "POLICY-2.4"
+                  ],
+                  "confidence": 1.0,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 0
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 2
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": false
+                    }
+                  ]
+                },
+                "duration_ms": 5034,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 8620,
+                  "completion_tokens": 610,
+                  "total_tokens": 9230
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 14327,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "reverse_charge",
+            "proposed_action": {
+              "amount_cents": 500,
+              "currency": "SGD",
+              "refund_basis": "cancellation_fee",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The driver failed to meet the mandatory contact obligations under POLICY-2.3, which requires at least one in-app chat message AND at least one in-app phone call attempt before cancellation. Evidence confirms zero driver messages (FACT-003: 0) and two call attempts (FACT-004: 2). As established in precedent DISP-2026-0211 (POLICY-7.3), the absence of either communication component voids the no-show fee, regardless of whether the five-minute wait was physically satisfied or the rider was present. Consequently, the SGD 5.00 cancellation fee is invalid. Under POLICY-2.4, a separate SGD 5.00 goodwill credit is reserved for cases where the driver is a no-show (failed to arrive) AND failed contact; here, the driver arrived on time, so no goodwill credit is applicable.",
+            "evidence_ids": [
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-07",
+              "FHU-2026-102-EVENT-06",
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-EVENT-02"
+            ],
+            "policy_ids": [
+              "POLICY-2.3",
+              "POLICY-7.3",
+              "POLICY-2.2",
+              "POLICY-2.4"
+            ],
+            "confidence": 1.0,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-003",
+                "value": 0
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 2
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": false
+              }
+            ]
+          },
+          "final_explanation": "The pickup records establish 8 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 0 message(s), 2 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "total_tokens": 30575,
+      "checks": {
+        "operational_success": true,
+        "case_id": true,
+        "outcome": true,
+        "amount_cents": true,
+        "goodwill_credit_cents": true,
+        "refund_basis": true,
+        "confidence": true,
+        "citations": true,
+        "retrieval": true,
+        "argument_completion": true
+      },
+      "failed_checks": [],
+      "expected_ruling": "reverse_charge",
+      "actual_ruling": "reverse_charge",
+      "conditional_confidence_referral": false,
+      "assessed_confidence": 1.0,
+      "required_confidence": 0,
+      "oracle_status": "draft_for_independent_human_review",
+      "human_confirmation_required": false,
+      "citation_issues": [],
+      "retrieval_issues": [],
+      "argument_issues": [],
+      "expected": {
+        "expected_label": "reverse_charge",
+        "expected_refund_cents": 500,
+        "expected_goodwill_credit_cents": 0,
+        "refund_basis": "cancellation_fee",
+        "mandatory_human_review": false
+      },
+      "wall_duration_ms": 14329
+    },
+    {
+      "case_id": "FHU-2026-108",
+      "run": 1,
+      "input_file": "/tmp/fairride-claim-patch-targeted-20261016T170105/cases/FHU-2026-108.json",
+      "verdict": "PASS",
+      "review": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-16T09:02:02.854781+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "FHU-2026-108",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Refund the excess-distance component",
+          "refund_cents": 51,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The actual route is 7.006 km versus 6.005 km planned: 1.001 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.505/km, with the resulting refund rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.51.",
+          "party_messages": {
+            "rider": {
+              "action": "Recommended refund: SGD 0.51 of your excess-distance fare.",
+              "explanation": "The actual route is 7.006 km versus 6.005 km planned: 1.001 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.505/km, with the resulting refund rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.51."
+            },
+            "driver": {
+              "action": "Recommended refund: SGD 0.51 of the rider's excess-distance fare.",
+              "explanation": "The actual route is 7.006 km versus 6.005 km planned: 1.001 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.505/km, with the resulting refund rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.51."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Additional distance within 2 km AI limit",
+              "observation": "1.001 km (2 km inclusive)",
+              "status": "met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "FHU-2026-108-ROUTE-01",
+                "FHU-2026-108-ROUTE-02"
+              ],
+              "policy_ids": [
+                "POLICY-6.2"
+              ]
+            },
+            {
+              "condition": "Additional distance within 1 km no-refund tolerance",
+              "observation": "1.001 km",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "FHU-2026-108-ROUTE-01",
+                "FHU-2026-108-ROUTE-02"
+              ],
+              "policy_ids": [
+                "POLICY-1.3"
+              ]
+            },
+            {
+              "condition": "Historical traffic justification",
+              "observation": "Not supported by historical traffic",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-005"
+              ],
+              "evidence_ids": [
+                "FHU-2026-108-TRIP-01",
+                "FHU-2026-108-EVENT-01",
+                "FHU-2026-108-EVENT-02",
+                "FHU-2026-108-EVENT-03",
+                "FHU-2026-108-EVENT-04",
+                "FHU-2026-108-ROUTE-01",
+                "FHU-2026-108-ROUTE-02",
+                "FHU-2026-108-TRAFFIC-01"
+              ],
+              "policy_ids": [
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "condition": "Rider informed before or at deviation",
+              "observation": "Not established",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-006"
+              ],
+              "evidence_ids": [
+                "FHU-2026-108-TRIP-01",
+                "FHU-2026-108-CHAT-03",
+                "FHU-2026-108-CHAT-01",
+                "FHU-2026-108-CHAT-02",
+                "FHU-2026-108-EVENT-01",
+                "FHU-2026-108-EVENT-02",
+                "FHU-2026-108-EVENT-03",
+                "FHU-2026-108-EVENT-04"
+              ],
+              "policy_ids": [
+                "POLICY-1.2",
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "condition": "Rider agreed before or at deviation",
+              "observation": "Not established",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "FHU-2026-108-TRIP-01",
+                "FHU-2026-108-CHAT-03",
+                "FHU-2026-108-CHAT-01",
+                "FHU-2026-108-CHAT-02",
+                "FHU-2026-108-EVENT-01",
+                "FHU-2026-108-EVENT-02",
+                "FHU-2026-108-EVENT-03",
+                "FHU-2026-108-EVENT-04"
+              ],
+              "policy_ids": [
+                "POLICY-1.2",
+                "POLICY-1.4"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Additional distance",
+              "value": 1.001,
+              "unit": "km",
+              "formula": "7.006 km actual − 6.005 km planned = 1.001 km",
+              "evidence_ids": [
+                "FHU-2026-108-ROUTE-01",
+                "FHU-2026-108-ROUTE-02"
+              ],
+              "policy_ids": [
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "label": "Excess-distance fare component",
+              "value": 51,
+              "unit": "SGD cents",
+              "formula": "max(0, 1.001 km) × S$0.505/km = S$0.51 (rounded half up to cents). The 1 km tolerance is not deducted.",
+              "evidence_ids": [
+                "FHU-2026-108-ROUTE-01",
+                "FHU-2026-108-ROUTE-02",
+                "FHU-2026-108-FARE-02"
+              ],
+              "policy_ids": [
+                "POLICY-1.3",
+                "POLICY-1.4"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-04-11T14:06:00+08:00",
+              "event": "Trip starts",
+              "evidence_ids": [
+                "FHU-2026-108-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-04-11T14:06:00+08:00",
+              "event": "System · recorded call",
+              "evidence_ids": [
+                "FHU-2026-108-CHAT-03"
+              ]
+            },
+            {
+              "timestamp": "2026-04-11T14:08:00+08:00",
+              "event": "Route deviation detected",
+              "evidence_ids": [
+                "FHU-2026-108-EVENT-02"
+              ]
+            },
+            {
+              "timestamp": "2026-04-11T14:09:30+08:00",
+              "event": "Rider · message",
+              "evidence_ids": [
+                "FHU-2026-108-CHAT-01"
+              ]
+            },
+            {
+              "timestamp": "2026-04-11T14:10:10+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "FHU-2026-108-CHAT-02"
+              ]
+            },
+            {
+              "timestamp": "2026-04-11T14:26:00+08:00",
+              "event": "Trip ends",
+              "evidence_ids": [
+                "FHU-2026-108-TRIP-01"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 6.005,
+            "name": "planned_distance_km",
+            "unit": "km",
+            "formula": "planned road route distance",
+            "evidence_ids": [
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": 7.006,
+            "name": "actual_distance_km",
+            "unit": "km",
+            "formula": "supplied GPS-reconstructed route distance",
+            "evidence_ids": [
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 1.001,
+            "name": "deviation_km",
+            "unit": "km",
+            "formula": "actual minus planned km",
+            "evidence_ids": [
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 51,
+            "name": "excess_distance_cents",
+            "unit": "SGD cents",
+            "formula": "max(0, additional_km) * distance_rate *100, half-up rounded",
+            "evidence_ids": [
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02",
+              "FHU-2026-108-FARE-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": "unsupported",
+            "name": "justification",
+            "unit": "state",
+            "formula": "route/time-matched historical traffic evidence",
+            "evidence_ids": [
+              "FHU-2026-108-TRIP-01",
+              "FHU-2026-108-EVENT-01",
+              "FHU-2026-108-EVENT-02",
+              "FHU-2026-108-EVENT-03",
+              "FHU-2026-108-EVENT-04",
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02",
+              "FHU-2026-108-TRAFFIC-01"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": false,
+            "name": "rider_informed",
+            "unit": "boolean",
+            "formula": "driver route notice before or at deviation",
+            "evidence_ids": [
+              "FHU-2026-108-TRIP-01",
+              "FHU-2026-108-CHAT-03",
+              "FHU-2026-108-CHAT-01",
+              "FHU-2026-108-CHAT-02",
+              "FHU-2026-108-EVENT-01",
+              "FHU-2026-108-EVENT-02",
+              "FHU-2026-108-EVENT-03",
+              "FHU-2026-108-EVENT-04"
+            ],
+            "policy_ids": [
+              "POLICY-1.2"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": false,
+            "name": "rider_agreed",
+            "unit": "boolean",
+            "formula": "rider acknowledgment of notice by deviation",
+            "evidence_ids": [
+              "FHU-2026-108-TRIP-01",
+              "FHU-2026-108-CHAT-03",
+              "FHU-2026-108-CHAT-01",
+              "FHU-2026-108-CHAT-02",
+              "FHU-2026-108-EVENT-01",
+              "FHU-2026-108-EVENT-02",
+              "FHU-2026-108-EVENT-03",
+              "FHU-2026-108-EVENT-04"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "FHU-2026-108-TICKET-01",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "FHU-2026-108",
+              "trip_id": "FUT-2026-93108",
+              "filed_by": "rider",
+              "dispute_type": "route_deviation",
+              "description": "The driver on FUT-2026-93108 said the main road was crowded and took back roads. Please check the added distance charge.",
+              "filed_at": "2026-04-11T17:06:00+08:00",
+              "status": "open",
+              "disputed_amount_cents": 115
+            }
+          },
+          {
+            "id": "FHU-2026-108-TRIP-01",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "FUT-2026-93108",
+              "rider_id": "FUR-82108",
+              "driver_id": "FUD-72108",
+              "pickup_location": {
+                "name": "Geylang Bahru sewing studio",
+                "lat": 1.322,
+                "lng": 103.87
+              },
+              "dropoff_location": {
+                "name": "Toa Payoh library annexe",
+                "lat": 1.334,
+                "lng": 103.852
+              },
+              "start_time": "2026-04-11T14:06:00+08:00",
+              "end_time": "2026-04-11T14:26:00+08:00",
+              "estimated_fare": 11.14,
+              "charged_fare": 12.29,
+              "fare_currency": "SGD"
+            }
+          },
+          {
+            "id": "FHU-2026-108-GPS-01",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-04-11T14:06:00+08:00",
+              "lat": 1.322,
+              "lng": 103.87,
+              "status": "trip_start"
+            }
+          },
+          {
+            "id": "FHU-2026-108-GPS-02",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-04-11T14:08:00+08:00",
+              "lat": 1.3232,
+              "lng": 103.8682,
+              "status": "deviation_start"
+            }
+          },
+          {
+            "id": "FHU-2026-108-GPS-03",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-04-11T14:16:00+08:00",
+              "lat": 1.331,
+              "lng": 103.861,
+              "status": "on_alternate_route"
+            }
+          },
+          {
+            "id": "FHU-2026-108-GPS-04",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-04-11T14:26:00+08:00",
+              "lat": 1.334,
+              "lng": 103.852,
+              "status": "trip_end"
+            }
+          },
+          {
+            "id": "FHU-2026-108-CHAT-03",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-04-11T14:06:00+08:00",
+              "sender": "system",
+              "type": "recorded_call",
+              "content": "Recording begins at 2026-04-11T14:06:00+08:00. Rider: \"Morning.\" Driver: \"Hello.\" At 2026-04-11T14:26:00+08:00: Driver: \"We have arrived.\" All other intervals contain road noise or silence; recording ends at 2026-04-11T14:26:00+08:00. Complete trip call recording; no missing intervals."
+            }
+          },
+          {
+            "id": "FHU-2026-108-CHAT-01",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-04-11T14:09:30+08:00",
+              "sender": "rider",
+              "type": "message",
+              "content": "This turn was different from the route on my screen."
+            }
+          },
+          {
+            "id": "FHU-2026-108-CHAT-02",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-04-11T14:10:10+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "I saw traffic on the other road and took this way."
+            }
+          },
+          {
+            "id": "FHU-2026-108-EVENT-01",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-04-11T14:06:00+08:00",
+              "event_type": "trip_started",
+              "details": "FUT-2026-93108; recommended FHU-2026-108-ROUTE-01, distance 6.005 km, estimated fare SGD 11.14."
+            }
+          },
+          {
+            "id": "FHU-2026-108-EVENT-02",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-04-11T14:08:00+08:00",
+              "event_type": "route_deviation_detected",
+              "details": "Actual trace diverges from FHU-2026-108-ROUTE-01 at this timestamp. Recorder timestamp resolution: one second."
+            }
+          },
+          {
+            "id": "FHU-2026-108-EVENT-03",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-04-11T14:26:00+08:00",
+              "event_type": "trip_completed",
+              "details": "Completed 7.006 km in 20 minutes. Ledger charged SGD 12.29; no refund or goodwill posted."
+            }
+          },
+          {
+            "id": "FHU-2026-108-EVENT-04",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-04-11T14:26:30+08:00",
+              "event_type": "communication_export_completed",
+              "details": "Complete in-app message and call export for FUT-2026-93108; trip call transcript contains every intelligible utterance. No deleted messages or recording gaps. Road lengths come from complete map-matched archives; displayed GPS points are samples."
+            }
+          },
+          {
+            "id": "FHU-2026-108-ROUTE-01",
+            "source": "route_data",
+            "data": {
+              "type": "planned",
+              "distance_km": 6.005,
+              "estimated_duration_min": 17,
+              "source": "synthetic_in_app_routing_engine",
+              "route_name": "Original recommended road route between Geylang Bahru sewing studio and Toa Payoh library annexe",
+              "waypoints": [
+                {
+                  "name": "Geylang Bahru sewing studio",
+                  "lat": 1.322,
+                  "lng": 103.87
+                },
+                {
+                  "name": "Toa Payoh library annexe",
+                  "lat": 1.334,
+                  "lng": 103.852
+                }
+              ]
+            }
+          },
+          {
+            "id": "FHU-2026-108-ROUTE-02",
+            "source": "route_data",
+            "data": {
+              "type": "actual",
+              "distance_km": 7.006,
+              "actual_duration_min": 20,
+              "source": "synthetic_gps_reconstruction",
+              "route_name": "Archived map-matched road trace",
+              "waypoints": [
+                {
+                  "name": "Geylang Bahru sewing studio",
+                  "lat": 1.322,
+                  "lng": 103.87
+                },
+                {
+                  "lat": 1.331,
+                  "lng": 103.861
+                },
+                {
+                  "name": "Toa Payoh library annexe",
+                  "lat": 1.334,
+                  "lng": 103.852
+                }
+              ]
+            }
+          },
+          {
+            "id": "FHU-2026-108-FARE-01",
+            "source": "fare_items",
+            "data": {
+              "component": "base_fare",
+              "amount": 3.8,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FHU-2026-108-FARE-02",
+            "source": "fare_items",
+            "data": {
+              "component": "distance_charge",
+              "amount": 3.54,
+              "currency": "SGD",
+              "distance_km": 7.006,
+              "rate_per_km": 0.505
+            }
+          },
+          {
+            "id": "FHU-2026-108-FARE-03",
+            "source": "fare_items",
+            "data": {
+              "component": "time_charge",
+              "amount": 4.3,
+              "currency": "SGD",
+              "duration_min": 20,
+              "rate_per_min": 0.215
+            }
+          },
+          {
+            "id": "FHU-2026-108-FARE-04",
+            "source": "fare_items",
+            "data": {
+              "component": "booking_fee",
+              "amount": 0.65,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FHU-2026-108-FARE-05",
+            "source": "fare_items",
+            "data": {
+              "component": "total_charged",
+              "amount": 12.29,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FHU-2026-108-FARE-06",
+            "source": "fare_items",
+            "data": {
+              "component": "estimated_total",
+              "amount": 11.14,
+              "currency": "SGD",
+              "breakdown": {
+                "base_fare": 3.8,
+                "distance_charge": 3.03,
+                "time_charge": 3.66,
+                "booking_fee": 0.65
+              }
+            }
+          },
+          {
+            "id": "FHU-2026-108-TRAFFIC-01",
+            "source": "traffic_data",
+            "data": {
+              "source": "historical_traffic_api_fixture",
+              "affected_route_id": "FHU-2026-108-ROUTE-01",
+              "segment": "Outbound junction segment on recommended route FHU-2026-108-ROUTE-01",
+              "valid_from": "2026-04-11T14:05:30+08:00",
+              "valid_until": "2026-04-11T14:26:00+08:00",
+              "status": "no_congestion",
+              "note": "Synthetic historical API fixture. No congestion or road closure; 38 km/h mean speed during this interval. No live traffic query was made."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_route_deviation",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "route_deviation",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-1.1",
+              "text": "Section 1.1: Rerouting for traffic, road closures or congestion is permitted, but the rider must be informed."
+            },
+            {
+              "id": "POLICY-1.2",
+              "text": "Section 1.2: Inform rider via in-app chat or recorded call before or at deviation; a brief reason is sufficient."
+            },
+            {
+              "id": "POLICY-1.3",
+              "text": "Section 1.3: The no-refund tolerance is 1 km of additional distance. For additional distance above 1 km, apply these separate cases. UNJUSTIFIED detour: refund ALL excess-distance fare; the formula is additional km multiplied by the distance rate. This refunds a fare component, not the entire trip or time-charge difference. JUSTIFIED detour with timely rider notification and agreement: no refund. JUSTIFIED but UNNOTIFIED detour: refund only PART of the excess-distance fare; that partial-component formula is unspecified, so refer until confirmed. The unspecified formula applies only to the justified-but-unnotified case and never to an unjustified detour."
+            },
+            {
+              "id": "POLICY-1.4",
+              "text": "Section 1.4: Additional km = actual minus recommended distance. Traffic justification uses historical traffic API records for the segment at trip time. Chat/call acknowledgment establishes agreement. App alert words alone are insufficient."
+            },
+            {
+              "id": "POLICY-7.1",
+              "text": "Precedent 7.1, DISP-2026-0089: 1.8 km traffic-justified detour without notification; partial excess-distance refund SGD 3.20, confidence 91%. The amount does not define a general percentage or formula."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": null,
+          "free_wait_time_min": null,
+          "no_show_threshold_min": null,
+          "cancellation_fee_after_wait": null,
+          "tolerance_km": 1.0,
+          "max_ai_deviation_km": 2.0,
+          "refund_basis": "excess_distance_fare"
+        },
+        "workflow": {
+          "case_id": "FHU-2026-108",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93108",
+                "sources": [
+                  "gps_telemetry",
+                  "route_data",
+                  "traffic_data",
+                  "chat_logs",
+                  "fare_items"
+                ],
+                "purpose": "Establish actual vs recommended distance, verify traffic conditions at trip time, confirm rider notification status, and calculate excess distance fare for refund determination.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1476,
+                  "total_tokens": 1575,
+                  "completion_tokens": 99
+                },
+                "record_ids": [
+                  "FHU-2026-108-GPS-01",
+                  "FHU-2026-108-GPS-02",
+                  "FHU-2026-108-GPS-03",
+                  "FHU-2026-108-GPS-04",
+                  "FHU-2026-108-CHAT-03",
+                  "FHU-2026-108-CHAT-01",
+                  "FHU-2026-108-CHAT-02",
+                  "FHU-2026-108-ROUTE-01",
+                  "FHU-2026-108-ROUTE-02",
+                  "FHU-2026-108-FARE-01",
+                  "FHU-2026-108-FARE-02",
+                  "FHU-2026-108-FARE-03",
+                  "FHU-2026-108-FARE-04",
+                  "FHU-2026-108-FARE-05",
+                  "FHU-2026-108-FARE-06",
+                  "FHU-2026-108-TRAFFIC-01"
+                ],
+                "duration_ms": 1141
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93108",
+                "sources": [
+                  "route_data",
+                  "traffic_data",
+                  "chat_logs",
+                  "gps_telemetry",
+                  "fare_items"
+                ],
+                "purpose": "Establish the recommended vs actual distance to calculate excess km, verify traffic conditions via historical API records, check for rider notification/app acknowledgment in chat logs, and retrieve fare components to calculate the refund amount.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1477,
+                  "total_tokens": 1588,
+                  "completion_tokens": 111
+                },
+                "record_ids": [
+                  "FHU-2026-108-GPS-01",
+                  "FHU-2026-108-GPS-02",
+                  "FHU-2026-108-GPS-03",
+                  "FHU-2026-108-GPS-04",
+                  "FHU-2026-108-CHAT-03",
+                  "FHU-2026-108-CHAT-01",
+                  "FHU-2026-108-CHAT-02",
+                  "FHU-2026-108-ROUTE-01",
+                  "FHU-2026-108-ROUTE-02",
+                  "FHU-2026-108-FARE-01",
+                  "FHU-2026-108-FARE-02",
+                  "FHU-2026-108-FARE-03",
+                  "FHU-2026-108-FARE-04",
+                  "FHU-2026-108-FARE-05",
+                  "FHU-2026-108-FARE-06",
+                  "FHU-2026-108-TRAFFIC-01"
+                ],
+                "duration_ms": 1232
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93108",
+                "sources": [
+                  "app_events",
+                  "trip_data"
+                ],
+                "purpose": "To determine if the driver notified the rider via in-app alert or chat before the deviation and to verify the exact trip timestamps and status for evidence correlation.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 3226,
+                  "total_tokens": 3308,
+                  "completion_tokens": 82
+                },
+                "record_ids": [
+                  "FHU-2026-108-TRIP-01",
+                  "FHU-2026-108-EVENT-01",
+                  "FHU-2026-108-EVENT-02",
+                  "FHU-2026-108-EVENT-03",
+                  "FHU-2026-108-EVENT-04"
+                ],
+                "duration_ms": 1086
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FUT-2026-93108",
+                "sources": [
+                  "app_events",
+                  "trip_data"
+                ],
+                "purpose": "Retrieve trip metadata (e.g., pickup/dropoff timestamps, rider status) and app event logs (e.g., route update notifications, driver actions, system alerts) to verify if the rider was informed of the deviation before or during the trip, and to corroborate the timeline of the chat messages and GPS deviations against system events.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 3227,
+                  "total_tokens": 3346,
+                  "completion_tokens": 119
+                },
+                "record_ids": [
+                  "FHU-2026-108-TRIP-01",
+                  "FHU-2026-108-EVENT-01",
+                  "FHU-2026-108-EVENT-02",
+                  "FHU-2026-108-EVENT-03",
+                  "FHU-2026-108-EVENT-04"
+                ],
+                "duration_ms": 1310
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [
+                    {
+                      "statement": "The deviation is unjustified because historical traffic records show no congestion on the recommended route, and the driver failed to notify the rider before deviating, triggering a refund of the excess distance fare under POLICY-1.3. POLICY-1.4 requires historical traffic verification which is absent here.",
+                      "evidence_ids": [
+                        "FHU-2026-108-TRAFFIC-01",
+                        "FHU-2026-108-CHAT-02",
+                        "FHU-2026-108-CHAT-01",
+                        "FHU-2026-108-EVENT-02"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.1",
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1.001
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 51
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 3507,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 6463,
+                  "completion_tokens": 363,
+                  "total_tokens": 6826
+                }
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver’s detour of 1.001 km exceeds the 1 km policy tolerance, and because historical traffic justification is unsupported and the rider was neither informed nor agreed to the change, the detour is unjustified. Under POLICY-1.3, this requires a full refund of the excess-distance fare (51 cents), calculated as the additional distance multiplied by the distance rate, without subtracting the tolerance.",
+                      "evidence_ids": [
+                        "FHU-2026-108-ROUTE-01",
+                        "FHU-2026-108-ROUTE-02",
+                        "FHU-2026-108-TRAFFIC-01",
+                        "FHU-2026-108-CHAT-01",
+                        "FHU-2026-108-CHAT-02",
+                        "FHU-2026-108-EVENT-02",
+                        "FHU-2026-108-FARE-02"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 6.005
+                        },
+                        {
+                          "fact_id": "FACT-002",
+                          "value": 7.006
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1.001
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 51
+                        },
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 4146,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 6463,
+                  "completion_tokens": 527,
+                  "total_tokens": 6990
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "partial_refund",
+                  "proposed_action": {
+                    "amount_cents": 51,
+                    "currency": "SGD",
+                    "refund_basis": "excess_distance_fare",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The rider and driver arguments align on the core facts. The actual distance (7.006 km, FACT-002) exceeded the planned distance (6.005 km, FACT-001) by 1.001 km (FACT-003). This deviation exceeds the 1 km no-refund tolerance specified in POLICY-1.3. The historical traffic data (FHU-2026-108-TRAFFIC-01) explicitly confirms there was no congestion on the recommended route, meaning the driver's justification is unsupported (FACT-005). Furthermore, the driver failed to notify the rider prior to the deviation (FACT-006), which disqualifies the detour from the 'justified and notified' or 'justified and agreed' categories under POLICY-1.4. According to POLICY-1.3, an unjustified detour requires a refund of ALL excess-distance fare. The excess distance fare is 51 cents (FACT-004). As per the decision rules, this case is governed by precedent POLICY-7.1, which establishes refunding the excess-distance component for similar deviations. The confidence is sufficient as the evidence is complete and the policy application is straightforward.",
+                  "evidence_ids": [
+                    "FHU-2026-108-ROUTE-01",
+                    "FHU-2026-108-ROUTE-02",
+                    "FHU-2026-108-FARE-02",
+                    "FHU-2026-108-TRAFFIC-01",
+                    "FHU-2026-108-CHAT-01",
+                    "FHU-2026-108-CHAT-02",
+                    "FHU-2026-108-EVENT-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3",
+                    "POLICY-1.4",
+                    "POLICY-7.1"
+                  ],
+                  "confidence": 0.92,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-001",
+                      "value": 6.005
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": 7.006
+                    },
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 1.001
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 51
+                    },
+                    {
+                      "fact_id": "FACT-005",
+                      "value": "unsupported"
+                    },
+                    {
+                      "fact_id": "FACT-006",
+                      "value": false
+                    },
+                    {
+                      "fact_id": "FACT-007",
+                      "value": false
+                    }
+                  ]
+                },
+                "duration_ms": 12482,
+                "citation_retries": 0,
+                "schema_retries": 1,
+                "citation_resolutions": [],
+                "validation_diagnostics": {
+                  "case_id": "FHU-2026-108",
+                  "actor": "judge",
+                  "response_type": "JudgeResult",
+                  "outcome": "accepted_after_repair",
+                  "attempts": [
+                    {
+                      "attempt": 1,
+                      "response": {
+                        "action": "final_ruling",
+                        "ruling": "partial_refund",
+                        "proposed_action": {
+                          "amount_cents": 51,
+                          "currency": "SGD",
+                          "refund_basis": "excess_distance_fare",
+                          "goodwill_credit_cents": 0
+                        },
+                        "explanation": "The actual route distance (7.006 km) exceeded the planned distance (6.005 km) by 1.001 km (FACT-003). This exceeds the 1 km policy tolerance (POLICY-1.3), triggering excess-distance fare review. Historical traffic data shows no congestion on the recommended route, and the driver failed to inform the rider prior to deviation (FACT-005, FACT-006). Under POLICY-1.3, an unjustified detour requires a refund of ALL excess-distance fare. The excess distance is 0.001 km above the 1 km tolerance (1.001 - 1.0 = 0.001). Using the distance rate of 0.505 SGD/km, the excess-distance charge is 0.001 * 0.505 * 100 = 0.051 SGD, rounded to 51 cents (FACT-004). The precedent POLICY-7.1 supports the principle of refunding the excess-distance component for unjustified or unnotified justified deviations. Confidence is high as facts are clear and policy is explicit.",
+                        "evidence_ids": [
+                          "FHU-2026-108-ROUTE-01",
+                          "FHU-2026-108-ROUTE-02",
+                          "FHU-2026-108-FARE-02",
+                          "FHU-2026-108-TRAFFIC-01",
+                          "FHU-2026-108-CHAT-01",
+                          "FHU-2026-108-CHAT-02"
+                        ],
+                        "policy_ids": [
+                          "POLICY-1.3",
+                          "POLICY-1.4",
+                          "POLICY-7.1"
+                        ],
+                        "confidence": 0.95,
+                        "fact_assertions": [
+                          {
+                            "fact_id": "FACT-001",
+                            "value": 6.005
+                          },
+                          {
+                            "fact_id": "FACT-002",
+                            "value": 7.006
+                          },
+                          {
+                            "fact_id": "FACT-003",
+                            "value": 1.001
+                          },
+                          {
+                            "fact_id": "FACT-004",
+                            "value": 51
+                          },
+                          {
+                            "fact_id": "FACT-005",
+                            "value": "unsupported"
+                          },
+                          {
+                            "fact_id": "FACT-006",
+                            "value": false
+                          },
+                          {
+                            "fact_id": "FACT-007",
+                            "value": false
+                          }
+                        ]
+                      },
+                      "validation_errors": [
+                        "Prose inconsistency: excess distance is 1.001 km, not 0.001 km; do not subtract the tolerance or include a discarded alternative calculation."
+                      ],
+                      "required_fact_assertions": [],
+                      "claim_feedback": []
+                    },
+                    {
+                      "attempt": 2,
+                      "response": {
+                        "action": "final_ruling",
+                        "ruling": "partial_refund",
+                        "proposed_action": {
+                          "amount_cents": 51,
+                          "currency": "SGD",
+                          "refund_basis": "excess_distance_fare",
+                          "goodwill_credit_cents": 0
+                        },
+                        "explanation": "The rider and driver arguments align on the core facts. The actual distance (7.006 km, FACT-002) exceeded the planned distance (6.005 km, FACT-001) by 1.001 km (FACT-003). This deviation exceeds the 1 km no-refund tolerance specified in POLICY-1.3. The historical traffic data (FHU-2026-108-TRAFFIC-01) explicitly confirms there was no congestion on the recommended route, meaning the driver's justification is unsupported (FACT-005). Furthermore, the driver failed to notify the rider prior to the deviation (FACT-006), which disqualifies the detour from the 'justified and notified' or 'justified and agreed' categories under POLICY-1.4. According to POLICY-1.3, an unjustified detour requires a refund of ALL excess-distance fare. The excess distance fare is 51 cents (FACT-004). As per the decision rules, this case is governed by precedent POLICY-7.1, which establishes refunding the excess-distance component for similar deviations. The confidence is sufficient as the evidence is complete and the policy application is straightforward.",
+                        "evidence_ids": [
+                          "FHU-2026-108-ROUTE-01",
+                          "FHU-2026-108-ROUTE-02",
+                          "FHU-2026-108-FARE-02",
+                          "FHU-2026-108-TRAFFIC-01",
+                          "FHU-2026-108-CHAT-01",
+                          "FHU-2026-108-CHAT-02",
+                          "FHU-2026-108-EVENT-02"
+                        ],
+                        "policy_ids": [
+                          "POLICY-1.3",
+                          "POLICY-1.4",
+                          "POLICY-7.1"
+                        ],
+                        "confidence": 0.92,
+                        "fact_assertions": [
+                          {
+                            "fact_id": "FACT-001",
+                            "value": 6.005
+                          },
+                          {
+                            "fact_id": "FACT-002",
+                            "value": 7.006
+                          },
+                          {
+                            "fact_id": "FACT-003",
+                            "value": 1.001
+                          },
+                          {
+                            "fact_id": "FACT-004",
+                            "value": 51
+                          },
+                          {
+                            "fact_id": "FACT-005",
+                            "value": "unsupported"
+                          },
+                          {
+                            "fact_id": "FACT-006",
+                            "value": false
+                          },
+                          {
+                            "fact_id": "FACT-007",
+                            "value": false
+                          }
+                        ]
+                      },
+                      "validation_errors": [],
+                      "required_fact_assertions": []
+                    }
+                  ],
+                  "usage": {
+                    "prompt_tokens": 16165,
+                    "completion_tokens": 1495,
+                    "total_tokens": 17660
+                  }
+                },
+                "usage": {
+                  "prompt_tokens": 16165,
+                  "completion_tokens": 1495,
+                  "total_tokens": 17660
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 19171,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "partial_refund",
+            "proposed_action": {
+              "amount_cents": 51,
+              "currency": "SGD",
+              "refund_basis": "excess_distance_fare",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The rider and driver arguments align on the core facts. The actual distance (7.006 km, FACT-002) exceeded the planned distance (6.005 km, FACT-001) by 1.001 km (FACT-003). This deviation exceeds the 1 km no-refund tolerance specified in POLICY-1.3. The historical traffic data (FHU-2026-108-TRAFFIC-01) explicitly confirms there was no congestion on the recommended route, meaning the driver's justification is unsupported (FACT-005). Furthermore, the driver failed to notify the rider prior to the deviation (FACT-006), which disqualifies the detour from the 'justified and notified' or 'justified and agreed' categories under POLICY-1.4. According to POLICY-1.3, an unjustified detour requires a refund of ALL excess-distance fare. The excess distance fare is 51 cents (FACT-004). As per the decision rules, this case is governed by precedent POLICY-7.1, which establishes refunding the excess-distance component for similar deviations. The confidence is sufficient as the evidence is complete and the policy application is straightforward.",
+            "evidence_ids": [
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02",
+              "FHU-2026-108-FARE-02",
+              "FHU-2026-108-TRAFFIC-01",
+              "FHU-2026-108-CHAT-01",
+              "FHU-2026-108-CHAT-02",
+              "FHU-2026-108-EVENT-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-1.4",
+              "POLICY-7.1"
+            ],
+            "confidence": 0.92,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-001",
+                "value": 6.005
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": 7.006
+              },
+              {
+                "fact_id": "FACT-003",
+                "value": 1.001
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 51
+              },
+              {
+                "fact_id": "FACT-005",
+                "value": "unsupported"
+              },
+              {
+                "fact_id": "FACT-006",
+                "value": false
+              },
+              {
+                "fact_id": "FACT-007",
+                "value": false
+              }
+            ]
+          },
+          "final_explanation": "The actual route is 7.006 km versus 6.005 km planned: 1.001 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.505/km, with the resulting refund rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.51.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "total_tokens": 41293,
+      "checks": {
+        "operational_success": true,
+        "case_id": true,
+        "outcome": true,
+        "amount_cents": true,
+        "goodwill_credit_cents": true,
+        "refund_basis": true,
+        "confidence": true,
+        "citations": true,
+        "retrieval": true,
+        "argument_completion": true
+      },
+      "failed_checks": [],
+      "expected_ruling": "partial_refund",
+      "actual_ruling": "partial_refund",
+      "conditional_confidence_referral": false,
+      "assessed_confidence": 0.92,
+      "required_confidence": 0.8,
+      "oracle_status": "draft_for_independent_human_review",
+      "human_confirmation_required": false,
+      "citation_issues": [],
+      "retrieval_issues": [],
+      "argument_issues": [],
+      "expected": {
+        "expected_label": "conditional_refund_excess_distance_fare",
+        "expected_refund_cents": 51,
+        "expected_goodwill_credit_cents": 0,
+        "refund_basis": "excess_distance_fare",
+        "mandatory_human_review": false
+      },
+      "wall_duration_ms": 19176
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "planned": 2,
+    "passed": 2,
+    "failed": 0,
+    "operational_failures": 0,
+    "final_rulings": 2,
+    "conditional_confidence_referrals": 0,
+    "total_tokens": 71868
+  }
+}

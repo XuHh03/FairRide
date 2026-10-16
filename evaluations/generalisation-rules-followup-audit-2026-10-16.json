@@ -1,0 +1,80 @@
+{
+  "review_status": "targeted_assistant_audit_not_independent_certification",
+  "report": "generalisation-rules-followup-2026-10-16.json",
+  "report_sha256": "c91cf77e26142af053964b96aeb09a557749ee03585dc20378854c6fbdf5972f",
+  "summary": {
+    "total": 12,
+    "planned": 12,
+    "passed": 12,
+    "failed": 0,
+    "operational_failures": 0,
+    "final_rulings": 8,
+    "conditional_confidence_referrals": 0,
+    "total_tokens": 257179
+  },
+  "scope": "Targeted inspection of saved accepted model arguments and Judge explanations, customer explanations and source timing. Findings are examples of remaining prose errors, not an exhaustive accuracy score. No additional model calls or code changes during evaluation.",
+  "findings": [
+    {
+      "case_id": "FHU-2026-101",
+      "actor": "rider_advocate",
+      "report_pointer": "/cases/0/review/workflow/activity_log/3/output/result/claims/0/statement",
+      "statement": "The driver arrived exactly five minutes late (17:24 vs 17:22), which falls within the strict boundary of POLICY-2.4 but indicates a late arrival that arguably triggers the 'driver no-show' goodwill credit provision when coupled with the specific contact timing dynamics observed.",
+      "finding": "Calls 17:24 versus 17:22 exactly five minutes late; the difference is two minutes. Also suggests goodwill despite established contacts."
+    },
+    {
+      "case_id": "FHU-2026-101",
+      "actor": "judge",
+      "report_pointer": "/cases/0/review/workflow/judge_result/explanation",
+      "statement": "The driver arrived at the scheduled pickup location at 17:24, which is within the five-minute tolerance of the 17:22 scheduled time (POLICY-2.4, FACT-009=true, FACT-010=false). The driver maintained continuous presence at the pickup point. The free wait period began at 17:22 (scheduled time) as the driver was already present; the driver waited until 17:27 (5 minutes), satisfying the time requirement (POLICY-2.1, FACT-001=5.0). The driver sent one in-app message (FACT-003=1) and attempted one in-app call (FACT-004=1) before the 17:29 cancellation. These actions satisfy the dual contact obligation required by POLICY-2.3. As all conditions for a valid rider no-show charge are met (POLICY-2.2), the charge is upheld. The rider's argument regarding contact timing is rejected; the policy requires the presence of the contact attempts, not their success or specific timing within the wait window. Precedent POLICY-7.3 involved a total lack of contact, which is distinct from this case where contacts were made.",
+      "finding": "Invents wait starting at 17:22 and ending at 17:27; recorded arrival is 17:24 and cancellation 17:29. The five-minute amount and accepted outcome are correct, but these stated endpoints are wrong."
+    },
+    {
+      "case_id": "FHU-2026-103",
+      "actor": "driver_advocate",
+      "report_pointer": "/cases/2/review/workflow/activity_log/3/output/result/claims/2/statement",
+      "statement": "The rider was charged a no-show fee because the cancellation occurred after the driver had been present and waiting since arrival, which is a valid basis for compensation under POLICY-2.2 given the completed contact and timely presence.",
+      "finding": "Claims compensation remains valid despite zero eligible waiting minutes at cancellation. Early presence and contact do not replace the five-minute requirement."
+    },
+    {
+      "case_id": "FHU-2026-104",
+      "actor": "driver_advocate",
+      "report_pointer": "/cases/3/review/workflow/activity_log/3/output/result/claims/1/statement",
+      "statement": "The rider's claim regarding a late missed call is incorrect; the driver attempted one call at 21:03:01, which occurred after the 21:03:00 cancellation, but the driver did send a message at 20:57:30 and attempted the call during the wait period as required by POLICY-2.3 before the cancellation took effect.",
+      "finding": "Calls the 21:03:01 call valid before a 21:03:00 cancellation despite explicitly acknowledging it was after. Source records and the computed pre-cancellation call count are consistent; this prose is not."
+    },
+    {
+      "case_id": "FHU-2026-105",
+      "actor": "driver_advocate",
+      "report_pointer": "/cases/4/review/workflow/activity_log/3/output/result/claims/0/statement",
+      "statement": "The driver arrived at the pickup location within the policy-compliant window, as arrival at 13:49:01 is within five minutes of the 13:44 scheduled time.",
+      "finding": "13:49:01 is five minutes and one second after 13:44:00, outside the inclusive five-minute boundary, not within it."
+    },
+    {
+      "case_id": "FHU-2026-106",
+      "actor": "judge",
+      "report_pointer": "/cases/5/review/workflow/judge_result/explanation",
+      "statement": "The fee_eligibility fact is computed as false primarily because the required GPS-corroborated timely presence (FACT-008, FACT-009) cannot be established due to a transport outage (FHU-2026-106-EVENT-03). While the driver satisfied arrival, wait, and contact obligations, the absence of critical evidence creates material uncertainty regarding the driver's actual physical presence at the pickup point. A refund of the cancellation fee is warranted due to the lack of proof, but a separate SGD 5 goodwill credit is also indicated under POLICY-2.4 (driver no-show plus no contact, though here contact exists, the core issue is the unresolved presence/no-show ambiguity). The judge cannot resolve the factual gap or determine the precise entitlement for the goodwill component without human oversight.",
+      "finding": "Referral disposition matches the draft key, but the rationale suggests unresolved goodwill despite one message and one call excluding the no-contact condition. FACT-011=true is supplied. No final monetary award was issued."
+    },
+    {
+      "case_id": "FHU-2026-108",
+      "actor": "driver_advocate",
+      "report_pointer": "/cases/7/review/workflow/activity_log/5/output/result/claims/1/statement",
+      "statement": "The driver provided timely notice via in-app chat immediately after the deviation started, explaining the reason, which satisfies the notification requirement of POLICY-1.2. However, since the justification itself is unsupported by historical data, the notification does not excuse the unjustified deviation.",
+      "finding": "Calls notice after deviation timely under the policy despite the before-or-at requirement. The application explanation preserves the 0.505/km rate and correct 51-cent refund."
+    },
+    {
+      "case_id": "FHU-2026-110",
+      "actor": "rider_advocate",
+      "report_pointer": "/cases/9/review/workflow/activity_log/5/output/result/claims/0/statement",
+      "statement": "The rider disputes the extra distance fare because the detour was traffic-justified, notified, and agreed upon, which under POLICY-1.3 exempts the rider from paying any excess-distance fare. The rider's claim is supported by the recorded conversation where the driver requested rerouting due to roadworks and the rider explicitly agreed.",
+      "finding": "Reverses the justified/agreed-detour rule by claiming it exempts the rider from paying excess-distance fare. The rule requires no refund; later prose correctly concedes this."
+    }
+  ],
+  "limitations": [
+    "One regression run on inspected synthetic cases with draft answer keys; not a fresh generalisation benchmark.",
+    "Financial/decision matches do not certify free-text accuracy.",
+    "Three of four referrals are policy preflight paths with zero model calls.",
+    "Model confidence is self-reported and uncalibrated."
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "model": "qwen3.6:35b",
+  "live_summary": {
+    "total": 12,
+    "planned": 12,
+    "passed": 10,
+    "failed": 2,
+    "operational_failures": 2,
+    "final_rulings": 7,
+    "conditional_confidence_referrals": 0,
+    "total_tokens": 261509
+  },
+  "source_report": "referral-live-2026-10-16-164334.json",
+  "source_sha256": "4c95afd2fa600635b1fa2b46d79d06c614d4224d689acacd1159e6681bcf18cd",
+  "presentation_checks_passed": 12,
+  "original_first_pass_and_frozen_files_unchanged": true,
+  "code_unchanged_during_run": true,
+  "cases": [
+    {
+      "case_id": "FHU-2026-101",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The pickup records establish 5 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-102",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The pickup records establish 8 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 0 message(s), 2 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-103",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The pickup records establish 0 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The cancellation fee is reversed because fewer than five eligible minutes were waited. Unlike precedent POLICY-7.3, contacts were made; the other unmet eligibility requirements invalidate the fee. Recommended rider refund: SGD 5.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-104",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The pickup records establish 6 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 1 message(s), 0 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-105",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The pickup records establish 2.98333 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 0 message(s), 0 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because the driver did not arrive within five minutes after scheduled pickup; fewer than five eligible minutes were waited; a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00. Separate goodwill credit under POLICY-2.4: SGD 5.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-106",
+      "verdict": "FAIL",
+      "status": "human_review",
+      "failure_category": "validation",
+      "customer_reason": "No validated decision was issued because the review failed.",
+      "validation_issues": [
+        "Agent review failed: Fact assertion correction failed: Fact assertion correction must retain FACT-002; Fact assertion correction must retain FACT-006; Fact assertion correction must retain FACT-007"
+      ],
+      "diagnostics": [
+        {
+          "actor": "driver_advocate",
+          "attempts": [
+            {
+              "attempt": 1,
+              "errors": [
+                "Fact assertion FACT-011 (goodwill_eligibility_resolved) must equal True; got False"
+              ]
+            },
+            {
+              "attempt": 2,
+              "errors": [
+                "Fact assertion correction must retain FACT-002",
+                "Fact assertion correction must retain FACT-006",
+                "Fact assertion correction must retain FACT-007"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "FHU-2026-107",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The actual route is 8 km versus 8.4 km planned: -0.4 km excess. The deviation is within the 1 km tolerance under POLICY-1.3, so the charge is upheld. Unlike precedent POLICY-7.1, the tolerance is not exceeded. Recommended rider refund: SGD 0.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-108",
+      "verdict": "FAIL",
+      "status": "human_review",
+      "failure_category": "validation",
+      "customer_reason": "No validated decision was issued because the review failed.",
+      "validation_issues": [
+        "Agent review failed: Fact assertion correction failed: Fact assertion correction must retain FACT-006; Fact assertion correction must retain FACT-007"
+      ],
+      "diagnostics": [
+        {
+          "actor": "driver_advocate",
+          "attempts": [
+            {
+              "attempt": 1,
+              "errors": [
+                "Fact assertion FACT-006 (rider_informed) must equal False; got True"
+              ]
+            },
+            {
+              "attempt": 2,
+              "errors": [
+                "Fact assertion correction must retain FACT-006",
+                "Fact assertion correction must retain FACT-007"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "FHU-2026-109",
+      "verdict": "PASS",
+      "status": "human_review",
+      "failure_category": null,
+      "customer_reason": "A human reviewer must resolve the following checks:\n\n- Section 1.3: justified detour lacks agreed notification; refund disposition/formula requires human review\n\nNo final refund or goodwill-credit amount has been decided.",
+      "validation_issues": [
+        "Section 1.3: justified detour lacks agreed notification; refund disposition/formula requires human review"
+      ],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-110",
+      "verdict": "PASS",
+      "status": "completed",
+      "failure_category": null,
+      "customer_reason": "The actual route is 13 km versus 11 km planned: 2 km excess. Matched historical traffic supports the detour, the rider was notified before or at deviation and the rider agreed. POLICY-1.3 requires no refund. Unlike precedent POLICY-7.1, the detour was notified and agreed. Recommended rider refund: SGD 0.00.",
+      "validation_issues": [],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-111",
+      "verdict": "PASS",
+      "status": "human_review",
+      "failure_category": null,
+      "customer_reason": "A human reviewer must resolve the following checks:\n\n- Section 5: safety indicator requires human review without an AI ruling\n\nNo final refund or goodwill-credit amount has been decided.",
+      "validation_issues": [
+        "Section 5: safety indicator requires human review without an AI ruling"
+      ],
+      "diagnostics": []
+    },
+    {
+      "case_id": "FHU-2026-112",
+      "verdict": "PASS",
+      "status": "human_review",
+      "failure_category": null,
+      "customer_reason": "A human reviewer must resolve the following checks:\n\n- Section 6.1: dispute value above SGD 50 requires human review\n- Historical traffic evidence is missing or conflicting\n\nNo final refund or goodwill-credit amount has been decided.",
+      "validation_issues": [
+        "Section 6.1: dispute value above SGD 50 requires human review"
+      ],
+      "diagnostics": []
+    }
+  ],
+  "limitations": [
+    "Single regression run on inspected synthetic cases and draft answer keys; not a new generalisation estimate.",
+    "Seven final rulings and three policy-preflight referrals matched; two model validation failures remain failures.",
+    "Customer summary checks do not certify raw model prose accuracy.",
+    "No code/prompt/key tuning or selective reruns during this batch."
+  ]
+}

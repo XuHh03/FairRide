@@ -1,0 +1,132 @@
+[1/12] FHU-2026-101 (run 1/1): Starting
+  [1/12] FHU-2026-101 (run 1/1): Preparing evidence and checking policy
+  [1/12] FHU-2026-101 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [1/12] FHU-2026-101 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [1/12] FHU-2026-101 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [1/12] FHU-2026-101 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [1/12] FHU-2026-101 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [1/12] FHU-2026-101 (run 1/1): Rider Advocate finished its evidence analysis
+  [1/12] FHU-2026-101 (run 1/1): Driver Advocate finished its evidence analysis
+  [1/12] FHU-2026-101 (run 1/1): Judge is reviewing initial arguments
+  [1/12] FHU-2026-101 (run 1/1): Finalizing: validating citations, policy and amounts
+  [1/12] FHU-2026-101 (run 1/1): Review complete
+[1/12] FHU-2026-101 (run 1/1): PASS — all applicable checks matched (13888 ms)
+[2/12] FHU-2026-102 (run 1/1): Starting
+  [2/12] FHU-2026-102 (run 1/1): Preparing evidence and checking policy
+  [2/12] FHU-2026-102 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [2/12] FHU-2026-102 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [2/12] FHU-2026-102 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [2/12] FHU-2026-102 (run 1/1): Driver Advocate: retrieving evidence (round 2/3)
+  [2/12] FHU-2026-102 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [2/12] FHU-2026-102 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [2/12] FHU-2026-102 (run 1/1): Rider Advocate finished its evidence analysis
+  [2/12] FHU-2026-102 (run 1/1): Driver Advocate finished its evidence analysis
+  [2/12] FHU-2026-102 (run 1/1): Judge is reviewing initial arguments
+  [2/12] FHU-2026-102 (run 1/1): Finalizing: validating citations, policy and amounts
+  [2/12] FHU-2026-102 (run 1/1): Review complete
+[2/12] FHU-2026-102 (run 1/1): PASS — all applicable checks matched (13990 ms)
+[3/12] FHU-2026-103 (run 1/1): Starting
+  [3/12] FHU-2026-103 (run 1/1): Preparing evidence and checking policy
+  [3/12] FHU-2026-103 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [3/12] FHU-2026-103 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [3/12] FHU-2026-103 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [3/12] FHU-2026-103 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [3/12] FHU-2026-103 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [3/12] FHU-2026-103 (run 1/1): Driver Advocate finished its evidence analysis
+  [3/12] FHU-2026-103 (run 1/1): Rider Advocate finished its evidence analysis
+  [3/12] FHU-2026-103 (run 1/1): Judge is reviewing initial arguments
+  [3/12] FHU-2026-103 (run 1/1): Finalizing: validating citations, policy and amounts
+  [3/12] FHU-2026-103 (run 1/1): Judge is correcting its decision
+  [3/12] FHU-2026-103 (run 1/1): Finalizing: validating the corrected decision
+  [3/12] FHU-2026-103 (run 1/1): Review complete
+[3/12] FHU-2026-103 (run 1/1): PASS — all applicable checks matched (22091 ms)
+[4/12] FHU-2026-104 (run 1/1): Starting
+  [4/12] FHU-2026-104 (run 1/1): Preparing evidence and checking policy
+  [4/12] FHU-2026-104 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [4/12] FHU-2026-104 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [4/12] FHU-2026-104 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [4/12] FHU-2026-104 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [4/12] FHU-2026-104 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [4/12] FHU-2026-104 (run 1/1): Rider Advocate finished its evidence analysis
+  [4/12] FHU-2026-104 (run 1/1): Driver Advocate finished its evidence analysis
+  [4/12] FHU-2026-104 (run 1/1): Judge is reviewing initial arguments
+  [4/12] FHU-2026-104 (run 1/1): Finalizing: validating citations, policy and amounts
+  [4/12] FHU-2026-104 (run 1/1): Review complete
+[4/12] FHU-2026-104 (run 1/1): PASS — all applicable checks matched (14854 ms)
+[5/12] FHU-2026-105 (run 1/1): Starting
+  [5/12] FHU-2026-105 (run 1/1): Preparing evidence and checking policy
+  [5/12] FHU-2026-105 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [5/12] FHU-2026-105 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [5/12] FHU-2026-105 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [5/12] FHU-2026-105 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [5/12] FHU-2026-105 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [5/12] FHU-2026-105 (run 1/1): Rider Advocate finished its evidence analysis
+  [5/12] FHU-2026-105 (run 1/1): Driver Advocate finished its evidence analysis
+  [5/12] FHU-2026-105 (run 1/1): Judge is reviewing initial arguments
+  [5/12] FHU-2026-105 (run 1/1): Finalizing: validating citations, policy and amounts
+  [5/12] FHU-2026-105 (run 1/1): Review complete
+[5/12] FHU-2026-105 (run 1/1): PASS — all applicable checks matched (11721 ms)
+[6/12] FHU-2026-106 (run 1/1): Starting
+  [6/12] FHU-2026-106 (run 1/1): Preparing evidence and checking policy
+  [6/12] FHU-2026-106 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [6/12] FHU-2026-106 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [6/12] FHU-2026-106 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [6/12] FHU-2026-106 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [6/12] FHU-2026-106 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [6/12] FHU-2026-106 (run 1/1): Agent review failed; human review required
+[6/12] FHU-2026-106 (run 1/1): FAIL — operational_success, argument_completion (15937 ms)
+[7/12] FHU-2026-107 (run 1/1): Starting
+  [7/12] FHU-2026-107 (run 1/1): Preparing evidence and checking policy
+  [7/12] FHU-2026-107 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [7/12] FHU-2026-107 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [7/12] FHU-2026-107 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [7/12] FHU-2026-107 (run 1/1): Rider Advocate: retrieving evidence (round 2/3)
+  [7/12] FHU-2026-107 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [7/12] FHU-2026-107 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [7/12] FHU-2026-107 (run 1/1): Rider Advocate finished its evidence analysis
+  [7/12] FHU-2026-107 (run 1/1): Driver Advocate finished its evidence analysis
+  [7/12] FHU-2026-107 (run 1/1): Judge is reviewing initial arguments
+  [7/12] FHU-2026-107 (run 1/1): Finalizing: validating citations, policy and amounts
+  [7/12] FHU-2026-107 (run 1/1): Review complete
+[7/12] FHU-2026-107 (run 1/1): PASS — all applicable checks matched (11615 ms)
+[8/12] FHU-2026-108 (run 1/1): Starting
+  [8/12] FHU-2026-108 (run 1/1): Preparing evidence and checking policy
+  [8/12] FHU-2026-108 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [8/12] FHU-2026-108 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [8/12] FHU-2026-108 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [8/12] FHU-2026-108 (run 1/1): Driver Advocate: retrieving evidence (round 2/3)
+  [8/12] FHU-2026-108 (run 1/1): Rider Advocate: retrieving evidence (round 2/3)
+  [8/12] FHU-2026-108 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [8/12] FHU-2026-108 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [8/12] FHU-2026-108 (run 1/1): Rider Advocate finished its evidence analysis
+  [8/12] FHU-2026-108 (run 1/1): Agent review failed; human review required
+[8/12] FHU-2026-108 (run 1/1): FAIL — operational_success, outcome, argument_completion (12131 ms)
+[9/12] FHU-2026-109 (run 1/1): Starting
+  [9/12] FHU-2026-109 (run 1/1): Preparing evidence and checking policy
+  [9/12] FHU-2026-109 (run 1/1): Human review required by policy
+[9/12] FHU-2026-109 (run 1/1): PASS — all applicable checks matched (3 ms)
+[10/12] FHU-2026-110 (run 1/1): Starting
+  [10/12] FHU-2026-110 (run 1/1): Preparing evidence and checking policy
+  [10/12] FHU-2026-110 (run 1/1): Rider and Driver Advocates are gathering evidence
+  [10/12] FHU-2026-110 (run 1/1): Rider Advocate: retrieving evidence (round 1/3)
+  [10/12] FHU-2026-110 (run 1/1): Driver Advocate: retrieving evidence (round 1/3)
+  [10/12] FHU-2026-110 (run 1/1): Driver Advocate: retrieving evidence (round 2/3)
+  [10/12] FHU-2026-110 (run 1/1): Rider Advocate: retrieving evidence (round 2/3)
+  [10/12] FHU-2026-110 (run 1/1): Driver Advocate: evidence retrieved; building its argument
+  [10/12] FHU-2026-110 (run 1/1): Rider Advocate: evidence retrieved; building its argument
+  [10/12] FHU-2026-110 (run 1/1): Rider Advocate finished its evidence analysis
+  [10/12] FHU-2026-110 (run 1/1): Driver Advocate finished its evidence analysis
+  [10/12] FHU-2026-110 (run 1/1): Judge is reviewing initial arguments
+  [10/12] FHU-2026-110 (run 1/1): Finalizing: validating citations, policy and amounts
+  [10/12] FHU-2026-110 (run 1/1): Review complete
+[10/12] FHU-2026-110 (run 1/1): PASS — all applicable checks matched (12946 ms)
+[11/12] FHU-2026-111 (run 1/1): Starting
+  [11/12] FHU-2026-111 (run 1/1): Preparing evidence and checking policy
+  [11/12] FHU-2026-111 (run 1/1): Human review required by policy
+[11/12] FHU-2026-111 (run 1/1): PASS — all applicable checks matched (3 ms)
+[12/12] FHU-2026-112 (run 1/1): Starting
+  [12/12] FHU-2026-112 (run 1/1): Preparing evidence and checking policy
+  [12/12] FHU-2026-112 (run 1/1): Human review required by policy
+[12/12] FHU-2026-112 (run 1/1): PASS — all applicable checks matched (2 ms)
+Report: /tmp/fairride-referral-live-20261016T164334.json
+10/12 passed. Draft-key matches remain provisional.
