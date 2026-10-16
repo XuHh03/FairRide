@@ -85,6 +85,27 @@ class FinalExplanationTests(unittest.TestCase):
         self.assertIn("rider agreed", result.final_explanation)
         self.assertIn("SGD 0.00", result.final_explanation)
 
+    def test_fractional_cent_rates_are_preserved_in_explanation_and_calculations(self):
+        from checks import route_deviation_facts
+        for rate in (0.505, 0.5555, 0.55):
+            case = load_case("DISP-010")
+            next(item for item in case["fare_items"] if item["component"] == "distance_charge")["rate_per_km"] = rate
+            policy = policy_for_case(case)
+            cents = route_deviation_facts(case, policy)["excess_distance_cents"]
+            decision = JudgeResult(action="final_ruling", ruling="partial_refund", confidence=0.99,
+                proposed_action={"amount_cents": cents, "refund_basis": "excess_distance_fare"},
+                explanation="Refund the excess distance.", evidence_ids=["TRIP-001"], policy_ids=["POLICY-1.3"])
+            with self.subTest(rate=rate):
+                explanation = grounded_final_explanation(case, policy, decision)
+                self.assertIn(f"SGD {rate}/km", explanation)
+                self.assertIn(f"SGD {cents / 100:.2f}", explanation)
+                result = WorkflowResult(case_id="DISP-010", status="completed", activity_log=[],
+                                        judge_result=decision, final_explanation=explanation, validation_issues=[])
+                summary = build_decision_summary(case, policy, result)
+                formula = next(row["formula"] for row in summary["calculations"] if row["label"] == "Excess-distance fare component")
+                self.assertIn(f"S${rate}/km", formula)
+                self.assertIn(f"S${cents / 100:.2f}", formula)
+
     def test_notice_at_deviation_is_described_as_inclusive_boundary(self):
         case = copy.deepcopy(load_case("DISP-011"))
         at = next(event["timestamp"] for event in case["app_events"] if event["event_type"] == "route_deviation_detected")

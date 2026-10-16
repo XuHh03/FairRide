@@ -80,6 +80,77 @@ class GoodwillUncertaintyTests(unittest.TestCase):
         self.assertFalse(facts["goodwill_eligibility_resolved"])
         self.assertTrue(material_case_issues(case, policy_for_case(case)))
 
+    def test_stale_and_post_cancellation_fixes_do_not_establish_presence(self):
+        for arrival_recorded in (True, False):
+            case = self.case()
+            scheduled = datetime.fromisoformat(case["trip_data"]["scheduled_time"])
+            if not arrival_recorded:
+                case["trip_data"]["driver_arrival_time"] = None
+            pickup = case["trip_data"]["pickup_location"]
+            case["gps_telemetry"] = [
+                {"id": f"FIX-{offset}", "timestamp": (scheduled + timedelta(minutes=offset)).isoformat(),
+                 "lat": pickup["lat"], "lng": pickup["lng"]} for offset in (-120, 10)]
+            with self.subTest(arrival_recorded=arrival_recorded):
+                facts = no_show_facts(case, policy_for_case(case))
+                self.assertFalse(facts["timely_presence"])
+                self.assertFalse(facts["arrival_verified"])
+                self.assertFalse(facts["fee_eligible"])
+                self.assertFalse(facts["driver_no_show"])  # Missing verification is not proven absence.
+
+    def test_pre_booking_fix_cannot_corroborate_an_early_arrival(self):
+        case = self.case()
+        scheduled = datetime.fromisoformat(case["trip_data"]["scheduled_time"])
+        early = scheduled - timedelta(minutes=20)
+        case["trip_data"]["driver_arrival_time"] = early.isoformat()
+        case["app_events"] = [{"id": "BOOKING", "event_type": "booking_confirmed",
+                               "timestamp": (scheduled - timedelta(minutes=10)).isoformat()}]
+        pickup = case["trip_data"]["pickup_location"]
+        case["gps_telemetry"] = [{"id": "PRE-BOOKING", "timestamp": early.isoformat(),
+                                  "lat": pickup["lat"], "lng": pickup["lng"]}]
+        facts = no_show_facts(case, policy_for_case(case))
+        self.assertFalse(facts["timely_presence"])
+        self.assertFalse(facts["arrival_verified"])
+        review = build_review_input(case, policy_for_case(case))
+        for fact in review.facts:
+            if fact.name in ("timely_presence", "arrival_verified", "waited_minutes"):
+                self.assertIn("BOOKING", fact.evidence_ids)
+
+    def test_presence_window_boundaries_are_inclusive_and_order_independent(self):
+        for offset in (0, 5, 5 + 1 / 60):
+            case = self.case()
+            scheduled = datetime.fromisoformat(case["trip_data"]["scheduled_time"])
+            at = scheduled + timedelta(minutes=offset)
+            case["trip_data"]["driver_arrival_time"] = at.isoformat()
+            case["gps_telemetry"] = [{"id": "PICKUP", "timestamp": at.isoformat(),
+                "lat": case["trip_data"]["pickup_location"]["lat"],
+                "lng": case["trip_data"]["pickup_location"]["lng"]}]
+            case["gps_telemetry"].append({"id": "STALE", "timestamp": (scheduled - timedelta(hours=2)).isoformat(),
+                "lat": case["trip_data"]["pickup_location"]["lat"],
+                "lng": case["trip_data"]["pickup_location"]["lng"]})
+            for reverse in (False, True):
+                if reverse:
+                    case["gps_telemetry"].reverse()
+                with self.subTest(offset=offset, reverse=reverse):
+                    facts = no_show_facts(case, policy_for_case(case))
+                    self.assertTrue(facts["arrival_verified"])
+                    self.assertEqual(facts["timely_presence"], offset <= 5)
+
+    def test_missing_arrival_uses_booking_window_to_preserve_early_pickup(self):
+        case = self.case()
+        scheduled = datetime.fromisoformat(case["trip_data"]["scheduled_time"])
+        case["trip_data"]["driver_arrival_time"] = None
+        case["app_events"] = [{"id": "BOOKING", "event_type": "booking_confirmed",
+                               "timestamp": (scheduled - timedelta(minutes=10)).isoformat()}]
+        pickup = case["trip_data"]["pickup_location"]
+        case["gps_telemetry"] = [{"id": f"FIX-{offset}", "timestamp": (scheduled + timedelta(minutes=offset)).isoformat(),
+                                  "lat": pickup["lat"], "lng": pickup["lng"]} for offset in (-120, -2, 6)]
+        facts = no_show_facts(case, policy_for_case(case))
+        self.assertTrue(facts["timely_presence"])
+        self.assertTrue(facts["arrival_verified"])
+        self.assertFalse(facts["driver_no_show"])
+        self.assertEqual(facts["waited_minutes"], 8)
+        self.assertEqual(facts["goodwill_credit_cents"], 0)
+
     def test_current_or_matching_early_pickup_presence_rules_out_goodwill_conflict(self):
         for offset in (-2, 0):
             case = self.case()

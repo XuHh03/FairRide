@@ -8,6 +8,7 @@ from contracts import AdvocateResult
 from evidence import build_review_input
 from review_summary import build_decision_summary, build_review_report
 from workflow import run_review
+from claim_repair_fixtures import patch_response
 
 
 class PR6IntegrationTests(unittest.TestCase):
@@ -57,7 +58,7 @@ class PR6IntegrationTests(unittest.TestCase):
         corrected_fact_bad_citation = copy.deepcopy(wrong_citation)
         corrected_fact_bad_citation["claims"][0]["fact_assertions"] = [{"fact_id": "FACT-001", "value": 9}]
         for outputs, error in (([overlong, wrong_fact], "Fact assertion correction failed"),
-                               ([wrong_fact, overlong], "Schema correction failed"),
+                               ([wrong_fact, overlong], "Claim repair failed"),
                                ([wrong_fact, corrected_fact_bad_citation], "Citation correction failed")):
             with self.subTest(error=error):
                 class Client:
@@ -65,7 +66,7 @@ class PR6IntegrationTests(unittest.TestCase):
                     async def complete_json(self, instructions, payload):
                         output = outputs[self.calls]
                         self.calls += 1
-                        return copy.deepcopy(output), {}
+                        return patch_response(copy.deepcopy(output), payload), {}
                 client = Client()
                 with self.assertRaisesRegex(ValueError, error):
                     asyncio.run(ModelAgentBackend(client).advocate(review, "rider_advocate"))

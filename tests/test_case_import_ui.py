@@ -70,6 +70,8 @@ class CaseImportUITests(unittest.TestCase):
                     self.assertTrue(app.get("download_button"))
                     app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
                     self.assertFalse(app.exception)
+                    self.assertTrue(any("Unverified model argument" in item.value for item in app.caption))
+                    self.assertTrue(any("Unverified Judge analysis" in item.value for item in app.caption))
                     self.assertEqual(reviewer.call_count, 1)
                     app.sidebar.file_uploader[0].clear().run()
                     self.assertFalse(app.exception)

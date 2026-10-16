@@ -6,6 +6,7 @@ from agents import ModelAgentBackend
 from case_data import load_case, policy_for_case
 from contracts import AdvocateResult
 from evidence import build_review_input, claim_correction_feedback, validate_references
+from claim_repair_fixtures import patch_response
 
 
 class ClaimCorrectionFeedbackTests(unittest.TestCase):
@@ -99,7 +100,7 @@ class ClaimCorrectionFeedbackTests(unittest.TestCase):
                 self.payloads = []
             async def complete_json(self, instructions, payload):
                 self.payloads.append(copy.deepcopy(payload))
-                return copy.deepcopy(wrong if len(self.payloads) == 1 else corrected), {"total_tokens": 5}
+                return patch_response(copy.deepcopy(wrong if len(self.payloads) == 1 else corrected), payload), {"total_tokens": 5}
         client = Client()
         call = asyncio.run(ModelAgentBackend(client).advocate(self.review, "driver_advocate"))
         self.assertEqual(len(client.payloads), 2)
@@ -117,7 +118,7 @@ class ClaimCorrectionFeedbackTests(unittest.TestCase):
             calls = 0
             async def complete_json(self, instructions, payload):
                 self.calls += 1
-                return copy.deepcopy(output), {}
+                return patch_response(copy.deepcopy(output), payload), {}
         client = Client()
         with self.assertRaisesRegex(ValueError, "Prose consistency correction failed"):
             asyncio.run(ModelAgentBackend(client).advocate(self.review, "driver_advocate"))

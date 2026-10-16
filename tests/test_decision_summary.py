@@ -5,10 +5,11 @@ import unittest
 
 from agents import ExampleAgentBackend, ModelAgentBackend
 from case_data import load_case, policy_for_case
-from contracts import AdvocateResult, JudgeResult
+from contracts import AdvocateResult, JudgeResult, WorkflowResult
 from evidence import build_evidence_index, build_policy_index, build_review_input, fact_assertion_issues
 from review_summary import build_decision_summary, build_review_report
 from workflow import run_review
+from claim_repair_fixtures import patch_response
 
 
 class DecisionSummaryTests(unittest.TestCase):
@@ -112,6 +113,71 @@ class DecisionSummaryTests(unittest.TestCase):
                 self.assertEqual(report["workflow"]["judge_result"]["explanation"], prose)
                 self.assertIn("not semantically certified", report["explanation_validation"])
 
+    def test_referral_explains_missing_pickup_verification_without_model_entitlements(self):
+        case = load_case("DISP-004")
+        case["gps_telemetry"] = []
+        policy = policy_for_case(case)
+        prose = "Give SGD 99 goodwill because contact is unresolved; the driver waited 99 minutes."
+        result = WorkflowResult(case_id="DISP-004", status="human_review", activity_log=[],
+            judge_result=JudgeResult(action="human_review", explanation=prose, confidence=0.5), validation_issues=[])
+        summary = build_decision_summary(case, policy, result)
+        self.assertIn("Driver arrival is not corroborated", summary["reason"])
+        self.assertNotIn(prose, json.dumps(summary))
+        self.assertNotIn("goodwill eligibility is unresolved", summary["reason"])
+        self.assertIn("No final refund or goodwill-credit amount has been decided", summary["reason"])
+        self.assertIsNone(summary["party_messages"])
+        self.assertIsNone(summary["refund_cents"])
+        self.assertIsNone(summary["goodwill_credit_cents"])
+        self.assertIsNone(result.final_explanation)
+        report = build_review_report(case, policy, result, "Live model")
+        self.assertEqual(report["summary"]["reason"], summary["reason"])
+        self.assertEqual(report["workflow"]["judge_result"]["explanation"], prose)
+
+    def test_policy_referrals_explain_the_computed_gate(self):
+        for case_id, expected in (("DISP-005", "route deviation above 2 km"),
+                                  ("DISP-012", "Historical traffic evidence is missing or conflicting")):
+            with self.subTest(case=case_id):
+                _, _, _, summary = self.review(case_id)
+                self.assertIn(expected, summary["reason"])
+                self.assertIn("No final refund or goodwill-credit amount has been decided", summary["reason"])
+
+    def test_justified_unnotified_referral_explains_the_undefined_formula(self):
+        case = load_case("DISP-011")
+        case["chat_logs"] = []
+        policy = policy_for_case(case)
+        result = run_review(case, policy, ExampleAgentBackend())
+        self.assertEqual(result.status, "human_review")
+        summary = build_decision_summary(case, policy, result)
+        self.assertIn("refund disposition/formula requires human review", summary["reason"])
+        self.assertIsNone(summary["refund_cents"])
+
+    def test_referral_without_recorded_gate_does_not_invent_a_reason(self):
+        case = load_case("DISP-004")
+        result = WorkflowResult(case_id="DISP-004", status="human_review", activity_log=[],
+            judge_result=JudgeResult(action="human_review", explanation="Invented safety incident."), validation_issues=[])
+        summary = build_decision_summary(case, policy_for_case(case), result)
+        self.assertIn("must assess the case", summary["reason"])
+        self.assertNotIn("safety", summary["reason"])
+        self.assertNotIn("missing", summary["reason"])
+
+    def test_confidence_referral_explains_threshold_without_using_model_prose(self):
+        case = load_case("DISP-010")
+        for confidence in (0.5, None):
+            result = WorkflowResult(case_id="DISP-010", status="human_review", activity_log=[],
+                judge_result=JudgeResult(action="human_review", explanation="Refund everything.", confidence=confidence),
+                mandatory_escalation=True, validation_issues=[])
+            with self.subTest(confidence=confidence):
+                summary = build_decision_summary(case, policy_for_case(case), result)
+                self.assertIn("confidence must be at least 80%", summary["reason"])
+                self.assertNotIn("Refund everything", summary["reason"])
+
+    def test_failed_review_does_not_get_an_evidence_referral_explanation(self):
+        case, policy, result, _ = self.review("DISP-012")
+        result.failure_category = "validation"
+        summary = build_decision_summary(case, policy, result)
+        self.assertEqual(summary["reason"], "No validated decision was issued because the review failed.")
+        self.assertNotIn("A human reviewer must resolve", summary["reason"])
+
     def test_referrals_and_failures_never_display_calculated_component_as_refund(self):
         for case_id in ("DISP-005", "DISP-008", "DISP-009", "DISP-012"):
             with self.subTest(case=case_id):
@@ -174,7 +240,7 @@ class FactAssertionTests(unittest.TestCase):
                                   else payload["schema_correction"]["required_fact_assertions"])
                     target = output if role == "judge" else output["claims"][0]
                     target["fact_assertions"] = assertions
-                    return output, {"total_tokens": 5}
+                    return patch_response(output, payload), {"total_tokens": 5}
             client = Client()
             backend = ModelAgentBackend(client)
             if role == "judge":
@@ -208,7 +274,7 @@ class FactAssertionTests(unittest.TestCase):
                 output["claims"][0]["fact_assertions"] = ([{"fact_id": "FACT-005", "value": 500},
                     {"fact_id": "FACT-011", "value": False}] if len(self.payloads) == 1
                     else payload["schema_correction"]["required_fact_assertions"])
-                return output, {}
+                return patch_response(output, payload), {}
         client = Client()
         call = asyncio.run(ModelAgentBackend(client).advocate(review, "rider_advocate"))
         self.assertEqual(call.result.claims[0].fact_assertions[0].value, 0)
@@ -289,7 +355,7 @@ class FactAssertionTests(unittest.TestCase):
 
             async def complete_json(self, instructions, payload):
                 self.calls += 1
-                return output, {}
+                return patch_response(copy.deepcopy(output), payload), {}
 
         client = Client()
         with self.assertRaisesRegex(ValueError, "Fact assertion correction failed"):
@@ -309,7 +375,7 @@ class FactAssertionTests(unittest.TestCase):
                 response = copy.deepcopy(output)
                 if self.calls == 1:
                     response["claims"][0]["fact_assertions"] = [{"fact_id": "FACT-001", "value": 8}]
-                return response, {}
+                return patch_response(response, payload), {}
 
         client = Client()
         with self.assertRaisesRegex(ValueError, "must retain FACT-001"):

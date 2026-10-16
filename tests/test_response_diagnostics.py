@@ -9,6 +9,7 @@ from contracts import AdvocateResult
 from evidence import build_review_input
 from review_summary import build_review_report
 from workflow import run_review
+from claim_repair_fixtures import patch_response
 
 
 class ResponseDiagnosticsTests(unittest.TestCase):
@@ -26,7 +27,7 @@ class ResponseDiagnosticsTests(unittest.TestCase):
                 self.calls += 1
                 if isinstance(value, Exception):
                     raise value
-                return copy.deepcopy(value), {"total_tokens": 5}
+                return patch_response(copy.deepcopy(value), payload), {"total_tokens": 5}
         return Client()
 
     def wrong_fact(self, role="driver_advocate"):
@@ -46,7 +47,8 @@ class ResponseDiagnosticsTests(unittest.TestCase):
         self.assertEqual(diagnostic["actor"], "driver_advocate")
         first, second = diagnostic["attempts"]
         self.assertEqual(first["response"], initial)
-        self.assertEqual(second["response"], repaired)
+        self.assertEqual(second["response"], {"patches": [{"section": "claims", "index": 0,
+                                                         "replacement": repaired["claims"][0]}]})
         self.assertIn("must equal 9", first["validation_errors"][0])
         self.assertIn("must retain FACT-001", second["validation_errors"][0])
         self.assertEqual(second["required_fact_assertions"], [{"fact_id": "FACT-001", "value": 9}])
@@ -109,7 +111,7 @@ class ResponseDiagnosticsTests(unittest.TestCase):
             async def complete_json(self, instructions, payload):
                 if "rider_advocate" in instructions:
                     self.rider_calls += 1
-                    return copy.deepcopy(initial if self.rider_calls == 1 else repaired), {"total_tokens": 5}
+                    return patch_response(copy.deepcopy(initial if self.rider_calls == 1 else repaired), payload), {"total_tokens": 5}
                 return copy.deepcopy(examples["driver_advocate"]), {"total_tokens": 7}
         result = run_review(self.case, self.policy, ModelAgentBackend(Client()))
         self.assertEqual(result.failure_category, "validation")
@@ -135,7 +137,7 @@ class ResponseDiagnosticsTests(unittest.TestCase):
                     return copy.deepcopy(examples["judge_final_ruling"]), {}
                 if "rider_advocate" in instructions:
                     self.rider_calls += 1
-                    return copy.deepcopy(initial if self.rider_calls == 1 else corrected), {}
+                    return patch_response(copy.deepcopy(initial if self.rider_calls == 1 else corrected), payload), {}
                 return copy.deepcopy(examples["driver_advocate"]), {}
         result = run_review(self.case, self.policy, ModelAgentBackend(Client()))
         self.assertEqual(result.status, "completed")

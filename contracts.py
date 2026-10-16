@@ -102,6 +102,16 @@ class AdvocateResult(Contract):
     unanswered_questions: list[str]
 
 
+class ClaimPatch(Contract):
+    section: Literal["claims", "counterpoints"]
+    index: int = Field(ge=0, strict=True)
+    replacement: Claim | None = Field(description="Corrected claim, or null to explicitly withdraw this claim.")
+
+
+class AdvocateRepair(Contract):
+    patches: list[ClaimPatch] = Field(min_length=1)
+
+
 class ArgumentFinding(Contract):
     section: Literal["claims", "counterpoints"]
     index: int = Field(ge=0, strict=True)
