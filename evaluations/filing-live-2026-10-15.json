@@ -1,0 +1,5086 @@
+{
+  "tested_commit": "f140733303bc749c5e70b01999995624175e2177",
+  "started_at": "2026-10-15T12:37:11.089676+00:00",
+  "model": "qwen3.6:35b",
+  "argument_support_check": false,
+  "runs_per_case": 2,
+  "cases": [
+    {
+      "case_id": "DISP-004",
+      "run": 1,
+      "passed": true,
+      "checks": {
+        "completed_without_failure": true,
+        "ruling": true,
+        "refund": true,
+        "goodwill": true,
+        "basis": true,
+        "confidence_present": true,
+        "validated_final": true,
+        "rider_advocate": true,
+        "driver_advocate": true,
+        "dashboard": true
+      },
+      "elapsed_seconds": 15.56,
+      "progress": [
+        "Preparing evidence and checking policy",
+        "Rider and Driver Advocates are gathering evidence",
+        "Rider Advocate: retrieving evidence (round 1/3)",
+        "Driver Advocate: retrieving evidence (round 1/3)",
+        "Rider Advocate: retrieving evidence (round 2/3)",
+        "Driver Advocate: evidence retrieved; building its argument",
+        "Rider Advocate: evidence retrieved; building its argument",
+        "Rider Advocate finished its evidence analysis",
+        "Driver Advocate finished its evidence analysis",
+        "Judge is reviewing initial arguments",
+        "Finalizing: validating citations, policy and amounts",
+        "Review complete"
+      ],
+      "reported_tokens": 29393,
+      "dashboard": {
+        "passed": true,
+        "source_label": "Live model",
+        "displayed_retrieval_events": 3,
+        "recipient_tabs_and_confidence": true,
+        "extra_model_calls": 0
+      },
+      "review_report": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-15T12:37:26.655536+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "DISP-004",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Retain the charge",
+          "refund_cents": 0,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00.",
+          "party_messages": {
+            "rider": {
+              "action": "Retain your cancellation fee; recommended rider refund: SGD 0.00.",
+              "explanation": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00."
+            },
+            "driver": {
+              "action": "Retain the rider's cancellation fee; recommended rider refund: SGD 0.00.",
+              "explanation": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Five physical minutes at pickup after scheduled time",
+              "observation": "9 min: 2026-09-25T09:00:00+08:00 to 2026-09-25T09:09:00+08:00",
+              "status": "met",
+              "fact_ids": [
+                "FACT-001",
+                "FACT-006",
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Pickup presence corroborated",
+              "observation": "GPS corroboration present",
+              "status": "met",
+              "fact_ids": [
+                "FACT-009"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Arrival by scheduled pickup + 5 minutes (inclusive)",
+              "observation": "Timely pickup presence recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-008",
+                "FACT-010"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.4"
+              ]
+            },
+            {
+              "condition": "At least one driver message before cancellation",
+              "observation": "4 recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "CHAT-003",
+                "CHAT-004",
+                "CHAT-005",
+                "CHAT-006",
+                "CHAT-007",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003",
+                "EVENT-004",
+                "EVENT-005",
+                "EVENT-006",
+                "EVENT-007",
+                "EVENT-008",
+                "EVENT-009",
+                "EVENT-010"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            },
+            {
+              "condition": "At least one driver call attempt before cancellation",
+              "observation": "2 recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-004"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "CHAT-003",
+                "CHAT-004",
+                "CHAT-005",
+                "CHAT-006",
+                "CHAT-007",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003",
+                "EVENT-004",
+                "EVENT-005",
+                "EVENT-006",
+                "EVENT-007",
+                "EVENT-008",
+                "EVENT-009",
+                "EVENT-010"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Counted pickup wait",
+              "value": 9.0,
+              "unit": "minutes",
+              "formula": "2026-09-25T09:00:00+08:00 → 2026-09-25T09:09:00+08:00 = 9 min. Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero.",
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "event": "Recorded driver arrival",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:00+08:00",
+              "event": "Scheduled pickup",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:00+08:00",
+              "event": "Counted wait starts",
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "event": "Driver · call",
+              "evidence_ids": [
+                "CHAT-002"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "event": "Driver called rider",
+              "evidence_ids": [
+                "EVENT-006"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:01:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-003"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "event": "Driver · call",
+              "evidence_ids": [
+                "CHAT-004"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "event": "Driver called rider",
+              "evidence_ids": [
+                "EVENT-007"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:05:30+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-005"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:08:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-006"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event": "Cancellation",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event": "Counted wait ends (cancellation or GPS departure)",
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event": "System · system",
+              "evidence_ids": [
+                "CHAT-007"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 9.0,
+            "name": "waited_minutes",
+            "unit": "minutes",
+            "formula": "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": true,
+            "name": "fee_eligible",
+            "unit": "boolean",
+            "formula": "pickup presence AND five-minute wait AND message AND call AND timely arrival",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.3",
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 4,
+            "name": "message_count",
+            "unit": "count",
+            "formula": "driver messages before cancellation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 2,
+            "name": "call_count",
+            "unit": "count",
+            "formula": "unique driver call attempts before cancellation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": 0,
+            "name": "goodwill_credit_cents",
+            "unit": "SGD cents",
+            "formula": "500 if driver no-show and no contact; separate from refund",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": "2026-09-25T09:00:00+08:00",
+            "name": "wait_start_time",
+            "unit": "ISO timestamp",
+            "formula": "max(scheduled pickup, available recorded or GPS-corroborated arrival)",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": "2026-09-25T09:09:00+08:00",
+            "name": "wait_end_time",
+            "unit": "ISO timestamp",
+            "formula": "earlier of cancellation and first subsequent GPS departure",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-008",
+            "value": true,
+            "name": "timely_presence",
+            "unit": "boolean",
+            "formula": "pickup GPS presence by scheduled pickup plus five minutes, inclusive",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-009",
+            "value": true,
+            "name": "arrival_verified",
+            "unit": "boolean",
+            "formula": "arrival corroborated by pickup GPS before cancellation",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-010",
+            "value": false,
+            "name": "driver_no_show",
+            "unit": "boolean",
+            "formula": "verified driver no-show under the five-minute arrival condition",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "TICKET-001",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "DISP-004",
+              "trip_id": "TRIP-2026-10587",
+              "filed_by": "rider",
+              "dispute_type": "no_show_charge",
+              "description": "I was charged a cancellation fee. Please check whether the driver met the waiting and contact requirements.",
+              "filed_at": "2026-09-25T09:30:00+08:00",
+              "status": "open"
+            }
+          },
+          {
+            "id": "TRIP-001",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "TRIP-2026-10587",
+              "rider_id": "R-8841",
+              "driver_id": "D-3340",
+              "pickup_location": {
+                "name": "Grand Hyatt Singapore, Main Driveway Taxi Stand",
+                "lat": 1.2959,
+                "lng": 103.8557
+              },
+              "dropoff_location": {
+                "name": "Singapore Expo",
+                "lat": 1.3185,
+                "lng": 103.9619
+              },
+              "scheduled_time": "2026-09-25T09:00:00+08:00",
+              "driver_arrival_time": "2026-09-25T08:57:00+08:00",
+              "driver_wait_start": "2026-09-25T08:57:00+08:00",
+              "cancellation_time": "2026-09-25T09:09:00+08:00",
+              "cancellation_fee": 5.0,
+              "cancellation_reason": "rider_no_show"
+            }
+          },
+          {
+            "id": "GPS-001",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T08:50:00+08:00",
+              "lat": 1.301,
+              "lng": 103.858,
+              "speed_kmh": 40,
+              "status": "en_route"
+            }
+          },
+          {
+            "id": "GPS-002",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T08:54:00+08:00",
+              "lat": 1.298,
+              "lng": 103.8565,
+              "speed_kmh": 25,
+              "status": "en_route"
+            }
+          },
+          {
+            "id": "GPS-003",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "arrived"
+            }
+          },
+          {
+            "id": "GPS-004",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:00:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "GPS-005",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:03:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "GPS-006",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:06:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "GPS-007",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "cancelled"
+            }
+          },
+          {
+            "id": "CHAT-001",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "I've arrived at the Grand Hyatt main driveway taxi stand. Silver Hyundai Sonata, plate SGP 3301 H."
+            }
+          },
+          {
+            "id": "CHAT-002",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "sender": "driver",
+              "type": "call",
+              "content": "Outgoing call to rider — not answered (rang 25s, no response)."
+            }
+          },
+          {
+            "id": "CHAT-003",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:01:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "Hi, I'm at the main driveway taxi stand. Please come down when you're ready."
+            }
+          },
+          {
+            "id": "CHAT-004",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "sender": "driver",
+              "type": "call",
+              "content": "Second outgoing call to rider — not answered (rang 20s, no response)."
+            }
+          },
+          {
+            "id": "CHAT-005",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:05:30+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "I've been waiting 8 minutes. I'll have to cancel if you don't arrive soon."
+            }
+          },
+          {
+            "id": "CHAT-006",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:08:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "Sorry, I've waited long enough. Cancelling the trip."
+            }
+          },
+          {
+            "id": "CHAT-007",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "sender": "system",
+              "type": "system",
+              "content": "Trip cancelled by driver. Reason: rider_no_show. Cancellation fee of $5.00 applied."
+            }
+          },
+          {
+            "id": "EVENT-001",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:52:00+08:00",
+              "event_type": "booking_confirmed",
+              "details": "Rider R-8841 booked trip TRIP-2026-10587 from Grand Hyatt Singapore to Singapore Expo. Scheduled pickup 09:00."
+            }
+          },
+          {
+            "id": "EVENT-002",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:52:10+08:00",
+              "event_type": "driver_assigned",
+              "details": "Driver D-3340 (Wong Lai Fun, Hyundai Sonata SGP 3301 H) assigned. ETA 5 min."
+            }
+          },
+          {
+            "id": "EVENT-003",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "event_type": "driver_arrived",
+              "details": "Driver GPS within 5m of pickup point (Grand Hyatt main driveway). Speed 0 km/h. Auto-arrival confirmed."
+            }
+          },
+          {
+            "id": "EVENT-004",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:57:05+08:00",
+              "event_type": "rider_notified",
+              "details": "Push notification + in-app alert sent to rider: 'Your driver has arrived.'"
+            }
+          },
+          {
+            "id": "EVENT-005",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:57:10+08:00",
+              "event_type": "wait_timer_started",
+              "details": "Free wait timer started. 5 min free wait period ends at 09:02. No-show threshold at 09:05 (8 min)."
+            }
+          },
+          {
+            "id": "EVENT-006",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "event_type": "driver_called_rider",
+              "details": "Driver initiated in-app call to rider. Call rang 25s, no answer."
+            }
+          },
+          {
+            "id": "EVENT-007",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "event_type": "driver_called_rider",
+              "details": "Driver initiated second in-app call to rider. Call rang 20s, no answer."
+            }
+          },
+          {
+            "id": "EVENT-008",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:05:00+08:00",
+              "event_type": "no_show_threshold_reached",
+              "details": "No-show time condition met. Driver waited 8 minutes (08:57 to 09:05). Cancellation fee now applicable per policy."
+            }
+          },
+          {
+            "id": "EVENT-009",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event_type": "cancellation_fee_applied",
+              "details": "Cancellation fee of $5.00 charged to rider payment method (credit card). Total driver wait: 12 minutes."
+            }
+          },
+          {
+            "id": "EVENT-010",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:09:05+08:00",
+              "event_type": "driver_released",
+              "details": "Driver D-3340 released from trip. Trip status: cancelled (rider_no_show)."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_no_show",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "no_show_charge",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-2.1",
+              "text": "Section 2.1: Five-minute free wait from scheduled pickup time. Early arrival earns no pre-schedule credit. Implementation interpretation: a late driver must also spend five physical minutes at pickup after arrival."
+            },
+            {
+              "id": "POLICY-2.2",
+              "text": "Section 2.2: A valid driver-cancelled rider no-show incurs SGD 5.00, transferred to the driver as compensation."
+            },
+            {
+              "id": "POLICY-2.3",
+              "text": "Section 2.3: Before cancellation, driver must send at least one in-app chat message AND attempt at least one in-app phone call. Failure of either obligation voids the fee."
+            },
+            {
+              "id": "POLICY-2.4",
+              "text": "Section 2.4: Driver must arrive by scheduled pickup plus 5 minutes. Rider may cancel at no charge when driver fails this arrival condition. Driver no-show plus no contact qualifies for a separate SGD 5 goodwill credit."
+            },
+            {
+              "id": "POLICY-2.5",
+              "text": "Section 2.5: At least 3 no-show cancellations within a rolling 30 days flag the rider for human account review; do not suspend accounts or infer fee validity from history."
+            },
+            {
+              "id": "POLICY-7.3",
+              "text": "Precedent 7.3, DISP-2026-0211: Driver waited 6 minutes but made no message or call. SGD 5 cancellation fee reversed. Relevant when contact obligations are missing; it is not the answer label for the current case."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": "scheduled_time",
+          "free_wait_time_min": 5,
+          "no_show_threshold_min": 5,
+          "cancellation_fee_after_wait": 5.0,
+          "tolerance_km": null,
+          "max_ai_deviation_km": null,
+          "refund_basis": "cancellation_fee"
+        },
+        "workflow": {
+          "case_id": "DISP-004",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "app_events",
+                  "chat_logs"
+                ],
+                "purpose": "To determine if the driver arrived within the scheduled time plus 5-minute tolerance and to verify if the driver sent at least one in-app chat message and attempted at least one in-app phone call before cancelling, as required by Policy 2.2 and 2.3.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1329,
+                  "total_tokens": 1436,
+                  "completion_tokens": 107
+                },
+                "record_ids": [
+                  "CHAT-001",
+                  "CHAT-002",
+                  "CHAT-003",
+                  "CHAT-004",
+                  "CHAT-005",
+                  "CHAT-006",
+                  "CHAT-007",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003",
+                  "EVENT-004",
+                  "EVENT-005",
+                  "EVENT-006",
+                  "EVENT-007",
+                  "EVENT-008",
+                  "EVENT-009",
+                  "EVENT-010"
+                ],
+                "duration_ms": 1270
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "app_events",
+                  "chat_logs",
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "Establish the scheduled pickup time, actual driver arrival time, and whether the driver waited the required 5 minutes. Verify if the driver sent at least one in-app chat message and attempted at least one in-app phone call before cancellation, as these are mandatory conditions for a valid no-show charge under policy.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1328,
+                  "total_tokens": 1454,
+                  "completion_tokens": 126
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "GPS-005",
+                  "GPS-006",
+                  "GPS-007",
+                  "CHAT-001",
+                  "CHAT-002",
+                  "CHAT-003",
+                  "CHAT-004",
+                  "CHAT-005",
+                  "CHAT-006",
+                  "CHAT-007",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003",
+                  "EVENT-004",
+                  "EVENT-005",
+                  "EVENT-006",
+                  "EVENT-007",
+                  "EVENT-008",
+                  "EVENT-009",
+                  "EVENT-010"
+                ],
+                "duration_ms": 1391
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "Verify the driver's physical presence at the pickup location for the required 5-minute free wait period to confirm the no-show condition was legitimately met after arrival.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2877,
+                  "total_tokens": 2962,
+                  "completion_tokens": 85
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "GPS-005",
+                  "GPS-006",
+                  "GPS-007"
+                ],
+                "duration_ms": 1223
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [],
+                  "counterpoints": [
+                    {
+                      "statement": "The driver satisfied all conditions for the cancellation fee: timely arrival by 09:00 (within the 5-minute tolerance), 9 minutes of waiting time, and required contacts (4 messages and 2 calls). FACT-002 confirms fee eligibility is true.",
+                      "evidence_ids": [
+                        "GPS-003",
+                        "GPS-007",
+                        "CHAT-001",
+                        "CHAT-002",
+                        "CHAT-003",
+                        "CHAT-004",
+                        "EVENT-008",
+                        "EVENT-009"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1",
+                        "POLICY-2.3",
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": true
+                        },
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 9.0
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 4
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 2
+                        },
+                        {
+                          "fact_id": "FACT-008",
+                          "value": true
+                        }
+                      ]
+                    }
+                  ],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 3207,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 6738,
+                  "completion_tokens": 371,
+                  "total_tokens": 7109
+                }
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [
+                    {
+                      "statement": "Driver arrived at the pickup location prior to the scheduled time, satisfying POLICY-2.4's strict arrival deadline. Verified GPS telemetry (GPS-003) confirms arrival at 08:57, which is three minutes ahead of the 09:00 schedule. Being early does not constitute a no-show.",
+                      "evidence_ids": [
+                        "GPS-003",
+                        "EVENT-003"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-008",
+                          "value": true
+                        },
+                        {
+                          "fact_id": "FACT-009",
+                          "value": true
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "Driver fulfilled all contact obligations required by POLICY-2.3 before cancellation, consisting of four messages and two unique call attempts. Specifically, messages were sent at 08:57 (CHAT-001) and 09:01 (CHAT-003), with calls attempted at 09:00 (CHAT-002) and 09:04 (CHAT-004). These efforts demonstrate active diligence to locate the rider.",
+                      "evidence_ids": [
+                        "CHAT-001",
+                        "CHAT-002",
+                        "CHAT-003",
+                        "CHAT-004"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 4
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 2
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver waited significantly longer than the mandatory threshold, totaling 9 minutes of presence at the pickup point (FACT-001), well exceeding the five-minute minimum required to invoke the cancellation fee. The cancellation occurred at 09:09 after 12 minutes of total waiting time, confirming rider no-show status.",
+                      "evidence_ids": [
+                        "TRIP-001",
+                        "GPS-003",
+                        "GPS-007"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1",
+                        "POLICY-2.2"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 9
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": "2026-09-25T09:00:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": "2026-09-25T09:09:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-002",
+                          "value": true
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 6476,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 6738,
+                  "completion_tokens": 781,
+                  "total_tokens": 7519
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "uphold_charge",
+                  "proposed_action": {
+                    "amount_cents": 0,
+                    "currency": "SGD",
+                    "refund_basis": "cancellation_fee",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The dispute is resolved by verifying the driver's compliance with the no-show requirements under Policy v2.1. \n\n1. **Timely Arrival (POLICY-2.4):** The driver arrived at 08:57, three minutes before the scheduled 09:00 pickup. This satisfies the condition of arriving within the 5-minute tolerance (scheduled time + 5 minutes). FACT-008 and FACT-009 confirm timely presence and arrival verification.\n\n2. **Wait Period (POLICY-2.1):** The driver waited until cancellation. Although the driver arrived early, the policy requires a five-minute free wait from the *scheduled* pickup time. The driver was present and waiting from 08:57 through 09:05 (when the 5-minute free window ended) and continued waiting until 09:09. The total elapsed time from scheduled pickup to cancellation is 9 minutes (FACT-001), satisfying the duration requirement.\n\n3. **Contact Obligations (POLICY-2.3):** The driver sent at least one message (CHAT-001 at 08:57, CHAT-003 at 09:01, etc.) and attempted at least one call (CHAT-002 at 09:00, CHAT-004 at 09:04) before cancelling. The data confirms 4 messages and 2 call attempts. This fulfills the mandatory contact requirements.\n\nSince all conditions (timely arrival, sufficient wait, and contact obligations) are met, the SGD 5 cancellation fee is valid. Precedent DISP-2026-0211 (POLICY-7.3) is cited for contrast: in that case, the fee was reversed due to *missing* contact obligations. Here, contacts were present, so the precedent confirms the necessity of those contacts but does not dictate reversal here.\n\nThe charge is upheld.",
+                  "evidence_ids": [
+                    "TRIP-001",
+                    "GPS-003",
+                    "CHAT-001",
+                    "CHAT-002",
+                    "CHAT-003",
+                    "CHAT-004",
+                    "CHAT-006",
+                    "EVENT-003",
+                    "EVENT-008",
+                    "EVENT-009"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.1",
+                    "POLICY-2.2",
+                    "POLICY-2.3",
+                    "POLICY-2.4",
+                    "POLICY-7.3"
+                  ],
+                  "confidence": 1.0,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-001",
+                      "value": 9.0
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 4
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 2
+                    },
+                    {
+                      "fact_id": "FACT-008",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-009",
+                      "value": true
+                    }
+                  ]
+                },
+                "duration_ms": 6701,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 8070,
+                  "completion_tokens": 843,
+                  "total_tokens": 8913
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 14577,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "uphold_charge",
+            "proposed_action": {
+              "amount_cents": 0,
+              "currency": "SGD",
+              "refund_basis": "cancellation_fee",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The dispute is resolved by verifying the driver's compliance with the no-show requirements under Policy v2.1. \n\n1. **Timely Arrival (POLICY-2.4):** The driver arrived at 08:57, three minutes before the scheduled 09:00 pickup. This satisfies the condition of arriving within the 5-minute tolerance (scheduled time + 5 minutes). FACT-008 and FACT-009 confirm timely presence and arrival verification.\n\n2. **Wait Period (POLICY-2.1):** The driver waited until cancellation. Although the driver arrived early, the policy requires a five-minute free wait from the *scheduled* pickup time. The driver was present and waiting from 08:57 through 09:05 (when the 5-minute free window ended) and continued waiting until 09:09. The total elapsed time from scheduled pickup to cancellation is 9 minutes (FACT-001), satisfying the duration requirement.\n\n3. **Contact Obligations (POLICY-2.3):** The driver sent at least one message (CHAT-001 at 08:57, CHAT-003 at 09:01, etc.) and attempted at least one call (CHAT-002 at 09:00, CHAT-004 at 09:04) before cancelling. The data confirms 4 messages and 2 call attempts. This fulfills the mandatory contact requirements.\n\nSince all conditions (timely arrival, sufficient wait, and contact obligations) are met, the SGD 5 cancellation fee is valid. Precedent DISP-2026-0211 (POLICY-7.3) is cited for contrast: in that case, the fee was reversed due to *missing* contact obligations. Here, contacts were present, so the precedent confirms the necessity of those contacts but does not dictate reversal here.\n\nThe charge is upheld.",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-003",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-006",
+              "EVENT-003",
+              "EVENT-008",
+              "EVENT-009"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.2",
+              "POLICY-2.3",
+              "POLICY-2.4",
+              "POLICY-7.3"
+            ],
+            "confidence": 1.0,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-001",
+                "value": 9.0
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": true
+              },
+              {
+                "fact_id": "FACT-003",
+                "value": 4
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 2
+              },
+              {
+                "fact_id": "FACT-008",
+                "value": true
+              },
+              {
+                "fact_id": "FACT-009",
+                "value": true
+              }
+            ]
+          },
+          "final_explanation": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "prose_findings": [],
+      "material_prose_error": false,
+      "grounded_explanation_consistent": true
+    },
+    {
+      "case_id": "DISP-004",
+      "run": 2,
+      "passed": true,
+      "checks": {
+        "completed_without_failure": true,
+        "ruling": true,
+        "refund": true,
+        "goodwill": true,
+        "basis": true,
+        "confidence_present": true,
+        "validated_final": true,
+        "rider_advocate": true,
+        "driver_advocate": true,
+        "dashboard": true
+      },
+      "elapsed_seconds": 16.68,
+      "progress": [
+        "Preparing evidence and checking policy",
+        "Rider and Driver Advocates are gathering evidence",
+        "Rider Advocate: retrieving evidence (round 1/3)",
+        "Driver Advocate: retrieving evidence (round 1/3)",
+        "Rider Advocate: retrieving evidence (round 2/3)",
+        "Driver Advocate: retrieving evidence (round 2/3)",
+        "Rider Advocate: evidence retrieved; building its argument",
+        "Driver Advocate: evidence retrieved; building its argument",
+        "Rider Advocate finished its evidence analysis",
+        "Driver Advocate finished its evidence analysis",
+        "Judge is reviewing initial arguments",
+        "Finalizing: validating citations, policy and amounts",
+        "Review complete"
+      ],
+      "reported_tokens": 33492,
+      "dashboard": {
+        "passed": true,
+        "source_label": "Live model",
+        "displayed_retrieval_events": 4,
+        "recipient_tabs_and_confidence": true,
+        "extra_model_calls": 0
+      },
+      "review_report": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-15T12:37:43.335305+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "DISP-004",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Retain the charge",
+          "refund_cents": 0,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00.",
+          "party_messages": {
+            "rider": {
+              "action": "Retain your cancellation fee; recommended rider refund: SGD 0.00.",
+              "explanation": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00."
+            },
+            "driver": {
+              "action": "Retain the rider's cancellation fee; recommended rider refund: SGD 0.00.",
+              "explanation": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Five physical minutes at pickup after scheduled time",
+              "observation": "9 min: 2026-09-25T09:00:00+08:00 to 2026-09-25T09:09:00+08:00",
+              "status": "met",
+              "fact_ids": [
+                "FACT-001",
+                "FACT-006",
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Pickup presence corroborated",
+              "observation": "GPS corroboration present",
+              "status": "met",
+              "fact_ids": [
+                "FACT-009"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Arrival by scheduled pickup + 5 minutes (inclusive)",
+              "observation": "Timely pickup presence recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-008",
+                "FACT-010"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.4"
+              ]
+            },
+            {
+              "condition": "At least one driver message before cancellation",
+              "observation": "4 recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "CHAT-003",
+                "CHAT-004",
+                "CHAT-005",
+                "CHAT-006",
+                "CHAT-007",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003",
+                "EVENT-004",
+                "EVENT-005",
+                "EVENT-006",
+                "EVENT-007",
+                "EVENT-008",
+                "EVENT-009",
+                "EVENT-010"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            },
+            {
+              "condition": "At least one driver call attempt before cancellation",
+              "observation": "2 recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-004"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "CHAT-003",
+                "CHAT-004",
+                "CHAT-005",
+                "CHAT-006",
+                "CHAT-007",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003",
+                "EVENT-004",
+                "EVENT-005",
+                "EVENT-006",
+                "EVENT-007",
+                "EVENT-008",
+                "EVENT-009",
+                "EVENT-010"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Counted pickup wait",
+              "value": 9.0,
+              "unit": "minutes",
+              "formula": "2026-09-25T09:00:00+08:00 → 2026-09-25T09:09:00+08:00 = 9 min. Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero.",
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "event": "Recorded driver arrival",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:00+08:00",
+              "event": "Scheduled pickup",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:00+08:00",
+              "event": "Counted wait starts",
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "event": "Driver · call",
+              "evidence_ids": [
+                "CHAT-002"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "event": "Driver called rider",
+              "evidence_ids": [
+                "EVENT-006"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:01:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-003"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "event": "Driver · call",
+              "evidence_ids": [
+                "CHAT-004"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "event": "Driver called rider",
+              "evidence_ids": [
+                "EVENT-007"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:05:30+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-005"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:08:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-006"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event": "Cancellation",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event": "Counted wait ends (cancellation or GPS departure)",
+              "evidence_ids": [
+                "TRIP-001",
+                "GPS-001",
+                "GPS-002",
+                "GPS-003",
+                "GPS-004",
+                "GPS-005",
+                "GPS-006",
+                "GPS-007"
+              ]
+            },
+            {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event": "System · system",
+              "evidence_ids": [
+                "CHAT-007"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 9.0,
+            "name": "waited_minutes",
+            "unit": "minutes",
+            "formula": "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": true,
+            "name": "fee_eligible",
+            "unit": "boolean",
+            "formula": "pickup presence AND five-minute wait AND message AND call AND timely arrival",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.3",
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 4,
+            "name": "message_count",
+            "unit": "count",
+            "formula": "driver messages before cancellation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 2,
+            "name": "call_count",
+            "unit": "count",
+            "formula": "unique driver call attempts before cancellation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": 0,
+            "name": "goodwill_credit_cents",
+            "unit": "SGD cents",
+            "formula": "500 if driver no-show and no contact; separate from refund",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007",
+              "CHAT-001",
+              "CHAT-002",
+              "CHAT-003",
+              "CHAT-004",
+              "CHAT-005",
+              "CHAT-006",
+              "CHAT-007",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "EVENT-004",
+              "EVENT-005",
+              "EVENT-006",
+              "EVENT-007",
+              "EVENT-008",
+              "EVENT-009",
+              "EVENT-010"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": "2026-09-25T09:00:00+08:00",
+            "name": "wait_start_time",
+            "unit": "ISO timestamp",
+            "formula": "max(scheduled pickup, available recorded or GPS-corroborated arrival)",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": "2026-09-25T09:09:00+08:00",
+            "name": "wait_end_time",
+            "unit": "ISO timestamp",
+            "formula": "earlier of cancellation and first subsequent GPS departure",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-008",
+            "value": true,
+            "name": "timely_presence",
+            "unit": "boolean",
+            "formula": "pickup GPS presence by scheduled pickup plus five minutes, inclusive",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-009",
+            "value": true,
+            "name": "arrival_verified",
+            "unit": "boolean",
+            "formula": "arrival corroborated by pickup GPS before cancellation",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-010",
+            "value": false,
+            "name": "driver_no_show",
+            "unit": "boolean",
+            "formula": "verified driver no-show under the five-minute arrival condition",
+            "evidence_ids": [
+              "TRIP-001",
+              "GPS-001",
+              "GPS-002",
+              "GPS-003",
+              "GPS-004",
+              "GPS-005",
+              "GPS-006",
+              "GPS-007"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "TICKET-001",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "DISP-004",
+              "trip_id": "TRIP-2026-10587",
+              "filed_by": "rider",
+              "dispute_type": "no_show_charge",
+              "description": "I was charged a cancellation fee. Please check whether the driver met the waiting and contact requirements.",
+              "filed_at": "2026-09-25T09:30:00+08:00",
+              "status": "open"
+            }
+          },
+          {
+            "id": "TRIP-001",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "TRIP-2026-10587",
+              "rider_id": "R-8841",
+              "driver_id": "D-3340",
+              "pickup_location": {
+                "name": "Grand Hyatt Singapore, Main Driveway Taxi Stand",
+                "lat": 1.2959,
+                "lng": 103.8557
+              },
+              "dropoff_location": {
+                "name": "Singapore Expo",
+                "lat": 1.3185,
+                "lng": 103.9619
+              },
+              "scheduled_time": "2026-09-25T09:00:00+08:00",
+              "driver_arrival_time": "2026-09-25T08:57:00+08:00",
+              "driver_wait_start": "2026-09-25T08:57:00+08:00",
+              "cancellation_time": "2026-09-25T09:09:00+08:00",
+              "cancellation_fee": 5.0,
+              "cancellation_reason": "rider_no_show"
+            }
+          },
+          {
+            "id": "GPS-001",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T08:50:00+08:00",
+              "lat": 1.301,
+              "lng": 103.858,
+              "speed_kmh": 40,
+              "status": "en_route"
+            }
+          },
+          {
+            "id": "GPS-002",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T08:54:00+08:00",
+              "lat": 1.298,
+              "lng": 103.8565,
+              "speed_kmh": 25,
+              "status": "en_route"
+            }
+          },
+          {
+            "id": "GPS-003",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "arrived"
+            }
+          },
+          {
+            "id": "GPS-004",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:00:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "GPS-005",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:03:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "GPS-006",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:06:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "GPS-007",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "lat": 1.2959,
+              "lng": 103.8557,
+              "speed_kmh": 0,
+              "status": "cancelled"
+            }
+          },
+          {
+            "id": "CHAT-001",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "I've arrived at the Grand Hyatt main driveway taxi stand. Silver Hyundai Sonata, plate SGP 3301 H."
+            }
+          },
+          {
+            "id": "CHAT-002",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "sender": "driver",
+              "type": "call",
+              "content": "Outgoing call to rider — not answered (rang 25s, no response)."
+            }
+          },
+          {
+            "id": "CHAT-003",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:01:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "Hi, I'm at the main driveway taxi stand. Please come down when you're ready."
+            }
+          },
+          {
+            "id": "CHAT-004",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "sender": "driver",
+              "type": "call",
+              "content": "Second outgoing call to rider — not answered (rang 20s, no response)."
+            }
+          },
+          {
+            "id": "CHAT-005",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:05:30+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "I've been waiting 8 minutes. I'll have to cancel if you don't arrive soon."
+            }
+          },
+          {
+            "id": "CHAT-006",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:08:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "Sorry, I've waited long enough. Cancelling the trip."
+            }
+          },
+          {
+            "id": "CHAT-007",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "sender": "system",
+              "type": "system",
+              "content": "Trip cancelled by driver. Reason: rider_no_show. Cancellation fee of $5.00 applied."
+            }
+          },
+          {
+            "id": "EVENT-001",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:52:00+08:00",
+              "event_type": "booking_confirmed",
+              "details": "Rider R-8841 booked trip TRIP-2026-10587 from Grand Hyatt Singapore to Singapore Expo. Scheduled pickup 09:00."
+            }
+          },
+          {
+            "id": "EVENT-002",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:52:10+08:00",
+              "event_type": "driver_assigned",
+              "details": "Driver D-3340 (Wong Lai Fun, Hyundai Sonata SGP 3301 H) assigned. ETA 5 min."
+            }
+          },
+          {
+            "id": "EVENT-003",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:57:00+08:00",
+              "event_type": "driver_arrived",
+              "details": "Driver GPS within 5m of pickup point (Grand Hyatt main driveway). Speed 0 km/h. Auto-arrival confirmed."
+            }
+          },
+          {
+            "id": "EVENT-004",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:57:05+08:00",
+              "event_type": "rider_notified",
+              "details": "Push notification + in-app alert sent to rider: 'Your driver has arrived.'"
+            }
+          },
+          {
+            "id": "EVENT-005",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T08:57:10+08:00",
+              "event_type": "wait_timer_started",
+              "details": "Free wait timer started. 5 min free wait period ends at 09:02. No-show threshold at 09:05 (8 min)."
+            }
+          },
+          {
+            "id": "EVENT-006",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:00:30+08:00",
+              "event_type": "driver_called_rider",
+              "details": "Driver initiated in-app call to rider. Call rang 25s, no answer."
+            }
+          },
+          {
+            "id": "EVENT-007",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:04:00+08:00",
+              "event_type": "driver_called_rider",
+              "details": "Driver initiated second in-app call to rider. Call rang 20s, no answer."
+            }
+          },
+          {
+            "id": "EVENT-008",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:05:00+08:00",
+              "event_type": "no_show_threshold_reached",
+              "details": "No-show time condition met. Driver waited 8 minutes (08:57 to 09:05). Cancellation fee now applicable per policy."
+            }
+          },
+          {
+            "id": "EVENT-009",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:09:00+08:00",
+              "event_type": "cancellation_fee_applied",
+              "details": "Cancellation fee of $5.00 charged to rider payment method (credit card). Total driver wait: 12 minutes."
+            }
+          },
+          {
+            "id": "EVENT-010",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-25T09:09:05+08:00",
+              "event_type": "driver_released",
+              "details": "Driver D-3340 released from trip. Trip status: cancelled (rider_no_show)."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_no_show",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "no_show_charge",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-2.1",
+              "text": "Section 2.1: Five-minute free wait from scheduled pickup time. Early arrival earns no pre-schedule credit. Implementation interpretation: a late driver must also spend five physical minutes at pickup after arrival."
+            },
+            {
+              "id": "POLICY-2.2",
+              "text": "Section 2.2: A valid driver-cancelled rider no-show incurs SGD 5.00, transferred to the driver as compensation."
+            },
+            {
+              "id": "POLICY-2.3",
+              "text": "Section 2.3: Before cancellation, driver must send at least one in-app chat message AND attempt at least one in-app phone call. Failure of either obligation voids the fee."
+            },
+            {
+              "id": "POLICY-2.4",
+              "text": "Section 2.4: Driver must arrive by scheduled pickup plus 5 minutes. Rider may cancel at no charge when driver fails this arrival condition. Driver no-show plus no contact qualifies for a separate SGD 5 goodwill credit."
+            },
+            {
+              "id": "POLICY-2.5",
+              "text": "Section 2.5: At least 3 no-show cancellations within a rolling 30 days flag the rider for human account review; do not suspend accounts or infer fee validity from history."
+            },
+            {
+              "id": "POLICY-7.3",
+              "text": "Precedent 7.3, DISP-2026-0211: Driver waited 6 minutes but made no message or call. SGD 5 cancellation fee reversed. Relevant when contact obligations are missing; it is not the answer label for the current case."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": "scheduled_time",
+          "free_wait_time_min": 5,
+          "no_show_threshold_min": 5,
+          "cancellation_fee_after_wait": 5.0,
+          "tolerance_km": null,
+          "max_ai_deviation_km": null,
+          "refund_basis": "cancellation_fee"
+        },
+        "workflow": {
+          "case_id": "DISP-004",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "app_events",
+                  "chat_logs"
+                ],
+                "purpose": "Establish the driver's arrival time relative to the scheduled pickup and verify if the driver sent at least one in-app chat message and attempted one in-app phone call before cancellation, as required by Policy 2.3.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1329,
+                  "total_tokens": 1424,
+                  "completion_tokens": 95
+                },
+                "record_ids": [
+                  "CHAT-001",
+                  "CHAT-002",
+                  "CHAT-003",
+                  "CHAT-004",
+                  "CHAT-005",
+                  "CHAT-006",
+                  "CHAT-007",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003",
+                  "EVENT-004",
+                  "EVENT-005",
+                  "EVENT-006",
+                  "EVENT-007",
+                  "EVENT-008",
+                  "EVENT-009",
+                  "EVENT-010"
+                ],
+                "duration_ms": 944
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "app_events",
+                  "chat_logs"
+                ],
+                "purpose": "Establish the driver's arrival timestamp relative to the scheduled pickup time to determine if the 5-minute free wait period elapsed, and verify if the driver sent at least one in-app chat message and attempted at least one in-app phone call prior to cancellation, as required by Policy Section 2.3.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1328,
+                  "total_tokens": 1440,
+                  "completion_tokens": 112
+                },
+                "record_ids": [
+                  "CHAT-001",
+                  "CHAT-002",
+                  "CHAT-003",
+                  "CHAT-004",
+                  "CHAT-005",
+                  "CHAT-006",
+                  "CHAT-007",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003",
+                  "EVENT-004",
+                  "EVENT-005",
+                  "EVENT-006",
+                  "EVENT-007",
+                  "EVENT-008",
+                  "EVENT-009",
+                  "EVENT-010"
+                ],
+                "duration_ms": 1038
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "Verify the exact GPS coordinates of the driver at arrival to confirm presence at the Grand Hyatt main driveway and check trip metadata for any scheduled pickup time adjustments or specific location notes that might affect the 5-minute wait start time.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2877,
+                  "total_tokens": 2976,
+                  "completion_tokens": 99
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "GPS-005",
+                  "GPS-006",
+                  "GPS-007"
+                ],
+                "duration_ms": 1084
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-10587",
+                "sources": [
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "To verify the exact timestamp and duration of the driver's physical presence at the pickup location via GPS telemetry, and to confirm the official scheduled pickup time and cancellation timestamp from trip data. This is necessary to validate that the driver remained on-site for the full 5-minute free wait period plus additional time required to establish a no-show, and to ensure the arrival time matches the chat logs.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2876,
+                  "total_tokens": 3007,
+                  "completion_tokens": 131
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "GPS-005",
+                  "GPS-006",
+                  "GPS-007"
+                ],
+                "duration_ms": 1343
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The rider was charged a $5.00 cancellation fee for a rider no-show, which the rider disputes as invalid due to potential procedural failures by the driver.",
+                      "evidence_ids": [
+                        "TICKET-001",
+                        "TRIP-001"
+                      ],
+                      "policy_ids": [],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": true
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver satisfied the arrival condition, as confirmed by the system fact that timely presence was established within the five-minute window.",
+                      "evidence_ids": [
+                        "GPS-003",
+                        "EVENT-003"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-008",
+                          "value": true
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver satisfied the waiting period requirement, with a computed wait of 9 minutes exceeding the 5-minute threshold, satisfying the presence and time conditions for a no-show charge.",
+                      "evidence_ids": [
+                        "GPS-003",
+                        "GPS-007",
+                        "TRIP-001"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 9.0
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": "2026-09-25T09:00:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": "2026-09-25T09:09:00+08:00"
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver satisfied the contact obligations by sending at least one message and attempting at least one call before cancellation, which are verified by the system facts.",
+                      "evidence_ids": [
+                        "CHAT-001",
+                        "CHAT-002",
+                        "CHAT-003",
+                        "CHAT-004"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 4
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 2
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "Conceding that the provided evidence and computed facts indicate all eligibility conditions for the no-show fee were met, the rider advocate acknowledges the fee's validity under the supplied policy application.",
+                      "evidence_ids": [],
+                      "policy_ids": [
+                        "POLICY-2.2"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": true
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 6779,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 6738,
+                  "completion_tokens": 810,
+                  "total_tokens": 7548
+                }
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver satisfied the timely arrival requirement under POLICY-2.4 by physically arriving at the pickup point before the 5-minute post-schedule deadline, as verified by GPS telemetry showing zero speed and correct coordinates.",
+                      "evidence_ids": [
+                        "GPS-003",
+                        "GPS-004",
+                        "TRIP-001",
+                        "EVENT-003"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-008",
+                          "value": true
+                        },
+                        {
+                          "fact_id": "FACT-009",
+                          "value": true
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver fulfilled all contact obligations under POLICY-2.3 by sending multiple chat messages and attempting two unique phone calls prior to cancellation, ensuring the no-show fee is valid.",
+                      "evidence_ids": [
+                        "CHAT-001",
+                        "CHAT-002",
+                        "CHAT-003",
+                        "CHAT-004",
+                        "CHAT-005",
+                        "CHAT-006",
+                        "EVENT-006",
+                        "EVENT-007"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 4
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 2
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver completed the required waiting period, accumulating 9 minutes of verified wait time which exceeds the threshold, making the rider eligible for the compensation fee under POLICY-2.2.",
+                      "evidence_ids": [
+                        "GPS-003",
+                        "GPS-004",
+                        "GPS-005",
+                        "GPS-006",
+                        "GPS-007",
+                        "TRIP-001",
+                        "EVENT-008",
+                        "EVENT-009"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1",
+                        "POLICY-2.2"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 9.0
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": "2026-09-25T09:00:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": "2026-09-25T09:09:00+08:00"
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The combination of verified arrival, adequate wait time, and proper contact confirms the fee eligibility, resulting in a valid no-show charge for the driver.",
+                      "evidence_ids": [
+                        "TRIP-001",
+                        "GPS-001",
+                        "GPS-002",
+                        "GPS-003",
+                        "GPS-004",
+                        "GPS-005",
+                        "GPS-006",
+                        "GPS-007",
+                        "CHAT-001",
+                        "CHAT-002",
+                        "CHAT-003",
+                        "CHAT-004",
+                        "CHAT-005",
+                        "CHAT-006",
+                        "CHAT-007",
+                        "EVENT-001",
+                        "EVENT-002",
+                        "EVENT-003",
+                        "EVENT-004",
+                        "EVENT-005",
+                        "EVENT-006",
+                        "EVENT-007",
+                        "EVENT-008",
+                        "EVENT-009",
+                        "EVENT-010"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1",
+                        "POLICY-2.2",
+                        "POLICY-2.3",
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": true
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 8495,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 6738,
+                  "completion_tokens": 1104,
+                  "total_tokens": 7842
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "uphold_charge",
+                  "proposed_action": {
+                    "amount_cents": 0,
+                    "currency": "SGD",
+                    "refund_basis": "cancellation_fee",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The driver's cancellation of the trip and application of the rider no-show fee is valid. POLICY-2.4 requires the driver to arrive within 5 minutes of the scheduled time; GPS telemetry (GPS-003) and system events (EVENT-003) confirm the driver arrived at 08:57, before the 09:00 scheduled time, satisfying this condition. POLICY-2.1 establishes a 5-minute free wait period starting from the scheduled time (09:00). The driver waited until 09:09 (cancellation), which is 9 minutes of wait time, exceeding the threshold. POLICY-2.3 mandates at least one chat message and one phone call attempt before cancellation. The driver sent multiple messages (CHAT-001 through CHAT-006) and made two call attempts (CHAT-002, CHAT-004). All eligibility conditions for a valid no-show charge under POLICY-2.2 are met. POLICY-7.3 (DISP-2026-0211) supports this by distinguishing cases where contact is missing; here, contact was present. No refunds are warranted.",
+                  "evidence_ids": [
+                    "GPS-003",
+                    "CHAT-001",
+                    "CHAT-002",
+                    "TRIP-001",
+                    "EVENT-008"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.1",
+                    "POLICY-2.2",
+                    "POLICY-2.3",
+                    "POLICY-2.4",
+                    "POLICY-7.3"
+                  ],
+                  "confidence": 1.0,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-001",
+                      "value": 9.0
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 4
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 2
+                    },
+                    {
+                      "fact_id": "FACT-008",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-009",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-010",
+                      "value": false
+                    }
+                  ]
+                },
+                "duration_ms": 5423,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 8598,
+                  "completion_tokens": 657,
+                  "total_tokens": 9255
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 16301,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "uphold_charge",
+            "proposed_action": {
+              "amount_cents": 0,
+              "currency": "SGD",
+              "refund_basis": "cancellation_fee",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The driver's cancellation of the trip and application of the rider no-show fee is valid. POLICY-2.4 requires the driver to arrive within 5 minutes of the scheduled time; GPS telemetry (GPS-003) and system events (EVENT-003) confirm the driver arrived at 08:57, before the 09:00 scheduled time, satisfying this condition. POLICY-2.1 establishes a 5-minute free wait period starting from the scheduled time (09:00). The driver waited until 09:09 (cancellation), which is 9 minutes of wait time, exceeding the threshold. POLICY-2.3 mandates at least one chat message and one phone call attempt before cancellation. The driver sent multiple messages (CHAT-001 through CHAT-006) and made two call attempts (CHAT-002, CHAT-004). All eligibility conditions for a valid no-show charge under POLICY-2.2 are met. POLICY-7.3 (DISP-2026-0211) supports this by distinguishing cases where contact is missing; here, contact was present. No refunds are warranted.",
+            "evidence_ids": [
+              "GPS-003",
+              "CHAT-001",
+              "CHAT-002",
+              "TRIP-001",
+              "EVENT-008"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.2",
+              "POLICY-2.3",
+              "POLICY-2.4",
+              "POLICY-7.3"
+            ],
+            "confidence": 1.0,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-001",
+                "value": 9.0
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": true
+              },
+              {
+                "fact_id": "FACT-003",
+                "value": 4
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 2
+              },
+              {
+                "fact_id": "FACT-008",
+                "value": true
+              },
+              {
+                "fact_id": "FACT-009",
+                "value": true
+              },
+              {
+                "fact_id": "FACT-010",
+                "value": false
+              }
+            ]
+          },
+          "final_explanation": "The pickup records establish 9 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Both message and call contacts were recorded before cancellation. The five-minute wait and contact requirements are met; the cancellation fee is upheld under POLICY-2.1 and POLICY-2.3. Unlike precedent POLICY-7.3, both contacts were made. Recommended rider refund: SGD 0.00.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "prose_findings": [
+        {
+          "case_id": "DISP-004",
+          "run": 2,
+          "actor": "driver_advocate",
+          "event": "initial_argument",
+          "section": "claims",
+          "index": 2,
+          "quote": "making the rider eligible for the compensation fee under POLICY-2.2",
+          "severity": "material",
+          "issue": "POLICY-2.2 transfers a valid no-show cancellation fee to the driver, not the rider. Final outcome/refund was correct."
+        }
+      ],
+      "material_prose_error": true,
+      "grounded_explanation_consistent": true
+    },
+    {
+      "case_id": "DISP-010",
+      "run": 1,
+      "passed": true,
+      "checks": {
+        "completed_without_failure": true,
+        "ruling": true,
+        "refund": true,
+        "goodwill": true,
+        "basis": true,
+        "confidence_present": true,
+        "validated_final": true,
+        "rider_advocate": true,
+        "driver_advocate": true,
+        "dashboard": true
+      },
+      "elapsed_seconds": 18.14,
+      "progress": [
+        "Preparing evidence and checking policy",
+        "Rider and Driver Advocates are gathering evidence",
+        "Rider Advocate: retrieving evidence (round 1/3)",
+        "Driver Advocate: retrieving evidence (round 1/3)",
+        "Driver Advocate: retrieving evidence (round 2/3)",
+        "Rider Advocate: retrieving evidence (round 2/3)",
+        "Rider Advocate: evidence retrieved; building its argument",
+        "Driver Advocate: evidence retrieved; building its argument",
+        "Driver Advocate finished its evidence analysis",
+        "Rider Advocate finished its evidence analysis",
+        "Judge is reviewing initial arguments",
+        "Finalizing: validating citations, policy and amounts",
+        "Review complete"
+      ],
+      "reported_tokens": 33587,
+      "dashboard": {
+        "passed": true,
+        "source_label": "Live model",
+        "displayed_retrieval_events": 4,
+        "recipient_tabs_and_confidence": true,
+        "extra_model_calls": 0
+      },
+      "review_report": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-15T12:38:01.481025+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "DISP-010",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Refund the excess-distance component",
+          "refund_cents": 83,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83.",
+          "party_messages": {
+            "rider": {
+              "action": "Recommended refund: SGD 0.83 of your excess-distance fare.",
+              "explanation": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83."
+            },
+            "driver": {
+              "action": "Recommended refund: SGD 0.83 of the rider's excess-distance fare.",
+              "explanation": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Additional distance within 2 km AI limit",
+              "observation": "1.5 km (2 km inclusive)",
+              "status": "met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002"
+              ],
+              "policy_ids": [
+                "POLICY-6.2"
+              ]
+            },
+            {
+              "condition": "Additional distance within 1 km no-refund tolerance",
+              "observation": "1.5 km",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002"
+              ],
+              "policy_ids": [
+                "POLICY-1.3"
+              ]
+            },
+            {
+              "condition": "Historical traffic justification",
+              "observation": "Not supported by historical traffic",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-005"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003",
+                "ROUTE-001",
+                "ROUTE-002",
+                "TRAFFIC-001"
+              ],
+              "policy_ids": [
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "condition": "Rider informed before or at deviation",
+              "observation": "Not established",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-006"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003"
+              ],
+              "policy_ids": [
+                "POLICY-1.2",
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "condition": "Rider agreed before or at deviation",
+              "observation": "Not established",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003"
+              ],
+              "policy_ids": [
+                "POLICY-1.2",
+                "POLICY-1.4"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Additional distance",
+              "value": 1.5,
+              "unit": "km",
+              "formula": "8 km actual − 6.5 km planned = 1.5 km",
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002"
+              ],
+              "policy_ids": [
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "label": "Excess-distance fare component",
+              "value": 83,
+              "unit": "SGD cents",
+              "formula": "max(0, 1.5 km) × S$0.55/km = S$0.83 (rounded half up to cents). The 1 km tolerance is not deducted.",
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002",
+                "FARE-002"
+              ],
+              "policy_ids": [
+                "POLICY-1.3",
+                "POLICY-1.4"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-09-28T14:00:00+08:00",
+              "event": "Trip starts",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:02:00+08:00",
+              "event": "Route deviation detected",
+              "evidence_ids": [
+                "EVENT-002"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:03:00+08:00",
+              "event": "Rider · message",
+              "evidence_ids": [
+                "CHAT-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:04:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-002"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:18:00+08:00",
+              "event": "Trip ends",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 6.5,
+            "name": "planned_distance_km",
+            "unit": "km",
+            "formula": "planned road route distance",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": 8.0,
+            "name": "actual_distance_km",
+            "unit": "km",
+            "formula": "supplied GPS-reconstructed route distance",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 1.5,
+            "name": "deviation_km",
+            "unit": "km",
+            "formula": "actual minus planned km",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 83,
+            "name": "excess_distance_cents",
+            "unit": "SGD cents",
+            "formula": "max(0, additional_km) * distance_rate *100, half-up rounded",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002",
+              "FARE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": "unsupported",
+            "name": "justification",
+            "unit": "state",
+            "formula": "route/time-matched historical traffic evidence",
+            "evidence_ids": [
+              "TRIP-001",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "ROUTE-001",
+              "ROUTE-002",
+              "TRAFFIC-001"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": false,
+            "name": "rider_informed",
+            "unit": "boolean",
+            "formula": "driver route notice before or at deviation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003"
+            ],
+            "policy_ids": [
+              "POLICY-1.2"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": false,
+            "name": "rider_agreed",
+            "unit": "boolean",
+            "formula": "rider acknowledgment of notice by deviation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "TICKET-001",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "DISP-010",
+              "trip_id": "TRIP-2026-11010",
+              "filed_by": "rider",
+              "dispute_type": "route_deviation",
+              "description": "The driver took a longer route and I was overcharged.",
+              "filed_at": "2026-09-29T10:00:00+08:00",
+              "status": "open",
+              "disputed_amount_cents": 83
+            }
+          },
+          {
+            "id": "TRIP-001",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "TRIP-2026-11010",
+              "rider_id": "R-4502",
+              "driver_id": "D-7821",
+              "pickup_location": {
+                "name": "Marina Bay Sands",
+                "lat": 1.2834,
+                "lng": 103.8607
+              },
+              "dropoff_location": {
+                "name": "East Coast Park",
+                "lat": 1.3,
+                "lng": 103.909
+              },
+              "start_time": "2026-09-28T14:00:00+08:00",
+              "end_time": "2026-09-28T14:18:00+08:00",
+              "estimated_fare": 11.33,
+              "charged_fare": 12.9,
+              "fare_currency": "SGD"
+            }
+          },
+          {
+            "id": "GPS-001",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:00:00+08:00",
+              "lat": 1.2834,
+              "lng": 103.8607,
+              "status": "trip_start"
+            }
+          },
+          {
+            "id": "GPS-002",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:02:00+08:00",
+              "lat": 1.292,
+              "lng": 103.858,
+              "status": "deviation_start"
+            }
+          },
+          {
+            "id": "GPS-003",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:08:00+08:00",
+              "lat": 1.305,
+              "lng": 103.87,
+              "status": "on_detour"
+            }
+          },
+          {
+            "id": "GPS-004",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:18:00+08:00",
+              "lat": 1.3,
+              "lng": 103.909,
+              "status": "trip_end"
+            }
+          },
+          {
+            "id": "CHAT-001",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-28T14:03:00+08:00",
+              "sender": "rider",
+              "type": "message",
+              "content": "Why have we left the planned route?"
+            }
+          },
+          {
+            "id": "CHAT-002",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-28T14:04:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "There was traffic; I took an alternate route."
+            }
+          },
+          {
+            "id": "EVENT-001",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-28T14:00:00+08:00",
+              "event_type": "trip_started",
+              "details": "Trip started on the planned6.5km road route."
+            }
+          },
+          {
+            "id": "EVENT-002",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-28T14:02:00+08:00",
+              "event_type": "route_deviation_detected",
+              "details": "The recorded actual route diverged at this time."
+            }
+          },
+          {
+            "id": "EVENT-003",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-28T14:18:00+08:00",
+              "event_type": "trip_completed",
+              "details": "Trip complete, actual8km and18minutes. FareSGD12.90."
+            }
+          },
+          {
+            "id": "ROUTE-001",
+            "source": "route_data",
+            "data": {
+              "type": "planned",
+              "distance_km": 6.5,
+              "estimated_duration_min": 15,
+              "source": "synthetic_in_app_routing_engine",
+              "route_name": "Direct road route to East Coast Park",
+              "waypoints": [
+                {
+                  "name": "Marina Bay Sands",
+                  "lat": 1.2834,
+                  "lng": 103.8607
+                },
+                {
+                  "name": "East Coast Park",
+                  "lat": 1.3,
+                  "lng": 103.909
+                }
+              ]
+            }
+          },
+          {
+            "id": "ROUTE-002",
+            "source": "route_data",
+            "data": {
+              "type": "actual",
+              "distance_km": 8.0,
+              "actual_duration_min": 18,
+              "source": "synthetic_gps_reconstruction",
+              "route_name": "Recorded alternate road route",
+              "waypoints": [
+                {
+                  "name": "Marina Bay Sands",
+                  "lat": 1.2834,
+                  "lng": 103.8607
+                },
+                {
+                  "lat": 1.305,
+                  "lng": 103.87
+                },
+                {
+                  "name": "East Coast Park",
+                  "lat": 1.3,
+                  "lng": 103.909
+                }
+              ]
+            }
+          },
+          {
+            "id": "FARE-001",
+            "source": "fare_items",
+            "data": {
+              "component": "base_fare",
+              "amount": 3.5,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-002",
+            "source": "fare_items",
+            "data": {
+              "component": "distance_charge",
+              "distance_km": 8.0,
+              "rate_per_km": 0.55,
+              "amount": 4.4,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-003",
+            "source": "fare_items",
+            "data": {
+              "component": "time_charge",
+              "duration_min": 18,
+              "rate_per_min": 0.25,
+              "amount": 4.5,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-004",
+            "source": "fare_items",
+            "data": {
+              "component": "booking_fee",
+              "amount": 0.5,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-005",
+            "source": "fare_items",
+            "data": {
+              "component": "total_charged",
+              "amount": 12.9,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-006",
+            "source": "fare_items",
+            "data": {
+              "component": "estimated_total",
+              "amount": 11.33,
+              "currency": "SGD",
+              "breakdown": {
+                "base_fare": 3.5,
+                "distance_charge": 3.58,
+                "time_charge": 3.75,
+                "booking_fee": 0.5
+              }
+            }
+          },
+          {
+            "id": "TRAFFIC-001",
+            "source": "traffic_data",
+            "data": {
+              "source": "historical_traffic_api_fixture",
+              "affected_route_id": "ROUTE-001",
+              "segment": "Planned road segment at the recorded deviation",
+              "valid_from": "2026-09-28T14:00:00+08:00",
+              "valid_until": "2026-09-28T14:18:00+08:00",
+              "status": "no_congestion",
+              "note": "Synthetic historical API response fixture; no live traffic query was made."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_route_deviation",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "route_deviation",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-1.1",
+              "text": "Section 1.1: Rerouting for traffic, road closures or congestion is permitted, but the rider must be informed."
+            },
+            {
+              "id": "POLICY-1.2",
+              "text": "Section 1.2: Inform rider via in-app chat or recorded call before or at deviation; a brief reason is sufficient."
+            },
+            {
+              "id": "POLICY-1.3",
+              "text": "Section 1.3: The no-refund tolerance is 1 km of additional distance. For additional distance above 1 km, apply these separate cases. UNJUSTIFIED detour: refund ALL excess-distance fare; the formula is additional km multiplied by the distance rate. This refunds a fare component, not the entire trip or time-charge difference. JUSTIFIED detour with timely rider notification and agreement: no refund. JUSTIFIED but UNNOTIFIED detour: refund only PART of the excess-distance fare; that partial-component formula is unspecified, so refer until confirmed. The unspecified formula applies only to the justified-but-unnotified case and never to an unjustified detour."
+            },
+            {
+              "id": "POLICY-1.4",
+              "text": "Section 1.4: Additional km = actual minus recommended distance. Traffic justification uses historical traffic API records for the segment at trip time. Chat/call acknowledgment establishes agreement. App alert words alone are insufficient."
+            },
+            {
+              "id": "POLICY-7.1",
+              "text": "Precedent 7.1, DISP-2026-0089: 1.8 km traffic-justified detour without notification; partial excess-distance refund SGD 3.20, confidence 91%. The amount does not define a general percentage or formula."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": null,
+          "free_wait_time_min": null,
+          "no_show_threshold_min": null,
+          "cancellation_fee_after_wait": null,
+          "tolerance_km": 1.0,
+          "max_ai_deviation_km": 2.0,
+          "refund_basis": "excess_distance_fare"
+        },
+        "workflow": {
+          "case_id": "DISP-010",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "route_data",
+                  "gps_telemetry",
+                  "traffic_data",
+                  "chat_logs",
+                  "fare_items"
+                ],
+                "purpose": "Establish actual vs recommended distance to determine excess km, verify if detour was justified by historical traffic data at trip time, check for rider notification via chat logs, and calculate specific excess-distance fare component for refund calculation under policy 1.3.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1374,
+                  "total_tokens": 1495,
+                  "completion_tokens": 121
+                },
+                "record_ids": [
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "CHAT-001",
+                  "CHAT-002",
+                  "ROUTE-001",
+                  "ROUTE-002",
+                  "FARE-001",
+                  "FARE-002",
+                  "FARE-003",
+                  "FARE-004",
+                  "FARE-005",
+                  "FARE-006",
+                  "TRAFFIC-001"
+                ],
+                "duration_ms": 1309
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "route_data",
+                  "gps_telemetry",
+                  "traffic_data",
+                  "chat_logs",
+                  "fare_items"
+                ],
+                "purpose": "To determine actual vs recommended distance for excess km calculation, verify if detour was traffic-justified via API records, confirm rider notification status via chat logs, and calculate refund amount based on policy clauses 1.3 and 1.4.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1375,
+                  "total_tokens": 1497,
+                  "completion_tokens": 122
+                },
+                "record_ids": [
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "CHAT-001",
+                  "CHAT-002",
+                  "ROUTE-001",
+                  "ROUTE-002",
+                  "FARE-001",
+                  "FARE-002",
+                  "FARE-003",
+                  "FARE-004",
+                  "FARE-005",
+                  "FARE-006",
+                  "TRAFFIC-001"
+                ],
+                "duration_ms": 1319
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "app_events",
+                  "trip_data"
+                ],
+                "purpose": "Verify if the rider was informed via app alert or in-app chat prior to/during deviation to determine if the detour was justified and notified, and confirm trip metadata for context.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2669,
+                  "total_tokens": 2757,
+                  "completion_tokens": 88
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003"
+                ],
+                "duration_ms": 1105
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "app_events",
+                  "trip_data"
+                ],
+                "purpose": "Retrieve app events to confirm if the rider acknowledged the route deviation via chat or call, and trip data to verify the exact start/end coordinates and timestamps for the deviation period.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2668,
+                  "total_tokens": 2754,
+                  "completion_tokens": 86
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003"
+                ],
+                "duration_ms": 1226
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [],
+                  "counterpoints": [
+                    {
+                      "statement": "The route deviation is unjustified because historical traffic data confirms no congestion, and the driver failed to inform the rider before or at the time of deviation, violating POLICY-1.1 and POLICY-1.2.",
+                      "evidence_ids": [
+                        "TRAFFIC-001",
+                        "CHAT-001",
+                        "CHAT-002",
+                        "EVENT-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.1",
+                        "POLICY-1.2",
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1.5
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 83
+                        }
+                      ]
+                    }
+                  ],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 2980,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 4957,
+                  "completion_tokens": 337,
+                  "total_tokens": 5294
+                }
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver deviated 1.5 km from the planned route without prior notice, constituting an unjustified detour that warrants a refund of the entire excess-distance fare. Historical traffic data confirms no congestion existed, negating a traffic justification, and the rider's chat inquiry occurred after the deviation began, indicating no timely notification or agreement. Policy mandates refunding all excess-distance fare for unjustified detours, excluding the 1 km tolerance from the calculation base.",
+                      "evidence_ids": [
+                        "ROUTE-001",
+                        "ROUTE-002",
+                        "TRAFFIC-001",
+                        "CHAT-001",
+                        "CHAT-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.1",
+                        "POLICY-1.2",
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 6.5
+                        },
+                        {
+                          "fact_id": "FACT-002",
+                          "value": 8.0
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1.5
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 83
+                        },
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 3881,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 4957,
+                  "completion_tokens": 451,
+                  "total_tokens": 5408
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "partial_refund",
+                  "proposed_action": {
+                    "amount_cents": 83,
+                    "currency": "SGD",
+                    "refund_basis": "excess_distance_fare",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The driver deviated 1.5 km from the planned route, exceeding the 1 km tolerance but staying within the 2 km AI limit. Historical traffic data (TRAFFIC-001) shows no congestion, making the driver's claim of a justified detour false (FACT-005). Furthermore, the rider was not informed before or at the deviation, and the rider only inquired after the fact (FACT-006, FACT-007). Under POLICY-1.3, this constitutes an unjustified detour. POLICY-1.3 mandates a refund of ALL excess-distance fare for unjustified detours, calculated as 83 cents (FACT-004). The precedent DISP-2026-0089 (POLICY-7.1) confirms route deviations are handled via partial refunds of the excess distance component.",
+                  "evidence_ids": [
+                    "ROUTE-001",
+                    "ROUTE-002",
+                    "TRAFFIC-001",
+                    "CHAT-001",
+                    "CHAT-002",
+                    "FARE-002"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3",
+                    "POLICY-1.4",
+                    "POLICY-6.2",
+                    "POLICY-7.1"
+                  ],
+                  "confidence": 0.95,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-001",
+                      "value": 6.5
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": 8.0
+                    },
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 1.5
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 83
+                    },
+                    {
+                      "fact_id": "FACT-005",
+                      "value": "unsupported"
+                    },
+                    {
+                      "fact_id": "FACT-006",
+                      "value": false
+                    },
+                    {
+                      "fact_id": "FACT-007",
+                      "value": false
+                    }
+                  ]
+                },
+                "duration_ms": 11492,
+                "citation_retries": 0,
+                "schema_retries": 1,
+                "citation_resolutions": [
+                  {
+                    "location": "judge",
+                    "fact_id": "FACT-004",
+                    "evidence_ids": [
+                      "ROUTE-001",
+                      "ROUTE-002",
+                      "FARE-002"
+                    ]
+                  }
+                ],
+                "usage": {
+                  "prompt_tokens": 12972,
+                  "completion_tokens": 1410,
+                  "total_tokens": 14382
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 17799,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "partial_refund",
+            "proposed_action": {
+              "amount_cents": 83,
+              "currency": "SGD",
+              "refund_basis": "excess_distance_fare",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The driver deviated 1.5 km from the planned route, exceeding the 1 km tolerance but staying within the 2 km AI limit. Historical traffic data (TRAFFIC-001) shows no congestion, making the driver's claim of a justified detour false (FACT-005). Furthermore, the rider was not informed before or at the deviation, and the rider only inquired after the fact (FACT-006, FACT-007). Under POLICY-1.3, this constitutes an unjustified detour. POLICY-1.3 mandates a refund of ALL excess-distance fare for unjustified detours, calculated as 83 cents (FACT-004). The precedent DISP-2026-0089 (POLICY-7.1) confirms route deviations are handled via partial refunds of the excess distance component.",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002",
+              "TRAFFIC-001",
+              "CHAT-001",
+              "CHAT-002",
+              "FARE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-1.4",
+              "POLICY-6.2",
+              "POLICY-7.1"
+            ],
+            "confidence": 0.95,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-001",
+                "value": 6.5
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": 8.0
+              },
+              {
+                "fact_id": "FACT-003",
+                "value": 1.5
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 83
+              },
+              {
+                "fact_id": "FACT-005",
+                "value": "unsupported"
+              },
+              {
+                "fact_id": "FACT-006",
+                "value": false
+              },
+              {
+                "fact_id": "FACT-007",
+                "value": false
+              }
+            ]
+          },
+          "final_explanation": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "prose_findings": [
+        {
+          "case_id": "DISP-010",
+          "run": 1,
+          "actor": "rider_advocate",
+          "event": "initial_argument",
+          "section": "claims",
+          "index": 0,
+          "quote": "excluding the 1 km tolerance from the calculation base",
+          "severity": "ambiguous",
+          "issue": "This wording can imply deducting the tolerance despite the same claim saying refund the entire excess-distance fare. Rewrite explicitly as not subtracting 1 km. Not counted as a separately proven numerical error."
+        }
+      ],
+      "material_prose_error": false,
+      "grounded_explanation_consistent": true
+    },
+    {
+      "case_id": "DISP-010",
+      "run": 2,
+      "passed": true,
+      "checks": {
+        "completed_without_failure": true,
+        "ruling": true,
+        "refund": true,
+        "goodwill": true,
+        "basis": true,
+        "confidence_present": true,
+        "validated_final": true,
+        "rider_advocate": true,
+        "driver_advocate": true,
+        "dashboard": true
+      },
+      "elapsed_seconds": 13.22,
+      "progress": [
+        "Preparing evidence and checking policy",
+        "Rider and Driver Advocates are gathering evidence",
+        "Rider Advocate: retrieving evidence (round 1/3)",
+        "Driver Advocate: retrieving evidence (round 1/3)",
+        "Driver Advocate: retrieving evidence (round 2/3)",
+        "Rider Advocate: retrieving evidence (round 2/3)",
+        "Driver Advocate: retrieving evidence (round 3/3)",
+        "Rider Advocate: evidence retrieved; building its argument",
+        "Driver Advocate: evidence retrieved; building its argument",
+        "Driver Advocate finished its evidence analysis",
+        "Rider Advocate finished its evidence analysis",
+        "Judge is reviewing initial arguments",
+        "Finalizing: validating citations, policy and amounts",
+        "Review complete"
+      ],
+      "reported_tokens": 29538,
+      "dashboard": {
+        "passed": true,
+        "source_label": "Live model",
+        "displayed_retrieval_events": 5,
+        "recipient_tabs_and_confidence": true,
+        "extra_model_calls": 0
+      },
+      "review_report": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-15T12:38:14.702542+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "DISP-010",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Refund the excess-distance component",
+          "refund_cents": 83,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83.",
+          "party_messages": {
+            "rider": {
+              "action": "Recommended refund: SGD 0.83 of your excess-distance fare.",
+              "explanation": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83."
+            },
+            "driver": {
+              "action": "Recommended refund: SGD 0.83 of the rider's excess-distance fare.",
+              "explanation": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Additional distance within 2 km AI limit",
+              "observation": "1.5 km (2 km inclusive)",
+              "status": "met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002"
+              ],
+              "policy_ids": [
+                "POLICY-6.2"
+              ]
+            },
+            {
+              "condition": "Additional distance within 1 km no-refund tolerance",
+              "observation": "1.5 km",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002"
+              ],
+              "policy_ids": [
+                "POLICY-1.3"
+              ]
+            },
+            {
+              "condition": "Historical traffic justification",
+              "observation": "Not supported by historical traffic",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-005"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003",
+                "ROUTE-001",
+                "ROUTE-002",
+                "TRAFFIC-001"
+              ],
+              "policy_ids": [
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "condition": "Rider informed before or at deviation",
+              "observation": "Not established",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-006"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003"
+              ],
+              "policy_ids": [
+                "POLICY-1.2",
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "condition": "Rider agreed before or at deviation",
+              "observation": "Not established",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "TRIP-001",
+                "CHAT-001",
+                "CHAT-002",
+                "EVENT-001",
+                "EVENT-002",
+                "EVENT-003"
+              ],
+              "policy_ids": [
+                "POLICY-1.2",
+                "POLICY-1.4"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Additional distance",
+              "value": 1.5,
+              "unit": "km",
+              "formula": "8 km actual − 6.5 km planned = 1.5 km",
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002"
+              ],
+              "policy_ids": [
+                "POLICY-1.4"
+              ]
+            },
+            {
+              "label": "Excess-distance fare component",
+              "value": 83,
+              "unit": "SGD cents",
+              "formula": "max(0, 1.5 km) × S$0.55/km = S$0.83 (rounded half up to cents). The 1 km tolerance is not deducted.",
+              "evidence_ids": [
+                "ROUTE-001",
+                "ROUTE-002",
+                "FARE-002"
+              ],
+              "policy_ids": [
+                "POLICY-1.3",
+                "POLICY-1.4"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-09-28T14:00:00+08:00",
+              "event": "Trip starts",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:02:00+08:00",
+              "event": "Route deviation detected",
+              "evidence_ids": [
+                "EVENT-002"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:03:00+08:00",
+              "event": "Rider · message",
+              "evidence_ids": [
+                "CHAT-001"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:04:00+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "CHAT-002"
+              ]
+            },
+            {
+              "timestamp": "2026-09-28T14:18:00+08:00",
+              "event": "Trip ends",
+              "evidence_ids": [
+                "TRIP-001"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 6.5,
+            "name": "planned_distance_km",
+            "unit": "km",
+            "formula": "planned road route distance",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": 8.0,
+            "name": "actual_distance_km",
+            "unit": "km",
+            "formula": "supplied GPS-reconstructed route distance",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 1.5,
+            "name": "deviation_km",
+            "unit": "km",
+            "formula": "actual minus planned km",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 83,
+            "name": "excess_distance_cents",
+            "unit": "SGD cents",
+            "formula": "max(0, additional_km) * distance_rate *100, half-up rounded",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002",
+              "FARE-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": "unsupported",
+            "name": "justification",
+            "unit": "state",
+            "formula": "route/time-matched historical traffic evidence",
+            "evidence_ids": [
+              "TRIP-001",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003",
+              "ROUTE-001",
+              "ROUTE-002",
+              "TRAFFIC-001"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": false,
+            "name": "rider_informed",
+            "unit": "boolean",
+            "formula": "driver route notice before or at deviation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003"
+            ],
+            "policy_ids": [
+              "POLICY-1.2"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": false,
+            "name": "rider_agreed",
+            "unit": "boolean",
+            "formula": "rider acknowledgment of notice by deviation",
+            "evidence_ids": [
+              "TRIP-001",
+              "CHAT-001",
+              "CHAT-002",
+              "EVENT-001",
+              "EVENT-002",
+              "EVENT-003"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "TICKET-001",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "DISP-010",
+              "trip_id": "TRIP-2026-11010",
+              "filed_by": "rider",
+              "dispute_type": "route_deviation",
+              "description": "The driver took a longer route and I was overcharged.",
+              "filed_at": "2026-09-29T10:00:00+08:00",
+              "status": "open",
+              "disputed_amount_cents": 83
+            }
+          },
+          {
+            "id": "TRIP-001",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "TRIP-2026-11010",
+              "rider_id": "R-4502",
+              "driver_id": "D-7821",
+              "pickup_location": {
+                "name": "Marina Bay Sands",
+                "lat": 1.2834,
+                "lng": 103.8607
+              },
+              "dropoff_location": {
+                "name": "East Coast Park",
+                "lat": 1.3,
+                "lng": 103.909
+              },
+              "start_time": "2026-09-28T14:00:00+08:00",
+              "end_time": "2026-09-28T14:18:00+08:00",
+              "estimated_fare": 11.33,
+              "charged_fare": 12.9,
+              "fare_currency": "SGD"
+            }
+          },
+          {
+            "id": "GPS-001",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:00:00+08:00",
+              "lat": 1.2834,
+              "lng": 103.8607,
+              "status": "trip_start"
+            }
+          },
+          {
+            "id": "GPS-002",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:02:00+08:00",
+              "lat": 1.292,
+              "lng": 103.858,
+              "status": "deviation_start"
+            }
+          },
+          {
+            "id": "GPS-003",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:08:00+08:00",
+              "lat": 1.305,
+              "lng": 103.87,
+              "status": "on_detour"
+            }
+          },
+          {
+            "id": "GPS-004",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-09-28T14:18:00+08:00",
+              "lat": 1.3,
+              "lng": 103.909,
+              "status": "trip_end"
+            }
+          },
+          {
+            "id": "CHAT-001",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-28T14:03:00+08:00",
+              "sender": "rider",
+              "type": "message",
+              "content": "Why have we left the planned route?"
+            }
+          },
+          {
+            "id": "CHAT-002",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-09-28T14:04:00+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "There was traffic; I took an alternate route."
+            }
+          },
+          {
+            "id": "EVENT-001",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-28T14:00:00+08:00",
+              "event_type": "trip_started",
+              "details": "Trip started on the planned6.5km road route."
+            }
+          },
+          {
+            "id": "EVENT-002",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-28T14:02:00+08:00",
+              "event_type": "route_deviation_detected",
+              "details": "The recorded actual route diverged at this time."
+            }
+          },
+          {
+            "id": "EVENT-003",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-09-28T14:18:00+08:00",
+              "event_type": "trip_completed",
+              "details": "Trip complete, actual8km and18minutes. FareSGD12.90."
+            }
+          },
+          {
+            "id": "ROUTE-001",
+            "source": "route_data",
+            "data": {
+              "type": "planned",
+              "distance_km": 6.5,
+              "estimated_duration_min": 15,
+              "source": "synthetic_in_app_routing_engine",
+              "route_name": "Direct road route to East Coast Park",
+              "waypoints": [
+                {
+                  "name": "Marina Bay Sands",
+                  "lat": 1.2834,
+                  "lng": 103.8607
+                },
+                {
+                  "name": "East Coast Park",
+                  "lat": 1.3,
+                  "lng": 103.909
+                }
+              ]
+            }
+          },
+          {
+            "id": "ROUTE-002",
+            "source": "route_data",
+            "data": {
+              "type": "actual",
+              "distance_km": 8.0,
+              "actual_duration_min": 18,
+              "source": "synthetic_gps_reconstruction",
+              "route_name": "Recorded alternate road route",
+              "waypoints": [
+                {
+                  "name": "Marina Bay Sands",
+                  "lat": 1.2834,
+                  "lng": 103.8607
+                },
+                {
+                  "lat": 1.305,
+                  "lng": 103.87
+                },
+                {
+                  "name": "East Coast Park",
+                  "lat": 1.3,
+                  "lng": 103.909
+                }
+              ]
+            }
+          },
+          {
+            "id": "FARE-001",
+            "source": "fare_items",
+            "data": {
+              "component": "base_fare",
+              "amount": 3.5,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-002",
+            "source": "fare_items",
+            "data": {
+              "component": "distance_charge",
+              "distance_km": 8.0,
+              "rate_per_km": 0.55,
+              "amount": 4.4,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-003",
+            "source": "fare_items",
+            "data": {
+              "component": "time_charge",
+              "duration_min": 18,
+              "rate_per_min": 0.25,
+              "amount": 4.5,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-004",
+            "source": "fare_items",
+            "data": {
+              "component": "booking_fee",
+              "amount": 0.5,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-005",
+            "source": "fare_items",
+            "data": {
+              "component": "total_charged",
+              "amount": 12.9,
+              "currency": "SGD"
+            }
+          },
+          {
+            "id": "FARE-006",
+            "source": "fare_items",
+            "data": {
+              "component": "estimated_total",
+              "amount": 11.33,
+              "currency": "SGD",
+              "breakdown": {
+                "base_fare": 3.5,
+                "distance_charge": 3.58,
+                "time_charge": 3.75,
+                "booking_fee": 0.5
+              }
+            }
+          },
+          {
+            "id": "TRAFFIC-001",
+            "source": "traffic_data",
+            "data": {
+              "source": "historical_traffic_api_fixture",
+              "affected_route_id": "ROUTE-001",
+              "segment": "Planned road segment at the recorded deviation",
+              "valid_from": "2026-09-28T14:00:00+08:00",
+              "valid_until": "2026-09-28T14:18:00+08:00",
+              "status": "no_congestion",
+              "note": "Synthetic historical API response fixture; no live traffic query was made."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_route_deviation",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "route_deviation",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-1.1",
+              "text": "Section 1.1: Rerouting for traffic, road closures or congestion is permitted, but the rider must be informed."
+            },
+            {
+              "id": "POLICY-1.2",
+              "text": "Section 1.2: Inform rider via in-app chat or recorded call before or at deviation; a brief reason is sufficient."
+            },
+            {
+              "id": "POLICY-1.3",
+              "text": "Section 1.3: The no-refund tolerance is 1 km of additional distance. For additional distance above 1 km, apply these separate cases. UNJUSTIFIED detour: refund ALL excess-distance fare; the formula is additional km multiplied by the distance rate. This refunds a fare component, not the entire trip or time-charge difference. JUSTIFIED detour with timely rider notification and agreement: no refund. JUSTIFIED but UNNOTIFIED detour: refund only PART of the excess-distance fare; that partial-component formula is unspecified, so refer until confirmed. The unspecified formula applies only to the justified-but-unnotified case and never to an unjustified detour."
+            },
+            {
+              "id": "POLICY-1.4",
+              "text": "Section 1.4: Additional km = actual minus recommended distance. Traffic justification uses historical traffic API records for the segment at trip time. Chat/call acknowledgment establishes agreement. App alert words alone are insufficient."
+            },
+            {
+              "id": "POLICY-7.1",
+              "text": "Precedent 7.1, DISP-2026-0089: 1.8 km traffic-justified detour without notification; partial excess-distance refund SGD 3.20, confidence 91%. The amount does not define a general percentage or formula."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": null,
+          "free_wait_time_min": null,
+          "no_show_threshold_min": null,
+          "cancellation_fee_after_wait": null,
+          "tolerance_km": 1.0,
+          "max_ai_deviation_km": 2.0,
+          "refund_basis": "excess_distance_fare"
+        },
+        "workflow": {
+          "case_id": "DISP-010",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "route_data",
+                  "gps_telemetry",
+                  "chat_logs",
+                  "traffic_data",
+                  "fare_items"
+                ],
+                "purpose": "Establish actual vs. recommended distance to calculate excess km, verify traffic conditions for justification, confirm if rider was notified/agreed via chat logs, and isolate the excess-distance fare component for refund calculation.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1374,
+                  "total_tokens": 1485,
+                  "completion_tokens": 111
+                },
+                "record_ids": [
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "CHAT-001",
+                  "CHAT-002",
+                  "ROUTE-001",
+                  "ROUTE-002",
+                  "FARE-001",
+                  "FARE-002",
+                  "FARE-003",
+                  "FARE-004",
+                  "FARE-005",
+                  "FARE-006",
+                  "TRAFFIC-001"
+                ],
+                "duration_ms": 1243
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "gps_telemetry",
+                  "route_data",
+                  "traffic_data",
+                  "chat_logs",
+                  "fare_items"
+                ],
+                "purpose": "To calculate the actual vs recommended distance (gps/route), verify traffic conditions at trip time (traffic), confirm if rider was notified (chat), and determine the excess distance fare component for refund calculation (fare).",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1375,
+                  "total_tokens": 1489,
+                  "completion_tokens": 114
+                },
+                "record_ids": [
+                  "GPS-001",
+                  "GPS-002",
+                  "GPS-003",
+                  "GPS-004",
+                  "CHAT-001",
+                  "CHAT-002",
+                  "ROUTE-001",
+                  "ROUTE-002",
+                  "FARE-001",
+                  "FARE-002",
+                  "FARE-003",
+                  "FARE-004",
+                  "FARE-005",
+                  "FARE-006",
+                  "TRAFFIC-001"
+                ],
+                "duration_ms": 1261
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "app_events"
+                ],
+                "purpose": "To verify if the driver initiated any in-app notification, alert, or recorded call to inform the rider of the route deviation prior to or at the time of deviation, as required by Policy 1.2 for a justified detour.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2668,
+                  "total_tokens": 2761,
+                  "completion_tokens": 93
+                },
+                "record_ids": [
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003"
+                ],
+                "duration_ms": 1151
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "app_events",
+                  "trip_data"
+                ],
+                "purpose": "Establish the existence of an in-app alert or notification regarding the route deviation and confirm trip details to assess if the driver provided the required timely notification under policy section 1.2 and 1.4.",
+                "round": 2,
+                "usage": {
+                  "prompt_tokens": 2669,
+                  "total_tokens": 2762,
+                  "completion_tokens": 93
+                },
+                "record_ids": [
+                  "TRIP-001",
+                  "EVENT-001",
+                  "EVENT-002",
+                  "EVENT-003"
+                ],
+                "duration_ms": 1241
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "TRIP-2026-11010",
+                "sources": [
+                  "trip_data"
+                ],
+                "purpose": "Establish the base fare rate and verify the exact calculation of the disputed amount to determine the monetary value of the refund required under the unjustified or partially justified detour policy.",
+                "round": 3,
+                "usage": {
+                  "prompt_tokens": 2927,
+                  "total_tokens": 3007,
+                  "completion_tokens": 80
+                },
+                "record_ids": [
+                  "TRIP-001"
+                ],
+                "duration_ms": 1099
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [
+                    {
+                      "statement": "The 1.5 km deviation triggered the unjustified detour clause under POLICY-1.3 because historical traffic data shows no congestion, so the deviation was not historically justified. Per policy, the driver must refund the entire excess-distance fare of 83 cents.",
+                      "evidence_ids": [
+                        "ROUTE-001",
+                        "ROUTE-002",
+                        "TRAFFIC-001"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1.5
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 83
+                        },
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "Although the driver failed to notify the rider per POLICY-1.2 (FACT-006), the primary liability is the unjustified route itself; any partial refund formula for justified-but-unnotified detours does not apply here because the detour lacks historical traffic justification.",
+                      "evidence_ids": [
+                        "CHAT-001",
+                        "CHAT-002",
+                        "ROUTE-001",
+                        "ROUTE-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.2",
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 4315,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 4957,
+                  "completion_tokens": 485,
+                  "total_tokens": 5442
+                }
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver deviated 1.5 km from the planned route, exceeding the 1 km tolerance, and failed to provide timely notice or secure rider agreement as required by policy.",
+                      "evidence_ids": [
+                        "ROUTE-001",
+                        "ROUTE-002",
+                        "EVENT-002",
+                        "TRAFFIC-001",
+                        "CHAT-001",
+                        "CHAT-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.2",
+                        "POLICY-1.3",
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1.5
+                        },
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": false
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "Because the detour is unjustified (traffic records show no congestion) and unnotified, policy mandates a refund of the entire excess-distance fare of 83 cents.",
+                      "evidence_ids": [
+                        "TRAFFIC-001",
+                        "FARE-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 83
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [
+                    {
+                      "statement": "The driver's claim of traffic justification is unsupported because historical records for the specific segment and time show no congestion, invalidating the excuse for the deviation.",
+                      "evidence_ids": [
+                        "TRAFFIC-001",
+                        "EVENT-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-005",
+                          "value": "unsupported"
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The rider's in-app question at 14:03 was a reaction to the deviation (started 14:02), not prior agreement; policy requires notice before or at deviation, which did not occur.",
+                      "evidence_ids": [
+                        "EVENT-002",
+                        "CHAT-001",
+                        "CHAT-002"
+                      ],
+                      "policy_ids": [
+                        "POLICY-1.2"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-006",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 5686,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 4957,
+                  "completion_tokens": 732,
+                  "total_tokens": 5689
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "partial_refund",
+                  "proposed_action": {
+                    "amount_cents": 83,
+                    "currency": "SGD",
+                    "refund_basis": "excess_distance_fare",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The driver deviated 1.5 km from the planned route. This exceeds the 1 km no-refund tolerance (POLICY-1.3) but is within the 2 km AI ruling limit (POLICY-6.2). Historical traffic data (TRAFFIC-001) indicates no congestion, and the rider was not notified before the deviation started (FACT-006), meaning the detour is unjustified. Under POLICY-1.3, an unjustified detour requires a refund of ALL excess-distance fare. The excess distance is 0.5 km (1.5 km actual - 1.0 km tolerance). The excess distance fare is calculated as 0.5 km * SGD 0.55/km = SGD 0.275, rounded to 28 cents. However, the prompt's FACT-004 explicitly defines the excess_distance_cents as 83 cents based on the formula provided in the facts. We must use the provided fact. The ruling is a partial refund of this component. Precedent DISP-2026-0089 (POLICY-7.1) supports refunding excess distance for unjustified/unnotified deviations.",
+                  "evidence_ids": [
+                    "ROUTE-001",
+                    "ROUTE-002",
+                    "TRAFFIC-001",
+                    "FARE-002",
+                    "CHAT-001",
+                    "CHAT-002",
+                    "EVENT-002"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3",
+                    "POLICY-6.2",
+                    "POLICY-7.1"
+                  ],
+                  "confidence": 0.95,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 1.5
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 83
+                    },
+                    {
+                      "fact_id": "FACT-005",
+                      "value": "unsupported"
+                    },
+                    {
+                      "fact_id": "FACT-006",
+                      "value": false
+                    }
+                  ]
+                },
+                "duration_ms": 4605,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "usage": {
+                  "prompt_tokens": 6326,
+                  "completion_tokens": 577,
+                  "total_tokens": 6903
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 12795,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "partial_refund",
+            "proposed_action": {
+              "amount_cents": 83,
+              "currency": "SGD",
+              "refund_basis": "excess_distance_fare",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The driver deviated 1.5 km from the planned route. This exceeds the 1 km no-refund tolerance (POLICY-1.3) but is within the 2 km AI ruling limit (POLICY-6.2). Historical traffic data (TRAFFIC-001) indicates no congestion, and the rider was not notified before the deviation started (FACT-006), meaning the detour is unjustified. Under POLICY-1.3, an unjustified detour requires a refund of ALL excess-distance fare. The excess distance is 0.5 km (1.5 km actual - 1.0 km tolerance). The excess distance fare is calculated as 0.5 km * SGD 0.55/km = SGD 0.275, rounded to 28 cents. However, the prompt's FACT-004 explicitly defines the excess_distance_cents as 83 cents based on the formula provided in the facts. We must use the provided fact. The ruling is a partial refund of this component. Precedent DISP-2026-0089 (POLICY-7.1) supports refunding excess distance for unjustified/unnotified deviations.",
+            "evidence_ids": [
+              "ROUTE-001",
+              "ROUTE-002",
+              "TRAFFIC-001",
+              "FARE-002",
+              "CHAT-001",
+              "CHAT-002",
+              "EVENT-002"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-6.2",
+              "POLICY-7.1"
+            ],
+            "confidence": 0.95,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-003",
+                "value": 1.5
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 83
+              },
+              {
+                "fact_id": "FACT-005",
+                "value": "unsupported"
+              },
+              {
+                "fact_id": "FACT-006",
+                "value": false
+              }
+            ]
+          },
+          "final_explanation": "The actual route is 8 km versus 6.5 km planned: 1.5 km excess. Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD 0.55/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply. Recommended rider refund: SGD 0.83.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "prose_findings": [
+        {
+          "case_id": "DISP-010",
+          "run": 2,
+          "actor": "judge",
+          "event": "provisional_review",
+          "section": "explanation",
+          "index": null,
+          "quote": "The excess distance is 0.5 km (1.5 km actual - 1.0 km tolerance).",
+          "severity": "material",
+          "issue": "The original Judge prose incorrectly subtracts the tolerance and computes 28 cents, then defers to FACT-004=83 cents. POLICY-1.3 refunds the entire 1.5 km excess for this unjustified detour. Structured action and application-generated explanation correctly use 83 cents."
+        }
+      ],
+      "material_prose_error": true,
+      "grounded_explanation_consistent": true
+    }
+  ],
+  "prose_audit": {
+    "method": "Manual inspection of all advocate claims/counterpoints and original Judge explanations against supplied facts and policy; this is not exhaustive semantic certification.",
+    "status": "material_errors_found",
+    "findings": [
+      {
+        "case_id": "DISP-004",
+        "run": 2,
+        "actor": "driver_advocate",
+        "event": "initial_argument",
+        "section": "claims",
+        "index": 2,
+        "quote": "making the rider eligible for the compensation fee under POLICY-2.2",
+        "severity": "material",
+        "issue": "POLICY-2.2 transfers a valid no-show cancellation fee to the driver, not the rider. Final outcome/refund was correct."
+      },
+      {
+        "case_id": "DISP-010",
+        "run": 2,
+        "actor": "judge",
+        "event": "provisional_review",
+        "section": "explanation",
+        "index": null,
+        "quote": "The excess distance is 0.5 km (1.5 km actual - 1.0 km tolerance).",
+        "severity": "material",
+        "issue": "The original Judge prose incorrectly subtracts the tolerance and computes 28 cents, then defers to FACT-004=83 cents. POLICY-1.3 refunds the entire 1.5 km excess for this unjustified detour. Structured action and application-generated explanation correctly use 83 cents."
+      },
+      {
+        "case_id": "DISP-010",
+        "run": 1,
+        "actor": "rider_advocate",
+        "event": "initial_argument",
+        "section": "claims",
+        "index": 0,
+        "quote": "excluding the 1 km tolerance from the calculation base",
+        "severity": "ambiguous",
+        "issue": "This wording can imply deducting the tolerance despite the same claim saying refund the entire excess-distance fare. Rewrite explicitly as not subtracting 1 km. Not counted as a separately proven numerical error."
+      }
+    ]
+  },
+  "completed_at": "2026-10-15T12:38:14.704776+00:00",
+  "strict_passes": 4,
+  "automated_gate_scope": "Decision, exact refund/credit/basis, confidence presence, complete bounded retrieval before arguments, and rendering saved live results in the real dashboard. Excludes free-text semantic correctness.",
+  "readiness": "Filing/retrieval live smoke checks passed 4/4; do not treat this as a prose-accuracy clearance. Keep PR draft for issue #5 follow-up.",
+  "reported_tokens_total": 126010,
+  "material_prose_error_runs": 2
+}
