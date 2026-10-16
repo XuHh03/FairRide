@@ -46,6 +46,9 @@ async def gather_advocate_evidence(review: ReviewInput, role: Role, planner, on_
                               and isinstance(value, int) and not isinstance(value, bool)}
             request = EvidenceRequest.model_validate(call.result)
             event.update(request.model_dump(mode="json"))
+            if round_number == 3 and (set(request.sources) != set(payload["remaining_sources"])
+                                      or len(request.sources) != len(set(request.sources))):
+                raise ValueError("Final retrieval request must cover all remaining sources within the retrieval budget")
             records = tools.read(request.trip_id, request.sources)
         except Exception as exc:
             error = str(exc) if isinstance(exc, (ValueError, RuntimeError)) else type(exc).__name__

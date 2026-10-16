@@ -1,0 +1,162 @@
+{
+  "mode": "offline replay of captured regression responses; no provider calls",
+  "source_report": "evaluations/heldout-response-diagnostics-2026-10-16.json",
+  "case_id": "FHE-2026-006",
+  "scope": "Targeted detected fact/prose contradictions only; not arbitrary semantic validation or live-model reliability.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "claim_feedback": [
+        {
+          "section": "claims",
+          "index": 0,
+          "statement": "The driver arrived exactly at the scheduled pickup time and maintained stationary presence for 8 minutes, satisfying the physical presence and free-wait requirements under POLICY-2.1. The driver is eligible for the standard no-show fee as compensation for the wasted trip time.",
+          "offending_sentences": [],
+          "errors": [
+            "Fact assertion FACT-008 (timely_presence) must equal False; got True",
+            "Fact assertion FACT-009 (arrival_verified) must equal False; got True"
+          ],
+          "facts": [
+            {
+              "fact_id": "FACT-001",
+              "name": "waited_minutes",
+              "value": 8.0
+            },
+            {
+              "fact_id": "FACT-002",
+              "name": "fee_eligible",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-006",
+              "name": "wait_start_time",
+              "value": "2026-10-04T04:55:00+08:00"
+            },
+            {
+              "fact_id": "FACT-007",
+              "name": "wait_end_time",
+              "value": "2026-10-04T05:03:00+08:00"
+            },
+            {
+              "fact_id": "FACT-008",
+              "name": "timely_presence",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-009",
+              "name": "arrival_verified",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-011",
+              "name": "goodwill_eligibility_resolved",
+              "value": false
+            }
+          ],
+          "correction": "Use the listed canonical values and revise this claim consistently. Preserve required assertions. False verification does not establish physical presence or absence. When goodwill_eligibility_resolved is false, describe the reported arrival and conflicting GPS as unresolved; do not settle goodwill or dismiss either account."
+        },
+        {
+          "section": "counterpoints",
+          "index": 0,
+          "statement": "While the rider is correct that the driver sent zero messages and calls (voiding the fee under POLICY-2.3), this contact failure is an exception to the general rule and does not constitute a driver no-show when physical arrival was verified and timely. The lack of contact is a procedural error by the driver, not evidence that the driver failed to arrive.",
+          "offending_sentences": [
+            "While the rider is correct that the driver sent zero messages and calls (voiding the fee under POLICY-2.3), this contact failure is an exception to the general rule and does not constitute a driver no-show when physical arrival was verified and timely."
+          ],
+          "errors": [
+            "Prose inconsistency: pickup presence is not verified; describe the reported arrival and evidence uncertainty instead of asserting established physical presence. False verification does not establish absence."
+          ],
+          "facts": [
+            {
+              "fact_id": "FACT-002",
+              "name": "fee_eligible",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-003",
+              "name": "message_count",
+              "value": 0
+            },
+            {
+              "fact_id": "FACT-004",
+              "name": "call_count",
+              "value": 0
+            },
+            {
+              "fact_id": "FACT-008",
+              "name": "timely_presence",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-009",
+              "name": "arrival_verified",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-010",
+              "name": "driver_no_show",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-011",
+              "name": "goodwill_eligibility_resolved",
+              "value": false
+            }
+          ],
+          "correction": "Use the listed canonical values and revise this claim consistently. Preserve required assertions. False verification does not establish physical presence or absence. When goodwill_eligibility_resolved is false, describe the reported arrival and conflicting GPS as unresolved; do not settle goodwill or dismiss either account."
+        }
+      ],
+      "validation_issues": [
+        "Fact assertion FACT-008 (timely_presence) must equal False; got True",
+        "Fact assertion FACT-009 (arrival_verified) must equal False; got True",
+        "Prose inconsistency: pickup presence is not verified; describe the reported arrival and evidence uncertainty instead of asserting established physical presence. False verification does not establish absence."
+      ]
+    },
+    {
+      "attempt": 2,
+      "claim_feedback": [
+        {
+          "section": "claims",
+          "index": 0,
+          "statement": "The rider’s claim of a 'no car' is factually false because the driver was physically present at the pickup location for the entire 8-minute duration, corroborated by continuous stationary GPS telemetry.",
+          "offending_sentences": [
+            "The rider’s claim of a 'no car' is factually false because the driver was physically present at the pickup location for the entire 8-minute duration, corroborated by continuous stationary GPS telemetry."
+          ],
+          "errors": [
+            "Prose inconsistency: pickup presence is not verified; describe the reported arrival and evidence uncertainty instead of asserting established physical presence. False verification does not establish absence."
+          ],
+          "facts": [
+            {
+              "fact_id": "FACT-001",
+              "name": "waited_minutes",
+              "value": 8.0
+            },
+            {
+              "fact_id": "FACT-002",
+              "name": "fee_eligible",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-008",
+              "name": "timely_presence",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-009",
+              "name": "arrival_verified",
+              "value": false
+            },
+            {
+              "fact_id": "FACT-011",
+              "name": "goodwill_eligibility_resolved",
+              "value": false
+            }
+          ],
+          "correction": "Use the listed canonical values and revise this claim consistently. Preserve required assertions. False verification does not establish physical presence or absence. When goodwill_eligibility_resolved is false, describe the reported arrival and conflicting GPS as unresolved; do not settle goodwill or dismiss either account."
+        }
+      ],
+      "validation_issues": [
+        "Prose inconsistency: pickup presence is not verified; describe the reported arrival and evidence uncertainty instead of asserting established physical presence. False verification does not establish absence."
+      ]
+    }
+  ]
+}

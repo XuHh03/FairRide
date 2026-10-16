@@ -91,6 +91,7 @@ async def run_review_async(
                     "citation_retries": call.citation_retries,
                     "schema_retries": call.schema_retries,
                     "citation_resolutions": call.citation_resolutions,
+                    "validation_diagnostics": call.validation_diagnostics,
                     "usage": {key: value for key, value in call.usage.items()
                               if key in ("prompt_tokens", "completion_tokens", "total_tokens")
                               and isinstance(value, int)},
@@ -108,6 +109,7 @@ async def run_review_async(
                 "role": role, "attempt": attempt + 1, "findings": [f.model_dump(mode="json") for f in audit.findings],
                 "duration_ms": round((perf_counter() - audit_started) * 1000),
                 "schema_retries": audit_call.schema_retries, "citation_retries": audit_call.citation_retries,
+                "validation_diagnostics": audit_call.validation_diagnostics,
                 "usage": {key: value for key, value in audit_call.usage.items()
                           if key in ("prompt_tokens", "completion_tokens", "total_tokens")
                           and isinstance(value, int)},
@@ -164,6 +166,7 @@ async def run_review_async(
                 "citation_retries": call.citation_retries,
                 "schema_retries": call.schema_retries,
                 "citation_resolutions": call.citation_resolutions,
+                "validation_diagnostics": call.validation_diagnostics,
                 "usage": {key: value for key, value in call.usage.items()
                           if key in ("prompt_tokens", "completion_tokens", "total_tokens")
                           and isinstance(value, int)},
@@ -250,6 +253,10 @@ async def run_review_async(
         reason = str(exc) if isinstance(exc, (ValueError, RuntimeError)) else type(exc).__name__
         progress("Agent review failed; human review required")
         issues.append(f"Agent review failed: {reason}")
+        diagnostic = getattr(exc, "validation_diagnostics", None)
+        if diagnostic:
+            activity.append(ActivityEntry(actor=diagnostic["actor"], event="response_validation_failed",
+                                          output={"validation_diagnostics": diagnostic, "usage": diagnostic["usage"]}))
         activity.append(ActivityEntry(
             actor="system", event="review_failed",
             output={"wall_duration_ms": round((perf_counter() - started) * 1000)},

@@ -61,6 +61,13 @@ def no_show_facts(case: dict, policy: dict) -> dict:
         if record["event_type"] == "driver_called_rider" and datetime.fromisoformat(record["timestamp"]) < cancelled:
             calls.add(record["timestamp"])
     timely_presence = any(at <= scheduled + timedelta(minutes=5) for at in pickup_times)
+    deadline = scheduled + timedelta(minutes=5)
+    reported_arrival = datetime.fromisoformat(trip["driver_arrival_time"]) if trip.get("driver_arrival_time") else None
+    reported_presence_corroborated = reported_arrival is not None and any(
+        min(scheduled, reported_arrival) <= at <= deadline for at in pickup_times)
+    presence_conflict = (reported_arrival is not None and reported_arrival <= deadline and not reported_presence_corroborated
+                         and any(max(scheduled, reported_arrival) <= at <= min(deadline, cancelled) and not present for at, present in gps))
+    goodwill_eligibility_resolved = not (presence_conflict and cancelled >= deadline and not messages and not calls)
     driver_no_show = not timely_presence and (arrival > scheduled + timedelta(minutes=5) if arrival is not None
                       else trip.get("driver_no_show_confirmed") is True and not pickup_times)
     arrival_verified = arrival is not None and any(arrival <= at <= cancelled for at in pickup_times)
@@ -78,6 +85,7 @@ def no_show_facts(case: dict, policy: dict) -> dict:
         "fee_eligible": arrival_verified and not driver_no_show and waited >= 5 and bool(messages and calls),
         "policy_fee": Decimal(str(policy["cancellation_fee_after_wait"])),
         "goodwill_credit_cents": 500 if driver_no_show and not messages and not calls else 0,
+        "goodwill_eligibility_resolved": goodwill_eligibility_resolved,
     }
 
 
@@ -182,6 +190,8 @@ def material_case_issues(case: dict, policy: dict) -> list[str]:
         if (case["trip_data"].get("driver_arrival_time") and not facts["arrival_verified"]
                 and facts["contact_obligations_met"] and facts["waited_minutes"] >= 5):
             issues.append("Driver arrival is not corroborated at the recorded pickup coordinates")
+        if not facts["goodwill_eligibility_resolved"]:
+            issues.append("Reported timely arrival conflicts with pickup GPS; separate goodwill eligibility is unresolved")
         if "chat_logs" not in case or "app_events" not in case:
             issues.append("Contact evidence is missing rather than a verified empty log")
         if facts["fee_eligible"] and charged_cents(case) not in (0, 500):
@@ -309,7 +319,12 @@ def validate_final_ruling(case: dict, policy: dict, decision: JudgeResult) -> li
     if decision.ruling != expected:
         issues.append(f"Policy requires {expected}; {decision.ruling} cannot replace it")
     action = decision.proposed_action
-    if action.amount_cents != refund or action.goodwill_credit_cents != credit:
+    unresolved_credit = (case["dispute_ticket"]["dispute_type"] == "no_show_charge"
+                         and not no_show_facts(case, policy)["goodwill_eligibility_resolved"])
+    if unresolved_credit:
+        if action.amount_cents != refund:
+            issues.append(f"Policy requires {refund} refund cents; separate goodwill eligibility remains unresolved")
+    elif action.amount_cents != refund or action.goodwill_credit_cents != credit:
         issues.append(f"Policy requires {refund} refund cents and {credit} separate goodwill-credit cents")
     if action.refund_basis != basis:
         issues.append(f"Refund basis must be {basis}")

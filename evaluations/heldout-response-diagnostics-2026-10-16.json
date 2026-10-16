@@ -1,0 +1,1969 @@
+{
+  "evaluation_version": "heldout-1.1",
+  "generated_at": "2026-10-16T07:17:43.300460+00:00",
+  "model": "qwen3.6:35b",
+  "gather_evidence": true,
+  "argument_support_checker": false,
+  "oracle_notice": "Matches against draft keys are provisional. Independently review keys and explanations; prose is not semantically certified.",
+  "cases": [
+    {
+      "case_id": "FHE-2026-002",
+      "run": 1,
+      "input_file": "/var/folders/0z/j5n121v10xsfd77gt7ds8gxm0000gn/T/fairride-diagnostic-cases-nrwzti3u/FHE-2026-002.json",
+      "verdict": "PASS",
+      "review": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-16T07:17:57.383689+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "FHE-2026-002",
+          "policy_version": "2.1",
+          "status": "completed",
+          "outcome": "Refund the cancellation fee",
+          "refund_cents": 500,
+          "goodwill_credit_cents": 0,
+          "mandatory_escalation": false,
+          "failure_category": null,
+          "reason": "The pickup records establish 6.5 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 1 message(s), 0 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00.",
+          "party_messages": {
+            "rider": {
+              "action": "Recommended refund: SGD 5.00 of your cancellation fee.",
+              "explanation": "The pickup records establish 6.5 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 1 message(s), 0 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00."
+            },
+            "driver": {
+              "action": "Recommended refund: SGD 5.00 of the rider's cancellation fee.",
+              "explanation": "The pickup records establish 6.5 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 1 message(s), 0 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00."
+            }
+          },
+          "review_issues": [],
+          "checklist": [
+            {
+              "condition": "Five physical minutes at pickup after scheduled time",
+              "observation": "6.5 min: 2026-03-21T23:48:00+08:00 to 2026-03-21T23:54:30+08:00",
+              "status": "met",
+              "fact_ids": [
+                "FACT-001",
+                "FACT-006",
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-GPS-01",
+                "FHE-2026-002-GPS-02",
+                "FHE-2026-002-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Pickup presence corroborated",
+              "observation": "GPS corroboration present",
+              "status": "met",
+              "fact_ids": [
+                "FACT-009"
+              ],
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-GPS-01",
+                "FHE-2026-002-GPS-02",
+                "FHE-2026-002-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Arrival by scheduled pickup + 5 minutes (inclusive)",
+              "observation": "Timely pickup presence recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-008",
+                "FACT-010"
+              ],
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-GPS-01",
+                "FHE-2026-002-GPS-02",
+                "FHE-2026-002-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.4"
+              ]
+            },
+            {
+              "condition": "At least one driver message before cancellation",
+              "observation": "1 recorded",
+              "status": "met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-CHAT-01",
+                "FHE-2026-002-EVENT-01",
+                "FHE-2026-002-EVENT-02",
+                "FHE-2026-002-EVENT-03",
+                "FHE-2026-002-EVENT-04",
+                "FHE-2026-002-EVENT-05"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            },
+            {
+              "condition": "At least one driver call attempt before cancellation",
+              "observation": "0 recorded",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-004"
+              ],
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-CHAT-01",
+                "FHE-2026-002-EVENT-01",
+                "FHE-2026-002-EVENT-02",
+                "FHE-2026-002-EVENT-03",
+                "FHE-2026-002-EVENT-04",
+                "FHE-2026-002-EVENT-05"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Counted pickup wait",
+              "value": 6.5,
+              "unit": "minutes",
+              "formula": "2026-03-21T23:48:00+08:00 → 2026-03-21T23:54:30+08:00 = 6.5 min. Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero.",
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-GPS-01",
+                "FHE-2026-002-GPS-02",
+                "FHE-2026-002-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-03-21T23:48:00+08:00",
+              "event": "Scheduled pickup",
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-21T23:48:00+08:00",
+              "event": "Recorded driver arrival",
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-21T23:48:00+08:00",
+              "event": "Counted wait starts",
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-GPS-01",
+                "FHE-2026-002-GPS-02",
+                "FHE-2026-002-GPS-03"
+              ]
+            },
+            {
+              "timestamp": "2026-03-21T23:48:10+08:00",
+              "event": "Driver · message",
+              "evidence_ids": [
+                "FHE-2026-002-CHAT-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-21T23:54:30+08:00",
+              "event": "Cancellation",
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-03-21T23:54:30+08:00",
+              "event": "Counted wait ends (cancellation or GPS departure)",
+              "evidence_ids": [
+                "FHE-2026-002-TRIP-01",
+                "FHE-2026-002-GPS-01",
+                "FHE-2026-002-GPS-02",
+                "FHE-2026-002-GPS-03"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 6.5,
+            "name": "waited_minutes",
+            "unit": "minutes",
+            "formula": "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": false,
+            "name": "fee_eligible",
+            "unit": "boolean",
+            "formula": "pickup presence AND five-minute wait AND message AND call AND timely arrival",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03",
+              "FHE-2026-002-CHAT-01",
+              "FHE-2026-002-EVENT-01",
+              "FHE-2026-002-EVENT-02",
+              "FHE-2026-002-EVENT-03",
+              "FHE-2026-002-EVENT-04",
+              "FHE-2026-002-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.3",
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 1,
+            "name": "message_count",
+            "unit": "count",
+            "formula": "driver messages before cancellation",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-CHAT-01",
+              "FHE-2026-002-EVENT-01",
+              "FHE-2026-002-EVENT-02",
+              "FHE-2026-002-EVENT-03",
+              "FHE-2026-002-EVENT-04",
+              "FHE-2026-002-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 0,
+            "name": "call_count",
+            "unit": "count",
+            "formula": "unique driver call attempts before cancellation",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-CHAT-01",
+              "FHE-2026-002-EVENT-01",
+              "FHE-2026-002-EVENT-02",
+              "FHE-2026-002-EVENT-03",
+              "FHE-2026-002-EVENT-04",
+              "FHE-2026-002-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": 0,
+            "name": "goodwill_credit_cents",
+            "unit": "SGD cents",
+            "formula": "500 if driver no-show and no contact; separate from refund",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03",
+              "FHE-2026-002-CHAT-01",
+              "FHE-2026-002-EVENT-01",
+              "FHE-2026-002-EVENT-02",
+              "FHE-2026-002-EVENT-03",
+              "FHE-2026-002-EVENT-04",
+              "FHE-2026-002-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": "2026-03-21T23:48:00+08:00",
+            "name": "wait_start_time",
+            "unit": "ISO timestamp",
+            "formula": "max(scheduled pickup, available recorded or GPS-corroborated arrival)",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": "2026-03-21T23:54:30+08:00",
+            "name": "wait_end_time",
+            "unit": "ISO timestamp",
+            "formula": "earlier of cancellation and first subsequent GPS departure",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-008",
+            "value": true,
+            "name": "timely_presence",
+            "unit": "boolean",
+            "formula": "pickup GPS presence by scheduled pickup plus five minutes, inclusive",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-009",
+            "value": true,
+            "name": "arrival_verified",
+            "unit": "boolean",
+            "formula": "arrival corroborated by pickup GPS before cancellation",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-010",
+            "value": false,
+            "name": "driver_no_show",
+            "unit": "boolean",
+            "formula": "verified driver no-show under the five-minute arrival condition",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-011",
+            "value": true,
+            "name": "goodwill_eligibility_resolved",
+            "unit": "boolean",
+            "formula": "False when reported timely arrival conflicts with relevant pickup-window GPS and the elapsed no-contact case leaves separate goodwill unresolved; computed credit is not a final entitlement in that case",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-GPS-01",
+              "FHE-2026-002-GPS-02",
+              "FHE-2026-002-GPS-03",
+              "FHE-2026-002-CHAT-01",
+              "FHE-2026-002-EVENT-01",
+              "FHE-2026-002-EVENT-02",
+              "FHE-2026-002-EVENT-03",
+              "FHE-2026-002-EVENT-04",
+              "FHE-2026-002-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "FHE-2026-002-TICKET-01",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "FHE-2026-002",
+              "trip_id": "FHT-2026-91002",
+              "filed_by": "rider",
+              "dispute_type": "no_show_charge",
+              "description": "On FHT-2026-91002, I received a message but my phone never rang. Please return the cancellation fee.",
+              "filed_at": "2026-03-22T01:48:00+08:00",
+              "status": "open"
+            }
+          },
+          {
+            "id": "FHE-2026-002-TRIP-01",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "FHT-2026-91002",
+              "rider_id": "FHR-81002",
+              "driver_id": "FHD-71002",
+              "pickup_location": {
+                "name": "Tampines workshop, loading bay C",
+                "lat": 1.354,
+                "lng": 103.944
+              },
+              "dropoff_location": {
+                "name": "Bedok sports hall",
+                "lat": 1.325,
+                "lng": 103.938
+              },
+              "scheduled_time": "2026-03-21T23:48:00+08:00",
+              "driver_arrival_time": "2026-03-21T23:48:00+08:00",
+              "driver_wait_start": "2026-03-21T23:48:00+08:00",
+              "cancellation_time": "2026-03-21T23:54:30+08:00",
+              "cancellation_fee": 5.0,
+              "cancellation_reason": "rider_no_show"
+            }
+          },
+          {
+            "id": "FHE-2026-002-GPS-01",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-03-21T23:48:00+08:00",
+              "lat": 1.354,
+              "lng": 103.944,
+              "speed_kmh": 0,
+              "status": "arrived"
+            }
+          },
+          {
+            "id": "FHE-2026-002-GPS-02",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-03-21T23:51:15+08:00",
+              "lat": 1.354,
+              "lng": 103.944,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "FHE-2026-002-GPS-03",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-03-21T23:54:30+08:00",
+              "lat": 1.354,
+              "lng": 103.944,
+              "speed_kmh": 0,
+              "status": "cancelled"
+            }
+          },
+          {
+            "id": "FHE-2026-002-CHAT-01",
+            "source": "chat_logs",
+            "data": {
+              "timestamp": "2026-03-21T23:48:10+08:00",
+              "sender": "driver",
+              "type": "message",
+              "content": "I'm waiting at Tampines workshop, loading bay C. My car is a Kia Niro."
+            }
+          },
+          {
+            "id": "FHE-2026-002-EVENT-01",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-21T23:33:00+08:00",
+              "event_type": "booking_confirmed",
+              "details": "FHT-2026-91002; rider FHR-81002; driver FHD-71002; scheduled pickup 2026-03-21T23:48:00+08:00."
+            }
+          },
+          {
+            "id": "FHE-2026-002-EVENT-02",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-21T23:48:00+08:00",
+              "event_type": "driver_arrived",
+              "details": "Arrival service: GNSS auto-arrival at the booked pickup coordinates; timestamp 2026-03-21T23:48:00+08:00."
+            }
+          },
+          {
+            "id": "FHE-2026-002-EVENT-03",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-21T23:54:30+08:00",
+              "event_type": "pickup_presence_export",
+              "details": "Arrival-service archive reports continuous stationary pickup presence from 2026-03-21T23:48:00+08:00 through 2026-03-21T23:54:30+08:00. Source: arrival-service GNSS trace; one-second sampling."
+            }
+          },
+          {
+            "id": "FHE-2026-002-EVENT-04",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-21T23:54:30+08:00",
+              "event_type": "cancellation_fee_applied",
+              "details": "Driver cancelled FHT-2026-91002; reason rider_no_show. Ledger: SGD 5.00 debited to rider and SGD 5.00 transferred to driver; no reversal or goodwill credit posted."
+            }
+          },
+          {
+            "id": "FHE-2026-002-EVENT-05",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-03-21T23:54:50+08:00",
+              "event_type": "communication_export_completed",
+              "details": "Complete server-side in-app message and call export for FHT-2026-91002, booking through cancellation. All messages and attempted in-app calls are included in chat_logs; no omitted or deleted records. Voice attempts count includes unanswered calls."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_no_show",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "no_show_charge",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-2.1",
+              "text": "Section 2.1: Five-minute free wait from scheduled pickup time. Early arrival earns no pre-schedule credit. Implementation interpretation: a late driver must also spend five physical minutes at pickup after arrival."
+            },
+            {
+              "id": "POLICY-2.2",
+              "text": "Section 2.2: A valid driver-cancelled rider no-show incurs SGD 5.00, transferred to the driver as compensation."
+            },
+            {
+              "id": "POLICY-2.3",
+              "text": "Section 2.3: Before cancellation, driver must send at least one in-app chat message AND attempt at least one in-app phone call. Failure of either obligation voids the fee."
+            },
+            {
+              "id": "POLICY-2.4",
+              "text": "Section 2.4: Driver must arrive by scheduled pickup plus 5 minutes. Rider may cancel at no charge when driver fails this arrival condition. Driver no-show plus no contact qualifies for a separate SGD 5 goodwill credit."
+            },
+            {
+              "id": "POLICY-2.5",
+              "text": "Section 2.5: At least 3 no-show cancellations within a rolling 30 days flag the rider for human account review; do not suspend accounts or infer fee validity from history."
+            },
+            {
+              "id": "POLICY-7.3",
+              "text": "Precedent 7.3, DISP-2026-0211: Driver waited 6 minutes but made no message or call. SGD 5 cancellation fee reversed. Relevant when contact obligations are missing; it is not the answer label for the current case."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": "scheduled_time",
+          "free_wait_time_min": 5,
+          "no_show_threshold_min": 5,
+          "cancellation_fee_after_wait": 5.0,
+          "tolerance_km": null,
+          "max_ai_deviation_km": null,
+          "refund_basis": "cancellation_fee"
+        },
+        "workflow": {
+          "case_id": "FHE-2026-002",
+          "status": "completed",
+          "activity_log": [
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FHT-2026-91002",
+                "sources": [
+                  "app_events",
+                  "chat_logs",
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "To retrieve call logs, chat history, GPS arrival times, and trip metadata to verify driver compliance with contact obligations and arrival deadlines under the no-show policy.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1411,
+                  "total_tokens": 1508,
+                  "completion_tokens": 97
+                },
+                "record_ids": [
+                  "FHE-2026-002-TRIP-01",
+                  "FHE-2026-002-GPS-01",
+                  "FHE-2026-002-GPS-02",
+                  "FHE-2026-002-GPS-03",
+                  "FHE-2026-002-CHAT-01",
+                  "FHE-2026-002-EVENT-01",
+                  "FHE-2026-002-EVENT-02",
+                  "FHE-2026-002-EVENT-03",
+                  "FHE-2026-002-EVENT-04",
+                  "FHE-2026-002-EVENT-05"
+                ],
+                "duration_ms": 1339
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FHT-2026-91002",
+                "sources": [
+                  "app_events",
+                  "chat_logs",
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "Retrieve full interaction history to verify if the driver sent required in-app chat messages and attempted phone calls per policy 2.3, confirm arrival time against scheduled pickup per policy 2.4, and establish trip details to determine fee validity.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1412,
+                  "total_tokens": 1526,
+                  "completion_tokens": 114
+                },
+                "record_ids": [
+                  "FHE-2026-002-TRIP-01",
+                  "FHE-2026-002-GPS-01",
+                  "FHE-2026-002-GPS-02",
+                  "FHE-2026-002-GPS-03",
+                  "FHE-2026-002-CHAT-01",
+                  "FHE-2026-002-EVENT-01",
+                  "FHE-2026-002-EVENT-02",
+                  "FHE-2026-002-EVENT-03",
+                  "FHE-2026-002-EVENT-04",
+                  "FHE-2026-002-EVENT-05"
+                ],
+                "duration_ms": 1436
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The SGD 5.00 cancellation fee must be refunded because the driver failed to satisfy the mandatory contact requirements under POLICY-2.3. Although the driver sent one message (FACT-003), the contact log shows zero call attempts (FACT-004), which voids the fee eligibility entirely (FACT-002).",
+                      "evidence_ids": [
+                        "FHE-2026-002-TRIP-01",
+                        "FHE-2026-002-CHAT-01",
+                        "FHE-2026-002-EVENT-04",
+                        "FHE-2026-002-EVENT-05"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 0
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 3294,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 6072,
+                  "completion_tokens": 323,
+                  "total_tokens": 6395
+                }
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "driver_advocate",
+                  "claims": [
+                    {
+                      "statement": "The driver arrived at the scheduled time and maintained verified presence for 6.5 minutes, satisfying the arrival and waiting requirements.",
+                      "evidence_ids": [
+                        "FHE-2026-002-TRIP-01",
+                        "FHE-2026-002-GPS-01",
+                        "FHE-2026-002-GPS-02",
+                        "FHE-2026-002-GPS-03",
+                        "FHE-2026-002-EVENT-03"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.1",
+                        "POLICY-2.4"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 6.5
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": "2026-03-21T23:48:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-008",
+                          "value": true
+                        },
+                        {
+                          "fact_id": "FACT-009",
+                          "value": true
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The driver fulfilled the message obligation by sending one in-app chat prior to cancellation, which is a required component of the contact rule.",
+                      "evidence_ids": [
+                        "FHE-2026-002-CHAT-01",
+                        "FHE-2026-002-EVENT-05"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 1
+                        }
+                      ]
+                    },
+                    {
+                      "statement": "The ride is confirmed as a valid no-show entitling the driver to compensation, despite the lack of call records which would otherwise void the fee.",
+                      "evidence_ids": [
+                        "FHE-2026-002-TRIP-01",
+                        "FHE-2026-002-EVENT-04"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.2"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [
+                    {
+                      "statement": "The rider's allegation that they never received a call is unsupported by server logs which indicate zero call attempts were made by the driver.",
+                      "evidence_ids": [
+                        "FHE-2026-002-CHAT-01",
+                        "FHE-2026-002-EVENT-05",
+                        "FHE-2026-002-TICKET-01"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 0
+                        }
+                      ]
+                    }
+                  ],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 6858,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 6072,
+                  "completion_tokens": 823,
+                  "total_tokens": 6895
+                }
+              }
+            },
+            {
+              "actor": "judge",
+              "event": "provisional_review",
+              "output": {
+                "result": {
+                  "action": "final_ruling",
+                  "question": null,
+                  "rebuttal_roles": [],
+                  "ruling": "reverse_charge",
+                  "proposed_action": {
+                    "amount_cents": 500,
+                    "currency": "SGD",
+                    "refund_basis": "cancellation_fee",
+                    "goodwill_credit_cents": 0
+                  },
+                  "explanation": "The dispute concerns a no-show charge where the driver failed to satisfy the mandatory contact obligations. POLICY-2.3 requires the driver to send at least one in-app message AND attempt at least one in-app phone call before cancellation. The server logs (FACT-004) confirm zero call attempts were made. Under POLICY-2.3, the failure of either obligation voids the fee. This aligns with Precedent 7.3 (POLICY-7.3), where a SGD 5 fee was reversed due to missing contact. The driver's timely arrival and wait time (POLICY-2.1) do not cure the lack of required contact. The rider's claim for a refund is validated. The rider's complaint about the phone not ringing is unsupported by server logs showing no calls were attempted, so no separate goodwill credit is triggered (POLICY-2.4 goodwill applies to driver no-show with no contact, but here the driver was present; the lack of contact voids the fee, it doesn't constitute a driver no-show for goodwill purposes). The fee is reversed.",
+                  "evidence_ids": [
+                    "FHE-2026-002-TRIP-01",
+                    "FHE-2026-002-CHAT-01",
+                    "FHE-2026-002-EVENT-05",
+                    "FHE-2026-002-EVENT-04",
+                    "FHE-2026-002-TICKET-01"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.3",
+                    "POLICY-2.2",
+                    "POLICY-7.3"
+                  ],
+                  "confidence": 0.95,
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-002",
+                      "value": false
+                    },
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 1
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 0
+                    }
+                  ]
+                },
+                "duration_ms": 5878,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 7479,
+                  "completion_tokens": 563,
+                  "total_tokens": 8042
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_completed",
+              "output": {
+                "wall_duration_ms": 14080,
+                "status": "completed"
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "final_ruling",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": "reverse_charge",
+            "proposed_action": {
+              "amount_cents": 500,
+              "currency": "SGD",
+              "refund_basis": "cancellation_fee",
+              "goodwill_credit_cents": 0
+            },
+            "explanation": "The dispute concerns a no-show charge where the driver failed to satisfy the mandatory contact obligations. POLICY-2.3 requires the driver to send at least one in-app message AND attempt at least one in-app phone call before cancellation. The server logs (FACT-004) confirm zero call attempts were made. Under POLICY-2.3, the failure of either obligation voids the fee. This aligns with Precedent 7.3 (POLICY-7.3), where a SGD 5 fee was reversed due to missing contact. The driver's timely arrival and wait time (POLICY-2.1) do not cure the lack of required contact. The rider's claim for a refund is validated. The rider's complaint about the phone not ringing is unsupported by server logs showing no calls were attempted, so no separate goodwill credit is triggered (POLICY-2.4 goodwill applies to driver no-show with no contact, but here the driver was present; the lack of contact voids the fee, it doesn't constitute a driver no-show for goodwill purposes). The fee is reversed.",
+            "evidence_ids": [
+              "FHE-2026-002-TRIP-01",
+              "FHE-2026-002-CHAT-01",
+              "FHE-2026-002-EVENT-05",
+              "FHE-2026-002-EVENT-04",
+              "FHE-2026-002-TICKET-01"
+            ],
+            "policy_ids": [
+              "POLICY-2.3",
+              "POLICY-2.2",
+              "POLICY-7.3"
+            ],
+            "confidence": 0.95,
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-002",
+                "value": false
+              },
+              {
+                "fact_id": "FACT-003",
+                "value": 1
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 0
+              }
+            ]
+          },
+          "final_explanation": "The pickup records establish 6.5 eligible waiting minutes, starting no earlier than scheduled pickup and physical arrival. Contacts before cancellation: 1 message(s), 0 call(s); both are required by POLICY-2.3. The cancellation fee is reversed because a required contact is missing. Like precedent POLICY-7.3, missing contact invalidates the fee. Recommended rider refund: SGD 5.00.",
+          "validation_issues": [],
+          "failure_category": null,
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "total_tokens": 24366,
+      "checks": {
+        "operational_success": true,
+        "case_id": true,
+        "outcome": true,
+        "amount_cents": true,
+        "goodwill_credit_cents": true,
+        "refund_basis": true,
+        "confidence": true,
+        "citations": true,
+        "retrieval": true,
+        "argument_completion": true
+      },
+      "failed_checks": [],
+      "expected_ruling": "reverse_charge",
+      "actual_ruling": "reverse_charge",
+      "conditional_confidence_referral": false,
+      "assessed_confidence": 0.95,
+      "required_confidence": 0,
+      "oracle_status": "draft_for_independent_human_review",
+      "human_confirmation_required": false,
+      "citation_issues": [],
+      "retrieval_issues": [],
+      "argument_issues": [],
+      "expected": {
+        "expected_label": "reverse_charge",
+        "expected_refund_cents": 500,
+        "expected_goodwill_credit_cents": 0,
+        "refund_basis": "cancellation_fee",
+        "mandatory_human_review": false
+      },
+      "wall_duration_ms": 14086
+    },
+    {
+      "case_id": "FHE-2026-006",
+      "run": 1,
+      "input_file": "/var/folders/0z/j5n121v10xsfd77gt7ds8gxm0000gn/T/fairride-diagnostic-cases-nrwzti3u/FHE-2026-006.json",
+      "verdict": "FAIL",
+      "review": {
+        "report_version": "1.0",
+        "generated_at": "2026-10-16T07:18:25.095130+00:00",
+        "mode": "Live model",
+        "summary": {
+          "case_id": "FHE-2026-006",
+          "policy_version": "2.1",
+          "status": "human_review",
+          "outcome": "Review could not be completed",
+          "refund_cents": null,
+          "goodwill_credit_cents": null,
+          "mandatory_escalation": false,
+          "failure_category": "validation",
+          "reason": "No validated decision was issued because the review failed.",
+          "party_messages": null,
+          "review_issues": [
+            "Agent review failed: Fact assertion correction failed: Fact assertion correction must retain FACT-007; Fact assertion correction must retain FACT-008",
+            "Reported timely arrival conflicts with pickup GPS; separate goodwill eligibility is unresolved"
+          ],
+          "checklist": [
+            {
+              "condition": "Five physical minutes at pickup after scheduled time",
+              "observation": "8 min: 2026-10-04T04:55:00+08:00 to 2026-10-04T05:03:00+08:00",
+              "status": "unresolved",
+              "fact_ids": [
+                "FACT-001",
+                "FACT-006",
+                "FACT-007"
+              ],
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-GPS-01",
+                "FHE-2026-006-GPS-02",
+                "FHE-2026-006-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Pickup presence corroborated",
+              "observation": "No corroborated arrival",
+              "status": "unresolved",
+              "fact_ids": [
+                "FACT-009"
+              ],
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-GPS-01",
+                "FHE-2026-006-GPS-02",
+                "FHE-2026-006-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            },
+            {
+              "condition": "Arrival by scheduled pickup + 5 minutes (inclusive)",
+              "observation": "No timely pickup presence recorded",
+              "status": "unresolved",
+              "fact_ids": [
+                "FACT-008",
+                "FACT-010"
+              ],
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-GPS-01",
+                "FHE-2026-006-GPS-02",
+                "FHE-2026-006-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.4"
+              ]
+            },
+            {
+              "condition": "At least one driver message before cancellation",
+              "observation": "0 recorded",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-003"
+              ],
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-EVENT-01",
+                "FHE-2026-006-EVENT-02",
+                "FHE-2026-006-EVENT-03",
+                "FHE-2026-006-EVENT-04",
+                "FHE-2026-006-EVENT-05"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            },
+            {
+              "condition": "At least one driver call attempt before cancellation",
+              "observation": "0 recorded",
+              "status": "not met",
+              "fact_ids": [
+                "FACT-004"
+              ],
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-EVENT-01",
+                "FHE-2026-006-EVENT-02",
+                "FHE-2026-006-EVENT-03",
+                "FHE-2026-006-EVENT-04",
+                "FHE-2026-006-EVENT-05"
+              ],
+              "policy_ids": [
+                "POLICY-2.3"
+              ]
+            }
+          ],
+          "calculations": [
+            {
+              "label": "Recorded wait interval",
+              "value": 8.0,
+              "unit": "minutes",
+              "formula": "2026-10-04T04:55:00+08:00 → 2026-10-04T05:03:00+08:00 = 8 min. Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero. Pickup presence is not corroborated; this interval does not verify physical waiting.",
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-GPS-01",
+                "FHE-2026-006-GPS-02",
+                "FHE-2026-006-GPS-03"
+              ],
+              "policy_ids": [
+                "POLICY-2.1"
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "timestamp": "2026-10-04T04:55:00+08:00",
+              "event": "Scheduled pickup",
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-10-04T04:55:00+08:00",
+              "event": "Recorded driver arrival",
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-10-04T04:55:00+08:00",
+              "event": "Counted wait starts",
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-GPS-01",
+                "FHE-2026-006-GPS-02",
+                "FHE-2026-006-GPS-03"
+              ]
+            },
+            {
+              "timestamp": "2026-10-04T05:03:00+08:00",
+              "event": "Cancellation",
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01"
+              ]
+            },
+            {
+              "timestamp": "2026-10-04T05:03:00+08:00",
+              "event": "Counted wait ends (cancellation or GPS departure)",
+              "evidence_ids": [
+                "FHE-2026-006-TRIP-01",
+                "FHE-2026-006-GPS-01",
+                "FHE-2026-006-GPS-02",
+                "FHE-2026-006-GPS-03"
+              ]
+            }
+          ]
+        },
+        "facts": [
+          {
+            "id": "FACT-001",
+            "value": 8.0,
+            "name": "waited_minutes",
+            "unit": "minutes",
+            "formula": "Elapsed minutes from max(scheduled_time, available recorded or GPS-corroborated arrival) to cancellation_time, capped at the first subsequent GPS departure; floor at zero",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-002",
+            "value": false,
+            "name": "fee_eligible",
+            "unit": "boolean",
+            "formula": "pickup presence AND five-minute wait AND message AND call AND timely arrival",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03",
+              "FHE-2026-006-EVENT-01",
+              "FHE-2026-006-EVENT-02",
+              "FHE-2026-006-EVENT-03",
+              "FHE-2026-006-EVENT-04",
+              "FHE-2026-006-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.1",
+              "POLICY-2.3",
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-003",
+            "value": 0,
+            "name": "message_count",
+            "unit": "count",
+            "formula": "driver messages before cancellation",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-EVENT-01",
+              "FHE-2026-006-EVENT-02",
+              "FHE-2026-006-EVENT-03",
+              "FHE-2026-006-EVENT-04",
+              "FHE-2026-006-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-004",
+            "value": 0,
+            "name": "call_count",
+            "unit": "count",
+            "formula": "unique driver call attempts before cancellation",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-EVENT-01",
+              "FHE-2026-006-EVENT-02",
+              "FHE-2026-006-EVENT-03",
+              "FHE-2026-006-EVENT-04",
+              "FHE-2026-006-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ]
+          },
+          {
+            "id": "FACT-005",
+            "value": 0,
+            "name": "goodwill_credit_cents",
+            "unit": "SGD cents",
+            "formula": "500 if driver no-show and no contact; separate from refund",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03",
+              "FHE-2026-006-EVENT-01",
+              "FHE-2026-006-EVENT-02",
+              "FHE-2026-006-EVENT-03",
+              "FHE-2026-006-EVENT-04",
+              "FHE-2026-006-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-006",
+            "value": "2026-10-04T04:55:00+08:00",
+            "name": "wait_start_time",
+            "unit": "ISO timestamp",
+            "formula": "max(scheduled pickup, available recorded or GPS-corroborated arrival)",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-007",
+            "value": "2026-10-04T05:03:00+08:00",
+            "name": "wait_end_time",
+            "unit": "ISO timestamp",
+            "formula": "earlier of cancellation and first subsequent GPS departure",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-008",
+            "value": false,
+            "name": "timely_presence",
+            "unit": "boolean",
+            "formula": "pickup GPS presence by scheduled pickup plus five minutes, inclusive",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-009",
+            "value": false,
+            "name": "arrival_verified",
+            "unit": "boolean",
+            "formula": "arrival corroborated by pickup GPS before cancellation",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.1"
+            ]
+          },
+          {
+            "id": "FACT-010",
+            "value": false,
+            "name": "driver_no_show",
+            "unit": "boolean",
+            "formula": "verified driver no-show under the five-minute arrival condition",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          },
+          {
+            "id": "FACT-011",
+            "value": false,
+            "name": "goodwill_eligibility_resolved",
+            "unit": "boolean",
+            "formula": "False when reported timely arrival conflicts with relevant pickup-window GPS and the elapsed no-contact case leaves separate goodwill unresolved; computed credit is not a final entitlement in that case",
+            "evidence_ids": [
+              "FHE-2026-006-TRIP-01",
+              "FHE-2026-006-GPS-01",
+              "FHE-2026-006-GPS-02",
+              "FHE-2026-006-GPS-03",
+              "FHE-2026-006-EVENT-01",
+              "FHE-2026-006-EVENT-02",
+              "FHE-2026-006-EVENT-03",
+              "FHE-2026-006-EVENT-04",
+              "FHE-2026-006-EVENT-05"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "FHE-2026-006-TICKET-01",
+            "source": "dispute_ticket",
+            "data": {
+              "dispute_id": "FHE-2026-006",
+              "trip_id": "FHT-2026-91006",
+              "filed_by": "rider",
+              "dispute_type": "no_show_charge",
+              "description": "No car came to gate 2 for FHT-2026-91006, and nobody contacted me. Please check the fee and credit me for the missed pickup.",
+              "filed_at": "2026-10-04T06:55:00+08:00",
+              "status": "open"
+            }
+          },
+          {
+            "id": "FHE-2026-006-TRIP-01",
+            "source": "trip_data",
+            "data": {
+              "trip_id": "FHT-2026-91006",
+              "rider_id": "FHR-81006",
+              "driver_id": "FHD-71006",
+              "pickup_location": {
+                "name": "Jurong West repair depot, gate 2",
+                "lat": 1.342,
+                "lng": 103.704
+              },
+              "dropoff_location": {
+                "name": "Lakeside station shelter",
+                "lat": 1.344,
+                "lng": 103.721
+              },
+              "scheduled_time": "2026-10-04T04:55:00+08:00",
+              "driver_arrival_time": "2026-10-04T04:55:00+08:00",
+              "driver_wait_start": "2026-10-04T04:55:00+08:00",
+              "cancellation_time": "2026-10-04T05:03:00+08:00",
+              "cancellation_fee": 5.0,
+              "cancellation_reason": "rider_no_show"
+            }
+          },
+          {
+            "id": "FHE-2026-006-GPS-01",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-10-04T04:55:00+08:00",
+              "lat": 1.351,
+              "lng": 103.704,
+              "speed_kmh": 0,
+              "status": "arrived"
+            }
+          },
+          {
+            "id": "FHE-2026-006-GPS-02",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-10-04T04:59:00+08:00",
+              "lat": 1.351,
+              "lng": 103.704,
+              "speed_kmh": 0,
+              "status": "waiting"
+            }
+          },
+          {
+            "id": "FHE-2026-006-GPS-03",
+            "source": "gps_telemetry",
+            "data": {
+              "timestamp": "2026-10-04T05:03:00+08:00",
+              "lat": 1.351,
+              "lng": 103.704,
+              "speed_kmh": 0,
+              "status": "cancelled"
+            }
+          },
+          {
+            "id": "FHE-2026-006-EVENT-01",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-10-04T04:40:00+08:00",
+              "event_type": "booking_confirmed",
+              "details": "FHT-2026-91006; rider FHR-81006; driver FHD-71006; scheduled pickup 2026-10-04T04:55:00+08:00."
+            }
+          },
+          {
+            "id": "FHE-2026-006-EVENT-02",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-10-04T04:55:00+08:00",
+              "event_type": "driver_arrived",
+              "details": "Arrival service: GNSS auto-arrival at the booked pickup coordinates; timestamp 2026-10-04T04:55:00+08:00."
+            }
+          },
+          {
+            "id": "FHE-2026-006-EVENT-03",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-10-04T05:03:00+08:00",
+              "event_type": "pickup_presence_export",
+              "details": "Arrival-service archive reports continuous stationary pickup presence from 2026-10-04T04:55:00+08:00 through 2026-10-04T05:03:00+08:00. Source: arrival-service GNSS trace; one-second sampling."
+            }
+          },
+          {
+            "id": "FHE-2026-006-EVENT-04",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-10-04T05:03:00+08:00",
+              "event_type": "cancellation_fee_applied",
+              "details": "Driver cancelled FHT-2026-91006; reason rider_no_show. Ledger: SGD 5.00 debited to rider and SGD 5.00 transferred to driver; no reversal or goodwill credit posted."
+            }
+          },
+          {
+            "id": "FHE-2026-006-EVENT-05",
+            "source": "app_events",
+            "data": {
+              "timestamp": "2026-10-04T05:03:20+08:00",
+              "event_type": "communication_export_completed",
+              "details": "Complete server-side in-app message and call export for FHT-2026-91006, booking through cancellation. All messages and attempted in-app calls are included in chat_logs; no omitted or deleted records. Voice attempts count includes unanswered calls."
+            }
+          }
+        ],
+        "policy": {
+          "policy_id": "ryde_v2_1_no_show",
+          "version": "2.1",
+          "status": "supplied_project_reference",
+          "source_reference": "data/Document 2 — Ryde Dispute Resolution Policy v2.1 (Markdown).md",
+          "effective_date": "2026-01-01",
+          "dispute_type": "no_show_charge",
+          "fee_goes_to": "rider_refund_or_driver_compensation",
+          "clauses": [
+            {
+              "id": "POLICY-2.1",
+              "text": "Section 2.1: Five-minute free wait from scheduled pickup time. Early arrival earns no pre-schedule credit. Implementation interpretation: a late driver must also spend five physical minutes at pickup after arrival."
+            },
+            {
+              "id": "POLICY-2.2",
+              "text": "Section 2.2: A valid driver-cancelled rider no-show incurs SGD 5.00, transferred to the driver as compensation."
+            },
+            {
+              "id": "POLICY-2.3",
+              "text": "Section 2.3: Before cancellation, driver must send at least one in-app chat message AND attempt at least one in-app phone call. Failure of either obligation voids the fee."
+            },
+            {
+              "id": "POLICY-2.4",
+              "text": "Section 2.4: Driver must arrive by scheduled pickup plus 5 minutes. Rider may cancel at no charge when driver fails this arrival condition. Driver no-show plus no contact qualifies for a separate SGD 5 goodwill credit."
+            },
+            {
+              "id": "POLICY-2.5",
+              "text": "Section 2.5: At least 3 no-show cancellations within a rolling 30 days flag the rider for human account review; do not suspend accounts or infer fee validity from history."
+            },
+            {
+              "id": "POLICY-7.3",
+              "text": "Precedent 7.3, DISP-2026-0211: Driver waited 6 minutes but made no message or call. SGD 5 cancellation fee reversed. Relevant when contact obligations are missing; it is not the answer label for the current case."
+            },
+            {
+              "id": "POLICY-5.1",
+              "text": "Section 5.1–5.2: Safety indicators in any dispute require immediate human review. AI must not issue rulings, assign fault, or recommend a resolution for safety incidents."
+            },
+            {
+              "id": "POLICY-6.1",
+              "text": "Section 6.1: Dispute value under SGD 10 permits any confidence; SGD 10–50 needs at least 80%; above SGD 50 requires human review."
+            },
+            {
+              "id": "POLICY-6.2",
+              "text": "Section 6.2: Route AI rulings require confidence >=80% and additional distance <=2 km. No-show/cancellation fee is fixed at SGD 5; safety is always escalated. Unsupported categories are referred."
+            },
+            {
+              "id": "POLICY-6.3",
+              "text": "Section 6.3: Confidence considers evidence completeness, policy clarity, precedent alignment and credibility. Any party fraud flag >=1 raises the confidence requirement to 95%; a flag does not establish fault."
+            }
+          ],
+          "wait_start_event": "scheduled_time",
+          "free_wait_time_min": 5,
+          "no_show_threshold_min": 5,
+          "cancellation_fee_after_wait": 5.0,
+          "tolerance_km": null,
+          "max_ai_deviation_km": null,
+          "refund_basis": "cancellation_fee"
+        },
+        "workflow": {
+          "case_id": "FHE-2026-006",
+          "status": "human_review",
+          "activity_log": [
+            {
+              "actor": "rider_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FHT-2026-91006",
+                "sources": [
+                  "app_events",
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "Retrieve comprehensive event logs, location history, and trip metadata to determine if a driver arrived at the pickup location, if contact attempts were made, and to verify the timing of any cancellations against policy requirements.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1420,
+                  "total_tokens": 1521,
+                  "completion_tokens": 101
+                },
+                "record_ids": [
+                  "FHE-2026-006-TRIP-01",
+                  "FHE-2026-006-GPS-01",
+                  "FHE-2026-006-GPS-02",
+                  "FHE-2026-006-GPS-03",
+                  "FHE-2026-006-EVENT-01",
+                  "FHE-2026-006-EVENT-02",
+                  "FHE-2026-006-EVENT-03",
+                  "FHE-2026-006-EVENT-04",
+                  "FHE-2026-006-EVENT-05"
+                ],
+                "duration_ms": 1195
+              }
+            },
+            {
+              "actor": "rider_advocate",
+              "event": "initial_argument",
+              "output": {
+                "result": {
+                  "role": "rider_advocate",
+                  "claims": [
+                    {
+                      "statement": "The SGD 5.00 cancellation fee must be refunded because the driver failed to establish the mandatory in-app message and call contacts required by POLICY-2.3 before cancelling. POLICY-2.3 requires both obligations; their absence voids the fee regardless of other conditions.",
+                      "evidence_ids": [
+                        "FHE-2026-006-TRIP-01",
+                        "FHE-2026-006-EVENT-05"
+                      ],
+                      "policy_ids": [
+                        "POLICY-2.3"
+                      ],
+                      "fact_assertions": [
+                        {
+                          "fact_id": "FACT-002",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 0
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 0
+                        }
+                      ]
+                    }
+                  ],
+                  "counterpoints": [],
+                  "unanswered_questions": []
+                },
+                "duration_ms": 3094,
+                "citation_retries": 0,
+                "schema_retries": 0,
+                "citation_resolutions": [],
+                "validation_diagnostics": {},
+                "usage": {
+                  "prompt_tokens": 5923,
+                  "completion_tokens": 269,
+                  "total_tokens": 6192
+                }
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "evidence_request",
+              "output": {
+                "trip_id": "FHT-2026-91006",
+                "sources": [
+                  "app_events",
+                  "gps_telemetry",
+                  "trip_data"
+                ],
+                "purpose": "Retrieve communication logs to verify driver contact attempts (Policy 2.3), location history to determine if and when the driver arrived at the pickup location (Policy 2.4), and general trip details to confirm scheduled time and status.",
+                "round": 1,
+                "usage": {
+                  "prompt_tokens": 1419,
+                  "total_tokens": 1526,
+                  "completion_tokens": 107
+                },
+                "record_ids": [
+                  "FHE-2026-006-TRIP-01",
+                  "FHE-2026-006-GPS-01",
+                  "FHE-2026-006-GPS-02",
+                  "FHE-2026-006-GPS-03",
+                  "FHE-2026-006-EVENT-01",
+                  "FHE-2026-006-EVENT-02",
+                  "FHE-2026-006-EVENT-03",
+                  "FHE-2026-006-EVENT-04",
+                  "FHE-2026-006-EVENT-05"
+                ],
+                "duration_ms": 13689
+              }
+            },
+            {
+              "actor": "driver_advocate",
+              "event": "response_validation_failed",
+              "output": {
+                "validation_diagnostics": {
+                  "case_id": "FHE-2026-006",
+                  "actor": "driver_advocate",
+                  "response_type": "AdvocateResult",
+                  "outcome": "failed_validation",
+                  "attempts": [
+                    {
+                      "attempt": 1,
+                      "response": {
+                        "role": "driver_advocate",
+                        "claims": [
+                          {
+                            "statement": "The driver arrived exactly at the scheduled pickup time and maintained stationary presence for 8 minutes, satisfying the physical presence and free-wait requirements under POLICY-2.1. The driver is eligible for the standard no-show fee as compensation for the wasted trip time.",
+                            "evidence_ids": [
+                              "FHE-2026-006-TRIP-01",
+                              "FHE-2026-006-GPS-01",
+                              "FHE-2026-006-GPS-02",
+                              "FHE-2026-006-GPS-03",
+                              "FHE-2026-006-EVENT-02",
+                              "FHE-2026-006-EVENT-03"
+                            ],
+                            "policy_ids": [
+                              "POLICY-2.1",
+                              "POLICY-2.2"
+                            ],
+                            "fact_assertions": [
+                              {
+                                "fact_id": "FACT-001",
+                                "value": 8.0
+                              },
+                              {
+                                "fact_id": "FACT-006",
+                                "value": "2026-10-04T04:55:00+08:00"
+                              },
+                              {
+                                "fact_id": "FACT-007",
+                                "value": "2026-10-04T05:03:00+08:00"
+                              },
+                              {
+                                "fact_id": "FACT-008",
+                                "value": true
+                              },
+                              {
+                                "fact_id": "FACT-009",
+                                "value": true
+                              }
+                            ]
+                          }
+                        ],
+                        "counterpoints": [
+                          {
+                            "statement": "While the rider is correct that the driver sent zero messages and calls (voiding the fee under POLICY-2.3), this contact failure is an exception to the general rule and does not constitute a driver no-show when physical arrival was verified and timely. The lack of contact is a procedural error by the driver, not evidence that the driver failed to arrive.",
+                            "evidence_ids": [
+                              "FHE-2026-006-EVENT-05"
+                            ],
+                            "policy_ids": [
+                              "POLICY-2.3",
+                              "POLICY-2.4"
+                            ],
+                            "fact_assertions": [
+                              {
+                                "fact_id": "FACT-003",
+                                "value": 0
+                              },
+                              {
+                                "fact_id": "FACT-004",
+                                "value": 0
+                              },
+                              {
+                                "fact_id": "FACT-010",
+                                "value": false
+                              }
+                            ]
+                          }
+                        ],
+                        "unanswered_questions": []
+                      },
+                      "validation_errors": [
+                        "Fact assertion FACT-008 (timely_presence) must equal False; got True",
+                        "Fact assertion FACT-009 (arrival_verified) must equal False; got True"
+                      ],
+                      "required_fact_assertions": []
+                    },
+                    {
+                      "attempt": 2,
+                      "response": {
+                        "role": "driver_advocate",
+                        "claims": [
+                          {
+                            "statement": "The rider’s claim of a 'no car' is factually false because the driver was physically present at the pickup location for the entire 8-minute duration, corroborated by continuous stationary GPS telemetry.",
+                            "evidence_ids": [
+                              "FHE-2026-006-GPS-01",
+                              "FHE-2026-006-GPS-02",
+                              "FHE-2026-006-GPS-03",
+                              "FHE-2026-006-EVENT-03"
+                            ],
+                            "policy_ids": [
+                              "POLICY-2.1"
+                            ],
+                            "fact_assertions": [
+                              {
+                                "fact_id": "FACT-001",
+                                "value": 8.0
+                              },
+                              {
+                                "fact_id": "FACT-009",
+                                "value": false
+                              }
+                            ]
+                          },
+                          {
+                            "statement": "The driver’s arrival at 04:55:00 exactly matches the scheduled time, which is well within the inclusive 5-minute boundary of POLICY-2.4; the driver is therefore not a no-show.",
+                            "evidence_ids": [
+                              "FHE-2026-006-TRIP-01",
+                              "FHE-2026-006-EVENT-02"
+                            ],
+                            "policy_ids": [
+                              "POLICY-2.4"
+                            ],
+                            "fact_assertions": [
+                              {
+                                "fact_id": "FACT-006",
+                                "value": "2026-10-04T04:55:00+08:00"
+                              },
+                              {
+                                "fact_id": "FACT-010",
+                                "value": false
+                              }
+                            ]
+                          }
+                        ],
+                        "counterpoints": [
+                          {
+                            "statement": "The no-show fee is voided strictly because the driver failed to send the mandatory message and call required by POLICY-2.3, which are absent from the communication logs.",
+                            "evidence_ids": [
+                              "FHE-2026-006-EVENT-05"
+                            ],
+                            "policy_ids": [
+                              "POLICY-2.3"
+                            ],
+                            "fact_assertions": [
+                              {
+                                "fact_id": "FACT-003",
+                                "value": 0
+                              },
+                              {
+                                "fact_id": "FACT-004",
+                                "value": 0
+                              },
+                              {
+                                "fact_id": "FACT-002",
+                                "value": false
+                              }
+                            ]
+                          },
+                          {
+                            "statement": "While the fee reversal is supported by the missing contact, the driver’s timely physical presence negates the driver no-show status required for the separate goodwill credit.",
+                            "evidence_ids": [
+                              "FHE-2026-006-TRIP-01",
+                              "FHE-2026-006-GPS-01"
+                            ],
+                            "policy_ids": [
+                              "POLICY-2.4"
+                            ],
+                            "fact_assertions": [
+                              {
+                                "fact_id": "FACT-005",
+                                "value": 0
+                              },
+                              {
+                                "fact_id": "FACT-011",
+                                "value": false
+                              }
+                            ]
+                          }
+                        ],
+                        "unanswered_questions": [
+                          "Given the conflict between the timely arrival and missing contact, how should the system adjudicate the unresolved goodwill eligibility flag?"
+                        ]
+                      },
+                      "validation_errors": [
+                        "Fact assertion correction must retain FACT-007",
+                        "Fact assertion correction must retain FACT-008"
+                      ],
+                      "required_fact_assertions": [
+                        {
+                          "fact_id": "FACT-001",
+                          "value": 8.0
+                        },
+                        {
+                          "fact_id": "FACT-003",
+                          "value": 0
+                        },
+                        {
+                          "fact_id": "FACT-004",
+                          "value": 0
+                        },
+                        {
+                          "fact_id": "FACT-006",
+                          "value": "2026-10-04T04:55:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-007",
+                          "value": "2026-10-04T05:03:00+08:00"
+                        },
+                        {
+                          "fact_id": "FACT-008",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-009",
+                          "value": false
+                        },
+                        {
+                          "fact_id": "FACT-010",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ],
+                  "usage": {
+                    "prompt_tokens": 12778,
+                    "completion_tokens": 1572,
+                    "total_tokens": 14350
+                  }
+                },
+                "usage": {
+                  "prompt_tokens": 12778,
+                  "completion_tokens": 1572,
+                  "total_tokens": 14350
+                }
+              }
+            },
+            {
+              "actor": "system",
+              "event": "review_failed",
+              "output": {
+                "wall_duration_ms": 27704
+              }
+            }
+          ],
+          "judge_result": {
+            "action": "human_review",
+            "question": null,
+            "rebuttal_roles": [],
+            "ruling": null,
+            "proposed_action": null,
+            "explanation": "Agent review could not be validated.",
+            "evidence_ids": [],
+            "policy_ids": [],
+            "confidence": null,
+            "fact_assertions": []
+          },
+          "final_explanation": null,
+          "validation_issues": [
+            "Agent review failed: Fact assertion correction failed: Fact assertion correction must retain FACT-007; Fact assertion correction must retain FACT-008"
+          ],
+          "failure_category": "validation",
+          "mandatory_escalation": false,
+          "account_review_flags": []
+        },
+        "explanation_validation": "Declared fact assertions are checked against Python facts. Free-text agent commentary is not semantically certified."
+      },
+      "total_tokens": 23589,
+      "checks": {
+        "operational_success": false,
+        "case_id": true,
+        "outcome": true,
+        "amount_cents": null,
+        "goodwill_credit_cents": null,
+        "refund_basis": null,
+        "confidence": null,
+        "citations": true,
+        "retrieval": true,
+        "argument_completion": false
+      },
+      "failed_checks": [
+        "operational_success",
+        "argument_completion"
+      ],
+      "expected_ruling": "human_review",
+      "actual_ruling": "human_review",
+      "conditional_confidence_referral": false,
+      "assessed_confidence": null,
+      "required_confidence": 0,
+      "oracle_status": "draft_for_independent_human_review",
+      "human_confirmation_required": true,
+      "citation_issues": [],
+      "retrieval_issues": [],
+      "argument_issues": [
+        "driver_advocate: missing validated initial argument"
+      ],
+      "expected": {
+        "expected_label": "unresolved_goodwill_credit",
+        "expected_refund_cents": 500,
+        "expected_goodwill_credit_cents": null,
+        "refund_basis": "cancellation_fee",
+        "mandatory_human_review": true
+      },
+      "wall_duration_ms": 27709
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "planned": 2,
+    "passed": 1,
+    "failed": 1,
+    "operational_failures": 1,
+    "final_rulings": 1,
+    "conditional_confidence_referrals": 0,
+    "total_tokens": 47955
+  },
+  "input_source": "/Users/huanghao/Desktop/hao/Hack/Tencent/FairRide-held-out-v21-20261016/cases",
+  "evaluation_scope": "User-authorized diagnostic rerun of two synthetic regression cases; no generalisation claim.",
+  "diagnostic_findings": {
+    "FHE-2026-002": {
+      "verdict": "PASS",
+      "interpretation": "Expected 500-cent fee refund, zero separate goodwill. Earlier intermittent correction failure did not recur in this single rerun."
+    },
+    "FHE-2026-006": {
+      "verdict": "FAIL",
+      "failing_actor": "driver_advocate",
+      "initial_errors": [
+        "FACT-008 timely_presence asserted true instead of false",
+        "FACT-009 arrival_verified asserted true instead of false"
+      ],
+      "repair_errors": [
+        "Required FACT-007 wait_end_time assertion omitted",
+        "Required FACT-008 timely_presence assertion omitted"
+      ],
+      "prose_audit": "Corrected response still asserts physical pickup presence and dismisses the rider allegation while declaring arrival_verified=false and goodwill_eligibility_resolved=false. It did not simply remove the unsupported argument.",
+      "decision": "Keep the retention guard. The captured response does not support narrowing it merely to make this run pass. Factual support of advocate prose remains unresolved; no new prompt or validation-policy change was made."
+    },
+    "scope": "One live run each of two previously inspected regression cases; draft-key matching and a targeted manual prose audit, not a general reliability or calibration assessment."
+  }
+}

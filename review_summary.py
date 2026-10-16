@@ -26,6 +26,7 @@ FACT_LABELS = {
     "timely_presence": "Timely driver pickup presence",
     "arrival_verified": "Pickup arrival corroborated by GPS",
     "driver_no_show": "Driver no-show established",
+    "goodwill_eligibility_resolved": "Goodwill eligibility resolved against conflicting presence records",
     "planned_distance_km": "Planned route distance",
     "actual_distance_km": "Actual route distance",
     "deviation_km": "Additional distance",
