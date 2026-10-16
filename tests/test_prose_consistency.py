@@ -6,6 +6,7 @@ from agents import ExampleAgentBackend, ModelAgentBackend
 from case_data import load_case, policy_for_case
 from contracts import AdvocateResult, JudgeResult
 from evidence import build_review_input, validate_references
+from claim_repair_fixtures import patch_response
 
 
 class ProseConsistencyTests(unittest.TestCase):
@@ -66,7 +67,7 @@ class ProseConsistencyTests(unittest.TestCase):
 
             async def complete_json(self, instructions, payload):
                 self.payloads.append(copy.deepcopy(payload))
-                return copy.deepcopy(responses[len(self.payloads) - 1]), {"total_tokens": 5}
+                return patch_response(copy.deepcopy(responses[len(self.payloads) - 1]), payload), {"total_tokens": 5}
 
         return Client()
 

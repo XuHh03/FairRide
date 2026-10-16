@@ -37,8 +37,14 @@ def no_show_facts(case: dict, policy: dict) -> dict:
     cancelled = datetime.fromisoformat(trip["cancellation_time"])
     arrival = datetime.fromisoformat(trip["driver_arrival_time"]) if trip.get("driver_arrival_time") else None
     pickup = trip["pickup_location"]
+    booking_times = [datetime.fromisoformat(record["timestamp"]) for record in case.get("app_events", [])
+                     if record["event_type"] == "booking_confirmed"]
+    booking_start = min(booking_times, default=None)
+    presence_start = min(scheduled, arrival) if arrival is not None else booking_start or scheduled
+    if booking_start is not None:
+        presence_start = max(presence_start, booking_start)
     gps = [(datetime.fromisoformat(r["timestamp"]), r.get("lat") == pickup["lat"] and r.get("lng") == pickup["lng"])
-           for r in case.get("gps_telemetry", [])]
+           for r in case.get("gps_telemetry", []) if presence_start <= datetime.fromisoformat(r["timestamp"]) <= cancelled]
     pickup_times = [at for at, present in gps if present and at <= cancelled]
     if arrival is None and pickup_times:
         arrival = min(pickup_times)
@@ -295,8 +301,8 @@ def grounded_final_explanation(case: dict, policy: dict, decision: JudgeResult) 
         elif facts["justification"] == "confirmed":
             reason += "Matched historical traffic supports the detour, the rider was notified before or at deviation and the rider agreed. POLICY-1.3 requires no refund. Unlike precedent POLICY-7.1, the detour was notified and agreed."
         else:
-            rate = next(item["rate_per_km"] for item in case["fare_items"] if item["component"] == "distance_charge")
-            reason += f"Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD {rate:.2f}/km, rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply."
+            rate = Decimal(str(next(item["rate_per_km"] for item in case["fare_items"] if item["component"] == "distance_charge")))
+            reason += f"Matched historical traffic does not justify the detour. POLICY-1.3 refunds the entire excess distance at SGD {rate:f}/km, with the resulting refund rounded to whole cents; the 1 km tolerance is not subtracted. This is a partial refund of the trip fare. Unlike precedent POLICY-7.1, this detour is unjustified, so its unspecified partial-component formula does not apply."
     reason += f" Recommended rider refund: SGD {action.amount_cents / 100:.2f}."
     if action.goodwill_credit_cents:
         reason += f" Separate goodwill credit under POLICY-2.4: SGD {action.goodwill_credit_cents / 100:.2f}."

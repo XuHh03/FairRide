@@ -1,0 +1,28 @@
+[
+  {
+    "case_id": "FHU-2026-106",
+    "actor": "driver_advocate",
+    "mode": "offline captured-response replay with explicit withdrawal fixture; not model-quality validation",
+    "calls": 2,
+    "withdrawn": [
+      {
+        "section": "claims",
+        "index": 0
+      }
+    ],
+    "untouched_claims_and_assertions_preserved": true
+  },
+  {
+    "case_id": "FHU-2026-108",
+    "actor": "driver_advocate",
+    "mode": "offline captured-response replay with explicit withdrawal fixture; not model-quality validation",
+    "calls": 2,
+    "withdrawn": [
+      {
+        "section": "claims",
+        "index": 0
+      }
+    ],
+    "untouched_claims_and_assertions_preserved": true
+  }
+]

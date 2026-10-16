@@ -56,8 +56,8 @@ def build_review_input(case: dict, policy: dict) -> ReviewInput:
             ("goodwill_credit_cents", "SGD cents", "500 if driver no-show and no contact; separate from refund", ["POLICY-2.4"]),
             ("wait_start_time", "ISO timestamp", "max(scheduled pickup, available recorded or GPS-corroborated arrival)", ["POLICY-2.1"]),
             ("wait_end_time", "ISO timestamp", "earlier of cancellation and first subsequent GPS departure", ["POLICY-2.1"]),
-            ("timely_presence", "boolean", "pickup GPS presence by scheduled pickup plus five minutes, inclusive", ["POLICY-2.4"]),
-            ("arrival_verified", "boolean", "arrival corroborated by pickup GPS before cancellation", ["POLICY-2.1"]),
+            ("timely_presence", "boolean", "pickup GPS presence from the earlier of scheduled pickup and reported arrival, no earlier than recorded booking; when arrival is missing use booking or schedule if booking is missing; through scheduled pickup plus five minutes inclusive and before or at cancellation; false does not prove absence", ["POLICY-2.4"]),
+            ("arrival_verified", "boolean", "arrival corroborated by pickup GPS within the current pickup window, no earlier than recorded booking and before or at cancellation", ["POLICY-2.1"]),
             ("driver_no_show", "boolean", "verified driver no-show under the five-minute arrival condition", ["POLICY-2.4"]),
             ("goodwill_eligibility_resolved", "boolean", "False when reported timely arrival conflicts with relevant pickup-window GPS and the elapsed no-contact case leaves separate goodwill unresolved; computed credit is not a final entitlement in that case", ["POLICY-2.4"]),
         ]
@@ -86,6 +86,9 @@ def build_review_input(case: dict, policy: dict) -> ReviewInput:
             else:
                 sections = ("trip_data", "gps_telemetry", "chat_logs", "app_events")
             source_ids = [record.id for record in evidence.values() if record.source in sections]
+            if "gps_telemetry" in sections and "app_events" not in sections:
+                source_ids += [record.id for record in evidence.values() if record.source == "app_events"
+                               and record.data["event_type"] == "booking_confirmed"]
         elif name in ("planned_distance_km", "actual_distance_km", "deviation_km", "excess_distance_cents"):
             source_ids = [calculated["planned_route_id"], calculated["actual_route_id"]]
             if name == "excess_distance_cents":

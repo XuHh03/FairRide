@@ -37,7 +37,8 @@ class SharedContractTests(unittest.TestCase):
         self.assertNotIn("fraud_flags", review.model_dump_json())
         fact = next(f for f in review.facts if f.id == "FACT-001")
         self.assertEqual(fact.value, 6)
-        self.assertEqual(fact.evidence_ids, ["TRIP-001"] + [record["id"] for record in self.case["gps_telemetry"]])
+        self.assertEqual(fact.evidence_ids, ["TRIP-001"] + [record["id"] for record in self.case["gps_telemetry"]]
+                         + [record["id"] for record in self.case["app_events"] if record["event_type"] == "booking_confirmed"])
         self.assertIn("cancellation_time", fact.formula)
 
     def test_unknown_evidence_and_policy_citations_are_reported(self):

@@ -1,8 +1,9 @@
 """Evidence-backed presentation built from Python checks, never model prose."""
 
 from datetime import datetime, timezone
+from decimal import Decimal
 
-from checks import grounded_final_explanation, material_case_issues, no_show_facts, route_deviation_facts
+from checks import escalation_issues, grounded_final_explanation, material_case_issues, no_show_facts, route_deviation_facts
 from contracts import DerivedFact, WorkflowResult
 from evidence import build_review_input
 
@@ -110,7 +111,7 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
              "formula": f"{measured['actual_distance_km']:g} km actual − {measured['planned_distance_km']:g} km planned = {measured['deviation_km']:g} km",
              "evidence_ids": routes, "policy_ids": ["POLICY-1.4"]},
             {"label": "Excess-distance fare component", "value": measured["excess_distance_cents"], "unit": "SGD cents",
-             "formula": f"max(0, {measured['deviation_km']:g} km) × S${distance['rate_per_km']:.2f}/km = S${measured['excess_distance_cents'] / 100:.2f} (rounded half up to cents). The 1 km tolerance is not deducted.",
+             "formula": f"max(0, {measured['deviation_km']:g} km) × S${Decimal(str(distance['rate_per_km'])):f}/km = S${measured['excess_distance_cents'] / 100:.2f} (rounded half up to cents). The 1 km tolerance is not deducted.",
              "evidence_ids": routes + [distance["id"]], "policy_ids": ["POLICY-1.3", "POLICY-1.4"]},
         ])
         row("Additional distance within 2 km AI limit", f"{measured['deviation_km']:g} km (2 km inclusive)",
@@ -134,11 +135,20 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
             at(record.get("timestamp"), record["event_type"].replace("_", " ").capitalize(), [record["id"]])
     timeline.sort(key=lambda item: datetime.fromisoformat(item["timestamp"]))
     action = result.judge_result.proposed_action if result.status == "completed" and not result.failure_category else None
-    if not action:
-        reason = ("No validated decision was issued because the review failed." if result.failure_category else
-                  "A reviewer must resolve the policy referral or evidence issues listed below; no refund amount is recommended.")
-    else:
+    verified_issues = material_case_issues(case, policy)
+    if result.failure_category:
+        reason = "No validated decision was issued because the review failed."
+    elif action:
         reason = grounded_final_explanation(case, policy, result.judge_result)
+    else:
+        gates = escalation_issues(case, policy, result.judge_result.confidence)
+        if not gates and result.mandatory_escalation:
+            gates = escalation_issues(case, policy, result.judge_result.confidence, final=True)
+        verified_issues = list(dict.fromkeys(gates + verified_issues))
+        reason = ("A human reviewer must resolve the following checks:\n\n" +
+                  "\n".join(f"- {issue}" for issue in verified_issues) if verified_issues else
+                  "A human reviewer must assess the case before a final decision can be made.")
+        reason += "\n\nNo final refund or goodwill-credit amount has been decided."
     party_messages = None
     if action:
         component = "cancellation fee" if review.dispute_type == "no_show_charge" else "excess-distance fare"
@@ -160,7 +170,7 @@ def build_decision_summary(case: dict, policy: dict, result: WorkflowResult) -> 
         "mandatory_escalation": result.mandatory_escalation, "failure_category": result.failure_category,
         "reason": reason,
         "party_messages": party_messages,
-        "review_issues": list(dict.fromkeys(result.validation_issues + material_case_issues(case, policy))),
+        "review_issues": list(dict.fromkeys(result.validation_issues + verified_issues)),
         "checklist": checklist, "calculations": calculations, "timeline": timeline,
     }
 

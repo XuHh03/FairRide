@@ -22,8 +22,10 @@ class SchemaRetryTests(unittest.TestCase):
         class Client:
             def __init__(self):
                 self.payloads = []
+                self.instructions = []
 
             async def complete_json(self, instructions, payload):
+                self.instructions.append(instructions)
                 self.payloads.append(copy.deepcopy(payload))
                 return copy.deepcopy(outputs[len(self.payloads) - 1]), {"total_tokens": 5}
 
@@ -74,6 +76,32 @@ class SchemaRetryTests(unittest.TestCase):
         correction = client.payloads[1]["schema_correction"]
         self.assertEqual(correction["previous_response"], invalid)
         self.assertIn("main points", correction["instruction"])
+
+    def test_misplaced_fact_assertions_get_explicit_schema_guidance(self):
+        fact = self.review.facts[0]
+        valid = copy.deepcopy(self.examples["rider_advocate"])
+        assertion = {"fact_id": fact.id, "value": fact.value}
+        valid["claims"][0]["fact_assertions"] = [assertion]
+        invalid = copy.deepcopy(valid)
+        invalid["fact_assertions"] = invalid["claims"][0].pop("fact_assertions")
+        client = self.client([invalid, valid])
+        call = asyncio.run(ModelAgentBackend(client).advocate(self.review, "rider_advocate"))
+        self.assertEqual(call.result.claims[0].fact_assertions[0].fact_id, fact.id)
+        self.assertEqual(call.usage["total_tokens"], 10)
+        self.assertIn("Never put fact_assertions at the top level", client.instructions[0])
+        correction = client.payloads[1]["schema_correction"]
+        self.assertEqual(set(correction["allowed_top_level_fields"]), set(AdvocateResult.model_fields))
+        self.assertIn("claims[].fact_assertions", correction["instruction"])
+        self.assertIn("counterpoints[].fact_assertions", correction["instruction"])
+        self.assertEqual(correction["previous_response"], invalid)
+
+    def test_persistent_misplaced_assertions_still_fail_within_retry_budget(self):
+        invalid = copy.deepcopy(self.examples["rider_advocate"])
+        invalid["fact_assertions"] = [{"fact_id": self.review.facts[0].id, "value": self.review.facts[0].value}]
+        client = self.client([invalid, invalid])
+        with self.assertRaisesRegex(ValueError, "Schema correction failed: fact_assertions"):
+            asyncio.run(ModelAgentBackend(client).advocate(self.review, "rider_advocate"))
+        self.assertEqual(len(client.payloads), 2)
 
     def test_persistent_overlong_advocate_fails_after_two_calls(self):
         invalid = copy.deepcopy(self.examples["rider_advocate"])

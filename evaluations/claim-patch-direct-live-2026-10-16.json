@@ -1,0 +1,701 @@
+{
+  "model": "qwen3.6:35b",
+  "source_report": "evaluations/claim-patch-live-2026-10-16-165714.json",
+  "actual_live_calls": 2,
+  "cases": [
+    {
+      "case_id": "FHU-2026-102",
+      "mode": "captured invalid initial response plus one live advocate repair; not a new complete dispute review",
+      "verdict": "PASS",
+      "result": {
+        "role": "driver_advocate",
+        "claims": [
+          {
+            "statement": "The driver was physically present and verified by GPS from the scheduled pickup time, satisfying the arrival requirement under POLICY-2.4.",
+            "evidence_ids": [
+              "FHU-2026-102-GPS-01",
+              "FHU-2026-102-GPS-02",
+              "FHU-2026-102-GPS-03",
+              "FHU-2026-102-EVENT-02",
+              "FHU-2026-102-EVENT-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.4"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-009",
+                "value": true
+              },
+              {
+                "fact_id": "FACT-010",
+                "value": false
+              }
+            ]
+          },
+          {
+            "statement": "The driver made two unique call attempts prior to cancellation, satisfying the contact obligation under POLICY-2.3 despite having no chat messages to send.",
+            "evidence_ids": [
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03",
+              "FHU-2026-102-EVENT-04",
+              "FHU-2026-102-EVENT-05",
+              "FHU-2026-102-EVENT-07"
+            ],
+            "policy_ids": [
+              "POLICY-2.3"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-003",
+                "value": 0
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "statement": "The driver’s five-minute free wait expired without the mandatory chat contact required by POLICY-2.3, making the $5 fee ineligible. Although the driver waited 8 minutes and arrived on time, the absence of a driver-initiated message voids the no-show compensation.",
+            "evidence_ids": [
+              "FHU-2026-102-CHAT-01",
+              "FHU-2026-102-CHAT-02",
+              "FHU-2026-102-CHAT-03"
+            ],
+            "policy_ids": [
+              "POLICY-2.2",
+              "POLICY-2.3"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-001",
+                "value": 8.0
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": false
+              }
+            ]
+          }
+        ],
+        "counterpoints": [],
+        "unanswered_questions": []
+      },
+      "diagnostics": {
+        "case_id": "FHU-2026-102",
+        "actor": "driver_advocate",
+        "response_type": "AdvocateResult",
+        "outcome": "accepted_after_repair",
+        "attempts": [
+          {
+            "attempt": 1,
+            "response": {
+              "role": "driver_advocate",
+              "claims": [
+                {
+                  "statement": "The driver was physically present and verified by GPS from the scheduled pickup time, satisfying the arrival requirement under POLICY-2.4.",
+                  "evidence_ids": [
+                    "FHU-2026-102-GPS-01",
+                    "FHU-2026-102-GPS-02",
+                    "FHU-2026-102-GPS-03",
+                    "FHU-2026-102-EVENT-02",
+                    "FHU-2026-102-EVENT-03"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.4"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-009",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-010",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "statement": "The driver made two unique call attempts prior to cancellation, satisfying the contact obligation under POLICY-2.3 despite having no chat messages to send.",
+                  "evidence_ids": [
+                    "FHU-2026-102-CHAT-02",
+                    "FHU-2026-102-CHAT-03",
+                    "FHU-2026-102-EVENT-04",
+                    "FHU-2026-102-EVENT-05",
+                    "FHU-2026-102-EVENT-07"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 0
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 2
+                    }
+                  ]
+                },
+                {
+                  "statement": "The driver waited 8 minutes from arrival, exceeding the 5-minute free wait, and the rider requested a wait via chat, establishing a valid rider no-show under POLICY-2.2.",
+                  "evidence_ids": [
+                    "FHU-2026-102-TICKET-01",
+                    "FHU-2026-102-TRIP-01",
+                    "FHU-2026-102-CHAT-01",
+                    "FHU-2026-102-EVENT-06"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.2",
+                    "POLICY-2.1"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-001",
+                      "value": 8.0
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": true
+                    }
+                  ]
+                }
+              ],
+              "counterpoints": [],
+              "unanswered_questions": []
+            },
+            "validation_errors": [
+              "Fact assertion FACT-002 (fee_eligible) must equal False; got True"
+            ],
+            "required_fact_assertions": [],
+            "claim_feedback": [
+              {
+                "section": "claims",
+                "index": 2,
+                "statement": "The driver waited 8 minutes from arrival, exceeding the 5-minute free wait, and the rider requested a wait via chat, establishing a valid rider no-show under POLICY-2.2.",
+                "offending_sentences": [],
+                "errors": [
+                  "Fact assertion FACT-002 (fee_eligible) must equal False; got True"
+                ],
+                "facts": [
+                  {
+                    "fact_id": "FACT-001",
+                    "name": "waited_minutes",
+                    "value": 8.0
+                  },
+                  {
+                    "fact_id": "FACT-002",
+                    "name": "fee_eligible",
+                    "value": false
+                  },
+                  {
+                    "fact_id": "FACT-008",
+                    "name": "timely_presence",
+                    "value": true
+                  },
+                  {
+                    "fact_id": "FACT-009",
+                    "name": "arrival_verified",
+                    "value": true
+                  },
+                  {
+                    "fact_id": "FACT-011",
+                    "name": "goodwill_eligibility_resolved",
+                    "value": true
+                  }
+                ],
+                "correction": "Use the listed canonical values and revise this claim consistently. Preserve required assertions. False verification does not establish physical presence or absence. When goodwill_eligibility_resolved is false, describe the reported arrival and conflicting GPS as unresolved; do not settle goodwill or dismiss either account.",
+                "required_fact_assertions": [
+                  {
+                    "fact_id": "FACT-001",
+                    "value": 8.0
+                  },
+                  {
+                    "fact_id": "FACT-002",
+                    "value": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "attempt": 2,
+            "response": {
+              "patches": [
+                {
+                  "section": "claims",
+                  "index": 2,
+                  "replacement": {
+                    "statement": "The driver’s five-minute free wait expired without the mandatory chat contact required by POLICY-2.3, making the $5 fee ineligible. Although the driver waited 8 minutes and arrived on time, the absence of a driver-initiated message voids the no-show compensation.",
+                    "evidence_ids": [
+                      "FHU-2026-102-CHAT-01",
+                      "FHU-2026-102-CHAT-02",
+                      "FHU-2026-102-CHAT-03"
+                    ],
+                    "policy_ids": [
+                      "POLICY-2.2",
+                      "POLICY-2.3"
+                    ],
+                    "fact_assertions": [
+                      {
+                        "fact_id": "FACT-001",
+                        "value": 8.0
+                      },
+                      {
+                        "fact_id": "FACT-002",
+                        "value": false
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "validation_errors": [],
+            "required_fact_assertions": [
+              {
+                "fact_id": "FACT-001",
+                "value": 8.0
+              },
+              {
+                "fact_id": "FACT-002",
+                "value": false
+              }
+            ],
+            "assembled_response": {
+              "role": "driver_advocate",
+              "claims": [
+                {
+                  "statement": "The driver was physically present and verified by GPS from the scheduled pickup time, satisfying the arrival requirement under POLICY-2.4.",
+                  "evidence_ids": [
+                    "FHU-2026-102-GPS-01",
+                    "FHU-2026-102-GPS-02",
+                    "FHU-2026-102-GPS-03",
+                    "FHU-2026-102-EVENT-02",
+                    "FHU-2026-102-EVENT-03"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.4"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-009",
+                      "value": true
+                    },
+                    {
+                      "fact_id": "FACT-010",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "statement": "The driver made two unique call attempts prior to cancellation, satisfying the contact obligation under POLICY-2.3 despite having no chat messages to send.",
+                  "evidence_ids": [
+                    "FHU-2026-102-CHAT-02",
+                    "FHU-2026-102-CHAT-03",
+                    "FHU-2026-102-EVENT-04",
+                    "FHU-2026-102-EVENT-05",
+                    "FHU-2026-102-EVENT-07"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 0
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 2
+                    }
+                  ]
+                },
+                {
+                  "statement": "The driver’s five-minute free wait expired without the mandatory chat contact required by POLICY-2.3, making the $5 fee ineligible. Although the driver waited 8 minutes and arrived on time, the absence of a driver-initiated message voids the no-show compensation.",
+                  "evidence_ids": [
+                    "FHU-2026-102-CHAT-01",
+                    "FHU-2026-102-CHAT-02",
+                    "FHU-2026-102-CHAT-03"
+                  ],
+                  "policy_ids": [
+                    "POLICY-2.2",
+                    "POLICY-2.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-001",
+                      "value": 8.0
+                    },
+                    {
+                      "fact_id": "FACT-002",
+                      "value": false
+                    }
+                  ]
+                }
+              ],
+              "counterpoints": [],
+              "unanswered_questions": []
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 7828,
+          "completion_tokens": 271,
+          "total_tokens": 8099
+        }
+      },
+      "usage": {
+        "prompt_tokens": 7828,
+        "completion_tokens": 271,
+        "total_tokens": 8099
+      },
+      "live_calls": 1
+    },
+    {
+      "case_id": "FHU-2026-108",
+      "mode": "captured invalid initial response plus one live advocate repair; not a new complete dispute review",
+      "verdict": "PASS",
+      "result": {
+        "role": "driver_advocate",
+        "claims": [
+          {
+            "statement": "Although the deviation was not explicitly agreed to by the rider, the driver's notification combined with the rider's continued trip completion constitutes acceptance, or at minimum, exempts the driver from the stricter 'unjustified' penalty if the detour was reasonable.",
+            "evidence_ids": [
+              "FHU-2026-108-CHAT-02",
+              "FHU-2026-108-CHAT-01",
+              "FHU-2026-108-EVENT-03"
+            ],
+            "policy_ids": [
+              "POLICY-1.3"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-007",
+                "value": false
+              }
+            ]
+          },
+          {
+            "statement": "The deviation distance of 1.001 km exceeds the 1 km tolerance only marginally (0.001 km), resulting in a negligible excess-distance fare of 51 cents; arguing for full refund of this minor component is disproportionate given the context of a justified avoidance of congestion.",
+            "evidence_ids": [
+              "FHU-2026-108-ROUTE-01",
+              "FHU-2026-108-ROUTE-02",
+              "FHU-2026-108-FARE-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.3",
+              "POLICY-1.4"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-003",
+                "value": 1.001
+              },
+              {
+                "fact_id": "FACT-004",
+                "value": 51
+              }
+            ]
+          }
+        ],
+        "counterpoints": [
+          {
+            "statement": "The rider's claim that the detour was unjustified ignores the driver's explicit traffic explanation and the lack of historical evidence proving the main road was clear; the driver's assessment of traffic conditions is the primary basis for rerouting.",
+            "evidence_ids": [
+              "FHU-2026-108-TRAFFIC-01",
+              "FHU-2026-108-CHAT-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.4"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-005",
+                "value": "unsupported"
+              }
+            ]
+          },
+          {
+            "statement": "Even if the detour is deemed unjustified, the refund should be limited to the excess-distance fare of 51 cents, not the entire disputed amount of 115 cents, as time and base fares were not affected by the deviation.",
+            "evidence_ids": [
+              "FHU-2026-108-FARE-05",
+              "FHU-2026-108-FARE-02"
+            ],
+            "policy_ids": [
+              "POLICY-1.3"
+            ],
+            "fact_assertions": [
+              {
+                "fact_id": "FACT-004",
+                "value": 51
+              }
+            ]
+          }
+        ],
+        "unanswered_questions": []
+      },
+      "diagnostics": {
+        "case_id": "FHU-2026-108",
+        "actor": "driver_advocate",
+        "response_type": "AdvocateResult",
+        "outcome": "accepted_after_repair",
+        "attempts": [
+          {
+            "attempt": 1,
+            "response": {
+              "role": "driver_advocate",
+              "claims": [
+                {
+                  "statement": "The driver provided timely notification of the route change via in-app chat at 14:10:10, stating the reason was traffic, which satisfies the pre-deviation or at-deviation notice requirement under POLICY-1.2.",
+                  "evidence_ids": [
+                    "FHU-2026-108-CHAT-01",
+                    "FHU-2026-108-CHAT-02",
+                    "FHU-2026-108-EVENT-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.2"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-006",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "statement": "Although the deviation was not explicitly agreed to by the rider, the driver's notification combined with the rider's continued trip completion constitutes acceptance, or at minimum, exempts the driver from the stricter 'unjustified' penalty if the detour was reasonable.",
+                  "evidence_ids": [
+                    "FHU-2026-108-CHAT-02",
+                    "FHU-2026-108-CHAT-01",
+                    "FHU-2026-108-EVENT-03"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-007",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "statement": "The deviation distance of 1.001 km exceeds the 1 km tolerance only marginally (0.001 km), resulting in a negligible excess-distance fare of 51 cents; arguing for full refund of this minor component is disproportionate given the context of a justified avoidance of congestion.",
+                  "evidence_ids": [
+                    "FHU-2026-108-ROUTE-01",
+                    "FHU-2026-108-ROUTE-02",
+                    "FHU-2026-108-FARE-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3",
+                    "POLICY-1.4"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 1.001
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 51
+                    }
+                  ]
+                }
+              ],
+              "counterpoints": [
+                {
+                  "statement": "The rider's claim that the detour was unjustified ignores the driver's explicit traffic explanation and the lack of historical evidence proving the main road was clear; the driver's assessment of traffic conditions is the primary basis for rerouting.",
+                  "evidence_ids": [
+                    "FHU-2026-108-TRAFFIC-01",
+                    "FHU-2026-108-CHAT-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.4"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-005",
+                      "value": "unsupported"
+                    }
+                  ]
+                },
+                {
+                  "statement": "Even if the detour is deemed unjustified, the refund should be limited to the excess-distance fare of 51 cents, not the entire disputed amount of 115 cents, as time and base fares were not affected by the deviation.",
+                  "evidence_ids": [
+                    "FHU-2026-108-FARE-05",
+                    "FHU-2026-108-FARE-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 51
+                    }
+                  ]
+                }
+              ],
+              "unanswered_questions": []
+            },
+            "validation_errors": [
+              "Fact assertion FACT-006 (rider_informed) must equal False; got True"
+            ],
+            "required_fact_assertions": [],
+            "claim_feedback": [
+              {
+                "section": "claims",
+                "index": 0,
+                "statement": "The driver provided timely notification of the route change via in-app chat at 14:10:10, stating the reason was traffic, which satisfies the pre-deviation or at-deviation notice requirement under POLICY-1.2.",
+                "offending_sentences": [],
+                "errors": [
+                  "Fact assertion FACT-006 (rider_informed) must equal False; got True"
+                ],
+                "facts": [
+                  {
+                    "fact_id": "FACT-003",
+                    "name": "deviation_km",
+                    "value": 1.001
+                  },
+                  {
+                    "fact_id": "FACT-004",
+                    "name": "excess_distance_cents",
+                    "value": 51
+                  },
+                  {
+                    "fact_id": "FACT-005",
+                    "name": "justification",
+                    "value": "unsupported"
+                  },
+                  {
+                    "fact_id": "FACT-006",
+                    "name": "rider_informed",
+                    "value": false
+                  }
+                ],
+                "correction": "Use the listed canonical values and revise this claim consistently. Preserve required assertions. Use the entire excess-distance fare component; do not deduct the tolerance or retain a discarded alternative calculation.",
+                "required_fact_assertions": [
+                  {
+                    "fact_id": "FACT-006",
+                    "value": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "attempt": 2,
+            "response": {
+              "patches": [
+                {
+                  "section": "claims",
+                  "index": 0,
+                  "replacement": null
+                }
+              ]
+            },
+            "validation_errors": [],
+            "required_fact_assertions": [
+              {
+                "fact_id": "FACT-006",
+                "value": false
+              }
+            ],
+            "assembled_response": {
+              "role": "driver_advocate",
+              "claims": [
+                {
+                  "statement": "Although the deviation was not explicitly agreed to by the rider, the driver's notification combined with the rider's continued trip completion constitutes acceptance, or at minimum, exempts the driver from the stricter 'unjustified' penalty if the detour was reasonable.",
+                  "evidence_ids": [
+                    "FHU-2026-108-CHAT-02",
+                    "FHU-2026-108-CHAT-01",
+                    "FHU-2026-108-EVENT-03"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-007",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "statement": "The deviation distance of 1.001 km exceeds the 1 km tolerance only marginally (0.001 km), resulting in a negligible excess-distance fare of 51 cents; arguing for full refund of this minor component is disproportionate given the context of a justified avoidance of congestion.",
+                  "evidence_ids": [
+                    "FHU-2026-108-ROUTE-01",
+                    "FHU-2026-108-ROUTE-02",
+                    "FHU-2026-108-FARE-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3",
+                    "POLICY-1.4"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-003",
+                      "value": 1.001
+                    },
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 51
+                    }
+                  ]
+                }
+              ],
+              "counterpoints": [
+                {
+                  "statement": "The rider's claim that the detour was unjustified ignores the driver's explicit traffic explanation and the lack of historical evidence proving the main road was clear; the driver's assessment of traffic conditions is the primary basis for rerouting.",
+                  "evidence_ids": [
+                    "FHU-2026-108-TRAFFIC-01",
+                    "FHU-2026-108-CHAT-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.4"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-005",
+                      "value": "unsupported"
+                    }
+                  ]
+                },
+                {
+                  "statement": "Even if the detour is deemed unjustified, the refund should be limited to the excess-distance fare of 51 cents, not the entire disputed amount of 115 cents, as time and base fares were not affected by the deviation.",
+                  "evidence_ids": [
+                    "FHU-2026-108-FARE-05",
+                    "FHU-2026-108-FARE-02"
+                  ],
+                  "policy_ids": [
+                    "POLICY-1.3"
+                  ],
+                  "fact_assertions": [
+                    {
+                      "fact_id": "FACT-004",
+                      "value": 51
+                    }
+                  ]
+                }
+              ],
+              "unanswered_questions": []
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 7076,
+          "completion_tokens": 41,
+          "total_tokens": 7117
+        }
+      },
+      "usage": {
+        "prompt_tokens": 7076,
+        "completion_tokens": 41,
+        "total_tokens": 7117
+      },
+      "live_calls": 1
+    }
+  ]
+}

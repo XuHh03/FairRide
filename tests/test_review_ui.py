@@ -6,7 +6,7 @@ from unittest.mock import patch
 from streamlit.testing.v1 import AppTest
 
 from agents import AgentCall, ExampleAgentBackend
-from contracts import ArgumentReview, FactAssertion
+from contracts import ActivityEntry, ArgumentReview, FactAssertion
 from case_data import load_case, policy_for_case
 from evidence import build_evidence_index, build_policy_index, build_review_input
 from workflow import run_review
@@ -207,8 +207,8 @@ class IntegratedReviewUITests(unittest.TestCase):
         app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
         self.assertFalse(app.exception)
         captions = " ".join(item.value for item in app.caption)
-        self.assertIn("Model-generated argument", captions)
-        self.assertIn("Original Judge analysis", captions)
+        self.assertIn("Unverified model argument", captions)
+        self.assertIn("Unverified Judge analysis", captions)
         self.assertIn("Citation IDs and declared fact values are checked", captions)
         self.assertTrue(app.get("popover"))
         self.assertTrue(app.json)
@@ -226,6 +226,32 @@ class IntegratedReviewUITests(unittest.TestCase):
         self.assertTrue(any(item.value == "Model response failed validation" for item in app.error))
         self.assertFalse(app.success)
         self.assertFalse(any("Application-generated explanation" in item.value for item in app.caption))
+
+    def test_referral_uses_application_reason_and_keeps_raw_judge_in_activity(self):
+        case = load_case("DISP-012")
+        result = run_review(case, policy_for_case(case), ExampleAgentBackend())
+        prose = "UNVERIFIED_JUDGE_TEXT: award SGD 99 goodwill."
+        result.judge_result.explanation = prose
+        result.activity_log.append(ActivityEntry(actor="judge", event="provisional_review",
+            output={"result": result.judge_result.model_dump(mode="json")}))
+        with patch.dict(os.environ, {"FAIRRIDE_API_KEY": "test", "FAIRRIDE_MODEL": "test"}), \
+             patch("workflow.run_review", return_value=result) as reviewer:
+            app = AppTest.from_file(APP_PATH).run()
+            app.sidebar.selectbox[0].select("DISP-012").run()
+            app.sidebar.radio[0].set_value("Live model").run()
+            app.sidebar.button[0].click().run()
+            self.assertFalse(app.exception)
+            content = " ".join(item.value for item in app.markdown)
+            self.assertIn("Historical traffic evidence is missing or conflicting", content)
+            self.assertNotIn(prose, content)
+            self.assertTrue(any("Application-generated explanation" in item.value for item in app.caption))
+            self.assertFalse(any(item.label in ("Recommended rider refund", "Separate goodwill credit") for item in app.metric))
+            self.assertFalse(app.tabs)
+            app.sidebar.radio(key="dashboard_view").set_value("Agent activity").run()
+            self.assertFalse(app.exception)
+            self.assertTrue(any(prose in item.value for item in app.markdown))
+            self.assertTrue(any("Unverified Judge analysis" in item.value for item in app.caption))
+            self.assertEqual(reviewer.call_count, 1)
 
     def test_failed_support_check_displays_flagged_argument_and_cited_findings(self):
         class Backend(ExampleAgentBackend):

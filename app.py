@@ -173,7 +173,7 @@ def show_decision() -> None:
             st.caption("Self-reported by the Judge; not a calibrated probability of correctness.")
     else:
         st.warning("Human review required")
-    if result.status == "completed" and not result.failure_category:
+    if not result.failure_category:
         st.caption("Application-generated explanation from validated case facts and policy checks. Original Judge analysis is available in Agent activity.")
     party_messages = summary.get("party_messages")
     if party_messages:
@@ -356,7 +356,7 @@ elif view == "Agent activity":
                 if "result" in output:
                     item = output["result"]
                     if "claims" in item:
-                        st.caption("Model-generated argument; check its interpretation against cited sources." if st.session_state.review_mode == "Live model" else
+                        st.caption("Unverified model argument; citations and declared values are checked, but the text may contradict the evidence. Use the decision summary for the validated outcome." if st.session_state.review_mode == "Live model" else
                                    "Hand-written example argument; not a live model response.")
                         if output.get("support_status") == "flagged":
                             st.warning("This argument was flagged by the support check. Inspect its findings below; it was not accepted for the Judge.")
@@ -375,7 +375,7 @@ elif view == "Agent activity":
                         if item["unanswered_questions"]:
                             st.write("**Open questions:** " + "; ".join(item["unanswered_questions"]))
                     else:
-                        st.caption("Original Judge analysis; model prose may contain errors." if st.session_state.review_mode == "Live model" else
+                        st.caption("Unverified Judge analysis; use the application-generated explanation in the decision summary for the validated outcome." if st.session_state.review_mode == "Live model" else
                                    "Original Judge analysis from the hand-written example.")
                         st.write(item["explanation"])
                         if item.get("question"):
